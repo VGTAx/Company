@@ -1,0 +1,23 @@
+﻿@model List<Company.Models.DepartmentNumberPoco>
+
+@using Company.Helpers
+@{
+    ViewData["Title"] = "Home Page";
+}
+﻿
+<h1>Структура компании</h1>
+
+
+
+<ul>
+    @foreach (var department in Model.Where(d => d.ParentID == null))
+    {
+        <li>@department.DepartmentName - @department.NumberEmployee сотрудников</li>        
+        @ListHelper.RenderSubDepartments(Html,department.ID, Model); 
+    }
+</ul>
+
+
+
+
+         

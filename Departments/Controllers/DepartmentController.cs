@@ -169,13 +169,17 @@ namespace Company.Controllers
 
         public IActionResult DetailsDepartment(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var employeesDepartment = _context.Employees.Where(e => e.DepartmentID == id).ToList();
-            employeesDepartment.AddRange(GetEmployees(id, _context.Departments.ToList(), _context.Employees.ToList()));
+            if (employeesDepartment.Count == 0)
+            {
+                employeesDepartment.AddRange(GetEmployees(id, _context.Departments.ToList(), _context.Employees.ToList()));
+            }
+           
 
             var departments = _context.Departments
                 .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
@@ -193,31 +197,25 @@ namespace Company.Controllers
         }
 
         private List<Employee> GetEmployees(int? id, List<Department> departments, List<Employee> empl)
-        {
-            
-            var subdepartments = departments.Where(d=>d.ParentDepartmentID == id).ToList();
-            
+        {           
+            var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();            
+            var employees = new List<Employee>();
 
-            var employees = empl.Where(e => subdepartments.Select(s => s.ID).Contains(e.ID))
-                                            .ToList();
-            foreach(var employee in employees)
+            if (subdepartments.Count != 0)
             {
-                Console.WriteLine($"{employee.Name}\n");
+                employees = empl.Where(e => subdepartments.Select(s => s.ID).Contains(e.ID)).ToList();                
             }
-
+            employees = empl.Where(e => e.DepartmentID == id).ToList();
 
             if (subdepartments.Any())
             {
                 foreach (var dep in subdepartments)
-                {
-                    Console.WriteLine(dep.DepartmentName);
-
+                {       
                     var children = GetEmployees(dep.ID, departments, empl);
-                    Console.WriteLine(children.Count);
                     employees.AddRange(children);
                 }
             }
-            Console.WriteLine($"count empl: {employees.Count}\nDepar count: {subdepartments.Count}");
+           
             return employees;
         }
     }

@@ -1,15 +1,20 @@
 ﻿using Company.Models;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using MySqlX.XDevAPI.Common;
 using System.Runtime.Intrinsics.Arm;
+using System.Security.Policy;
 
 namespace Company.Helpers
 {
     public static class ListHelper
     {
+        
         public static IHtmlContent RenderSubDepartments(IHtmlHelper html, int? departmentId, List<DepartmentNumberPoco> departments)
         {
+           
             var subdepartments = departments.Where(d => d.ParentID == departmentId);
             var ul = new TagBuilder("ul");
             
@@ -19,10 +24,14 @@ namespace Company.Helpers
                 foreach (var dep in subdepartments)
                 {
                     var li = new TagBuilder("li");
-                    li.InnerHtml.Append(dep.DepartmentName!)
-                        .Append(" - ")
-                        .Append(dep.NumberEmployee.ToString()!)
-                        .Append(" сотрудников");
+                    //var a = new TagBuilder("a");
+                    //var actionUrl = urlHelper.Action("DetailsDepartment", "Department");
+
+                     
+                    //a.InnerHtml.Append(dep.DepartmentName!);
+                    //a.MergeAttribute("href", actionUrl);
+                    //a.Attributes["class"] = "nav-link text-dark";
+                    //li.InnerHtml.AppendHtml();
 
                     //if (IsButtonRequired(dep,departments))
                     //{

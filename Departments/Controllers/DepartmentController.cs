@@ -161,9 +161,28 @@ namespace Company.Controllers
             var departments = _context.Departments.ToList();
             var employee = _context.Employees;
 
+           
             ViewBag.Departments = departments;
 
             return View(employee);
+        }
+
+        public IActionResult DetailsDepartment(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var employeesDepartment = _context.Employees.Where(e => e.DepartmentID == id).ToList();
+            employeesDepartment.AddRange(GetEmployees(id, _context.Departments.ToList(), _context.Employees.ToList()));
+
+            var departments = _context.Departments
+                .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
+
+            ViewBag.Departments = departments;
+
+            return View("Details", employeesDepartment);
         }
 
         
@@ -171,6 +190,35 @@ namespace Company.Controllers
         private bool EmployeeExists(int? id)
         {
             return _context.Employees.Any(e => e.ID == id);
+        }
+
+        private List<Employee> GetEmployees(int? id, List<Department> departments, List<Employee> empl)
+        {
+            
+            var subdepartments = departments.Where(d=>d.ParentDepartmentID == id).ToList();
+            
+
+            var employees = empl.Where(e => subdepartments.Select(s => s.ID).Contains(e.ID))
+                                            .ToList();
+            foreach(var employee in employees)
+            {
+                Console.WriteLine($"{employee.Name}\n");
+            }
+
+
+            if (subdepartments.Any())
+            {
+                foreach (var dep in subdepartments)
+                {
+                    Console.WriteLine(dep.DepartmentName);
+
+                    var children = GetEmployees(dep.ID, departments, empl);
+                    Console.WriteLine(children.Count);
+                    employees.AddRange(children);
+                }
+            }
+            Console.WriteLine($"count empl: {employees.Count}\nDepar count: {subdepartments.Count}");
+            return employees;
         }
     }
 }

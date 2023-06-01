@@ -14,10 +14,10 @@
         if (subdepartments.Any())
         {
             <ul>
-             @foreach(var dep in subdepartments)
+             @foreach(var department in subdepartments)
                 {
-                   <li><a asp-action="DetailsDepartment" asp-route-id="@dep.ID" asp-controller="Department">@dep.DepartmentName</a></li>
-                   await RenderSubDepartment(dep.ID, departments);
+                   <li><a asp-action="DetailsDepartment" asp-route-departmentId="@department.ID" asp-controller="Department">@department.DepartmentName</a></li>
+                   await RenderSubDepartment(department.ID, departments);
                 }
             </ul>
         }        
@@ -27,7 +27,7 @@
 <ul>
     @foreach (var department in Model.Where(d => d.ParentID == null))
     {        
-        <li><a asp-action="DetailsDepartment" asp-route-id="@department.ID" asp-controller="Department">@department.DepartmentName</a></li>        
+        <li><a asp-action="DetailsDepartment" asp-route-departmentId="@department.ID" asp-controller="Department">@department.DepartmentName</a></li>        
         await RenderSubDepartment(department.ID, Model); 
     }
 </ul>

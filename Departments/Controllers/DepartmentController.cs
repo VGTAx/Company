@@ -22,22 +22,33 @@ namespace Company.Controllers
             var numberOfEmployyes = from d in _context.NumberOfEmployees
                                     join e in _context.Departments on d.DepartmentID equals e.ID
                                     select new DepartmentNumberPoco(e.ID, e.DepartmentName,
-                                                                e.ParentDepartmentID, d.EmployeeCount);
-                                   
+                                                                e.ParentDepartmentID, d.EmployeeCount);                                   
 
             return View(await numberOfEmployyes.ToListAsync());
         }
        
         
-        public IActionResult Create()
+        public IActionResult Create(int? departmentId)
         {
             var departments = _context.Departments
                 .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
-                .Select(item=> new SelectListItem
+                .Select(item => new SelectListItem
                 {
                     Value = item.ID.ToString(),
                     Text = item.DepartmentName
-                });           
+                }).AsEnumerable();
+
+            if (departmentId != null)
+            {
+                var tempDep = GetDepartments(departmentId, _context.Departments.ToList());
+                departments = tempDep
+                    .Select(item => new SelectListItem
+                    {
+                        Value = item.ID.ToString(),
+                        Text = item.DepartmentName,
+                        Selected = (tempDep.Count == 1)                        
+                    });  
+            }                    
 
             ViewData["Departments"] = departments;
             return View();
@@ -109,7 +120,6 @@ namespace Company.Controllers
                 }
                 return RedirectToAction(nameof(Details));
             }
-
             return View();
         }
 
@@ -160,24 +170,23 @@ namespace Company.Controllers
         {
             var departments = _context.Departments.ToList();
             var employee = _context.Employees;
-
            
             ViewBag.Departments = departments;
 
             return View(employee);
         }
 
-        public IActionResult DetailsDepartment(int? id)
+        public IActionResult DetailsDepartment(int? departmentId)
         {
-            if (id == null)
+            if (departmentId == null)
             {
                 return NotFound();
             }
 
-            var employeesDepartment = _context.Employees.Where(e => e.DepartmentID == id).ToList();
+            var employeesDepartment = _context.Employees.Where(e => e.DepartmentID == departmentId).ToList();
             if (employeesDepartment.Count == 0)
             {
-                employeesDepartment.AddRange(GetEmployees(id, _context.Departments.ToList(), _context.Employees.ToList()));
+                employeesDepartment.AddRange(GetEmployees(departmentId, _context.Departments.ToList(), _context.Employees.ToList()));
             }
            
 
@@ -185,6 +194,7 @@ namespace Company.Controllers
                 .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
 
             ViewBag.Departments = departments;
+            ViewBag.MainDepartment = departmentId;
 
             return View("Details", employeesDepartment);
         }
@@ -217,6 +227,33 @@ namespace Company.Controllers
             }
            
             return employees;
+        }
+
+        private List<Department> GetDepartments(int? id, List<Department> departments)
+        {
+            var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();
+            var deps = new List<Department>();
+
+            if (subdepartments.Any())
+            {
+                foreach (var department in subdepartments)
+                {
+                   var childDep =  GetDepartments(department.ID, departments);
+                   if (childDep.Count == 0)
+                   {
+                      deps.Add(department);
+                   }
+                   else
+                   {
+                      deps.AddRange(childDep);
+                   }
+                }
+            }
+            else
+            {
+                deps.Add(departments.FirstOrDefault(d => d.ID == id));
+            }
+            return deps;
         }
     }
 }

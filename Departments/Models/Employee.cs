@@ -10,10 +10,11 @@ namespace Company.Models
         [Required]
         public string ?Surname { get; set; }
         [Required]
-        public int ?Age { get; set; }
-        [Required]
+        public string ?Age { get; set; }
+        [Required]        
         public string ?Number { get; set; }
         [Required]
+        
         public int ?DepartmentID { get; set; }
 
         public Employee(int? ID, int? DepartmentID)
@@ -22,7 +23,7 @@ namespace Company.Models
             this.DepartmentID = DepartmentID;
         }       
 
-        public Employee(int? iD, string name, string surname, int age, string number, int? departmentID)
+        public Employee(int? iD, string name, string surname, string age, string number, int? departmentID)
         {
             ID = iD;
             Name = name;

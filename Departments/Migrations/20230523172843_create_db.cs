@@ -26,7 +26,7 @@ namespace Company.Migrations
 		                            FROM cte     
 		                            JOIN departments AS d ON d.ParentDepartmentID = cte.ID
 		                        ) 	
-		                    SELECT DepartmentID, COUNT(*) AS Employees  
+		                    SELECT cte.DepartmentID, COUNT(*) AS Employees  
 		                    FROM cte   
 		                    JOIN employees AS e ON e.DepartmentID = cte.ID   
 		                    GROUP BY cte.DepartmentID 

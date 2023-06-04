@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using MySql.EntityFrameworkCore;
 
 namespace Company.Data
 {
@@ -15,7 +14,7 @@ namespace Company.Data
                 .GetConnectionString("MySqlConnection");
 
             var optionsBuilder = new DbContextOptionsBuilder<DepartmentContext>();
-            optionsBuilder.UseMySQL(connectionString);
+            optionsBuilder.UseMySQL(connectionString!);
 
             return new DepartmentContext(optionsBuilder.Options);
         }

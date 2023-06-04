@@ -4,29 +4,28 @@
     ViewData["Title"] = "View";
 }
 
-<h1>View</h1>
+<h1>Список сотрудников</h1>
 
 <p>
-    <a asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Create New</a>
+    <a asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
-                
+                @Html.DisplayName("Имя")                
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Surname)
+                @Html.DisplayName("Фамилия")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Age)
+                @Html.DisplayName("Возраст")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Number)
+                @Html.DisplayName("Номер телефона")
             </th>
             <th>
-                <span>Department</span>
+                @Html.DisplayName("Отдел")
             </th>
             <th></th>
         </tr>
@@ -58,8 +57,8 @@
                 }
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |          
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.ID">Изменить</a> |          
+                <a asp-action="Delete" asp-route-id="@item.ID">Удалить</a>
             </td>
         </tr>
 }

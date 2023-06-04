@@ -10,23 +10,15 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
+        <nav class="navbar navbar-light  border-bottom box-shadow mb-3">
+            <div class="container-fluid">                
                 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Home</a>
-                        </li>                        
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Create">Create</a>
-                        </li>                       
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Details">Details</a>
-                        </li>
-
-                    </ul>
+                <div class="grid-container-nav">
+                     <a class="" asp-area="" asp-controller="Department" asp-action="Index">
+                    <img src="/logo.jpg" width="100" length="100" alt="logo"/></a>
+                     <a class="nav-link" asp-area="" asp-controller="Department" asp-action="Create">Добавить сотрудника</a>
+                     <a class="nav-link" asp-area="" asp-controller="Department" asp-action="Details">Список сотрудников</a>
+                     <a class="nav-link" asp-area="" asp-controller="Department" asp-action="Index">Структура компании</a>
                 </div>
             </div>
         </nav>

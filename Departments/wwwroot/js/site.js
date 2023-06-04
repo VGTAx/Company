@@ -2,42 +2,92 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-document.addEventListener('DOMContentLoaded', function () {
-    let number = document.getElementById("Number");
-    let age = document.getElementById("Age");
+document.addEventListener('DOMContentLoaded', () => {
 
-    age.addEventListener("keypress", (e) => {
-        let codeKey = e.which || e.keyCode;
+    let name = document.querySelector("#Name");
+    let surname = document.querySelector("#Surname");
+    let number = document.querySelector("#Number");
+    let age = document.querySelector("#Age");
+
+    let hierarchyItems = document.querySelectorAll("#hierarchy .hierarchy-item");
+    let delay = 150; // Задержка между появлением элементов (в миллисекундах)    
+
+    showItemsWithDelay(hierarchyItems, 0);    
+
+    name.addEventListener("keypress", event => {
+        eventHandlerCheckLetters(event)
+    });
+
+    surname.addEventListener("keypress", event => {
+        eventHandlerCheckLetters(event)
+    });
+
+    
+
+    age.addEventListener("keypress", (event) => {
+        let codeKey = event.which || event.keyCode;
         let inputValue = String.fromCharCode(codeKey);
-
-        if (!/^\d$/.test(inputValue) ||
-            !/^\d{0,2}$/.test(e.target.value)) {
-            e.preventDefault();
+        if (!/^\d$/.test(inputValue) || !/^\d{0,1}$/.test(event.target.value)) {
+            event.preventDefault();
         }        
     });
 
-    number.addEventListener('focus', function () {
+    number.addEventListener('focus', (event) => {
         if (event.target.value == "") {
             event.target.value = "+";
         }        
     });    
 
-    number.addEventListener("keypress", function (e) {              
+    number.addEventListener("keypress",  (event) => {              
 
-        if (!e.target.value.startsWith("+") && e.target.value != "") {
-            e.target.value = "+" + e.target.value;
+        if (!event.target.value.startsWith("+") && event.target.value != "") {
+            event.target.value = "+" + event.target.value;
         }
 
-        let codeKey = e.which || e.keyCode;
+        let codeKey = event.which || event.keyCode;
         let inputValue = String.fromCharCode(codeKey);        
 
         if (!/^\d$/.test(inputValue)) {
-            e.preventDefault();
+            event.preventDefault();
         }
         
-        if (inputValue.includes("+") || !/^[\d+]{1,12}$/.test(e.target.value)) {               
-             e.preventDefault();
+        if (inputValue.includes("+") || !/^[\d+]{1,12}$/.test(event.target.value)) {               
+             event.preventDefault();
         }
     });
+
+    function eventHandlerCheckLetters(event) {
+
+        let codeKey = event.which || event.keyCode;
+        let inputValue = String.fromCharCode(codeKey); 
+
+        if (!/^[a-zA-Zа-яА-Я-]$/.test(inputValue)) {
+            event.preventDefault();
+        }
+        if ((event.target.value.includes("-") && inputValue == "-")
+                || !/^[a-zA-Zа-яА-Я-]{0,20}$/.test(event.target.value)) {
+            event.preventDefault();
+        }
+    }
+
+    function showItemsWithDelay(items, index) {
+        if (index < items.length) {
+            let item = items[index];
+            item.style.visibility = "visible";
+            item.style.animation = "fadeIn .3s ease-in both";
+
+            let subDepartments = item.querySelector(".nested-list");
+            if (subDepartments) {
+                setTimeout(function () {
+                    let subItems = subDepartments.querySelectorAll(".hierarchy-item");
+                    showItemsWithDelay(subItems, 0);
+                }, delay);
+            }
+
+            setTimeout(function () {
+                showItemsWithDelay(items, index + 1);
+            }, delay);
+        }
+    }   
 
 })

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Company.Migrations
 {
     [DbContext(typeof(DepartmentContext))]
-    [Migration("20230523172843_create_db")]
-    partial class create_db
+    [Migration("20230607205622_add_department_description_1.0")]
+    partial class add_department_description_10
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,12 @@ namespace Company.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int?>("DepartmentDescriptionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DepartmentImageLink")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("DepartmentName")
                         .HasColumnType("longtext");
 
@@ -37,77 +43,167 @@ namespace Company.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DepartmentDescriptionID");
+
                     b.ToTable("Departments");
 
                     b.HasData(
                         new
                         {
                             ID = 1,
+                            DepartmentDescriptionID = 1,
                             DepartmentName = "Отдел по обслуживанию клиентов"
                         },
                         new
                         {
                             ID = 2,
+                            DepartmentDescriptionID = 2,
                             DepartmentName = "Производственный отдел"
                         },
                         new
                         {
                             ID = 3,
+                            DepartmentDescriptionID = 3,
                             DepartmentName = "Бухгалтерия"
                         },
                         new
                         {
                             ID = 4,
+                            DepartmentDescriptionID = 4,
                             DepartmentName = "Отдел продаж",
                             ParentDepartmentID = 1
                         },
                         new
                         {
                             ID = 5,
+                            DepartmentDescriptionID = 5,
                             DepartmentName = "Отдел оптовых продаж",
                             ParentDepartmentID = 4
                         },
                         new
                         {
                             ID = 6,
+                            DepartmentDescriptionID = 6,
                             DepartmentName = "Отдел розничных продаж",
                             ParentDepartmentID = 4
                         },
                         new
                         {
                             ID = 7,
+                            DepartmentDescriptionID = 7,
                             DepartmentName = "Отдел логистики",
                             ParentDepartmentID = 1
                         },
                         new
                         {
                             ID = 8,
+                            DepartmentDescriptionID = 8,
                             DepartmentName = "Склад",
                             ParentDepartmentID = 7
                         },
                         new
                         {
                             ID = 9,
+                            DepartmentDescriptionID = 9,
                             DepartmentName = "Отдел доставки",
                             ParentDepartmentID = 7
                         },
                         new
                         {
                             ID = 10,
+                            DepartmentDescriptionID = 10,
                             DepartmentName = "Инженерный отдел",
                             ParentDepartmentID = 2
                         },
                         new
                         {
                             ID = 11,
+                            DepartmentDescriptionID = 11,
                             DepartmentName = "Отдел проверки качества",
                             ParentDepartmentID = 2
                         },
                         new
                         {
                             ID = 12,
+                            DepartmentDescriptionID = 12,
                             DepartmentName = "Отдел закупок",
                             ParentDepartmentID = 2
+                        });
+                });
+
+            modelBuilder.Entity("Company.Models.DepartmentDescription", b =>
+                {
+                    b.Property<int>("DepartmentDescriptionID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("DepartmentDescriptionID");
+
+                    b.ToTable("DepartmentDescriptions");
+
+                    b.HasData(
+                        new
+                        {
+                            DepartmentDescriptionID = 1,
+                            Description = "Мы ценим наших клиентов и стремимся предоставить им высокий уровень обслуживания. Наш отдел по обслуживанию клиентов отвечает на вопросы, принимает заказы и разрешает любые возникающие проблемы, чтобы удовлетворить потребности наших клиентов. Отдел состоит из отдела продажи отдела логистики"
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 2,
+                            Description = "Наш производственный отдел отвечает за процесс производства. Мы используем передовые технологии и строгий контроль качества, чтобы обеспечить высокое качество нашей продукции. Отдел состоит из инженерного отдела, отдела проверки качества иотдела закупок"
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 3,
+                            Description = "Наша бухгалтерия отвечает за финансовое управление и учет наших операций, включая учет расходов, доходов и подготовку финансовых отчетов."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 4,
+                            Description = "Наш отдел продаж активно продвигает нашу продукцию на рынке. Мы работаем с оптовыми и розничными покупателями, устанавливая долгосрочные партнерские отношения и предлагая разнообразную продукцию."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 5,
+                            Description = "Отдел, специализирующийся на обслуживании оптовых покупателей Мы предлагаем выгодные условия сотрудничества, широкий ассортимент продукции и помогаем нашим клиентам выбрать наиболее подходящую продукцию для их бизнеса.."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 6,
+                            Description = "Наша компания имеет сеть розничных магазинов, где мы предлагаем нашу продукцию напрямую потребителям. Наш отдел розничных продаж работает на создание привлекательных витрин и предоставление высокого уровня обслуживания нашим клиентам."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 7,
+                            Description = " Мы уделяем особое внимание эффективному управлению логистическими процессами. Наш отдел логистики отвечает за координацию поставок, управление запасами, складирование и своевременную доставку наших продуктов."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 8,
+                            Description = "У нас есть собственный склад, где мы храним наши товары в соответствии с высокими стандартами качества и безопасности."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 9,
+                            Description = "Наш отдел доставки отвечает за оперативную и надежную доставку наших продуктов клиентам. Мы обеспечиваем, чтобы наша продуция достигала наших клиентов в сохранности и вовремя."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 10,
+                            Description = " Наш инженерный отдел занимается разработкой и совершенствованием наших производственных процессов, а также внедрением новых технологий для повышения эффективности и качества нашей продукции."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 11,
+                            Description = "Мы придерживаемся строгих стандартов качества, и наш отдел проверки качества осуществляет тщательный контроль качества на всех этапах производства, чтобы гарантировать, что наши продукты отвечают высоким стандартам и требованиям клиентов."
+                        },
+                        new
+                        {
+                            DepartmentDescriptionID = 12,
+                            Description = " Отдел закупок занимается поиском и приобретением качественных и надежных сырьевых материалов и компонентов для производства нашей продукции."
                         });
                 });
 
@@ -118,19 +214,24 @@ namespace Company.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("int");
+                    b.Property<string>("Age")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int?>("DepartmentID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Number")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Surname")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("ID");
@@ -141,7 +242,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 1,
-                            Age = 28,
+                            Age = "28",
                             DepartmentID = 3,
                             Name = "Алексей",
                             Number = "+79123456789",
@@ -150,7 +251,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 2,
-                            Age = 32,
+                            Age = "32",
                             DepartmentID = 3,
                             Name = "Екатерина",
                             Number = "+79123456780",
@@ -159,7 +260,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 3,
-                            Age = 21,
+                            Age = "21",
                             DepartmentID = 5,
                             Name = "Дмитрий",
                             Number = "+79123456781",
@@ -168,7 +269,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 4,
-                            Age = 35,
+                            Age = "35",
                             DepartmentID = 5,
                             Name = "Анна",
                             Number = "+79123456782",
@@ -177,7 +278,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 5,
-                            Age = 43,
+                            Age = "43",
                             DepartmentID = 6,
                             Name = "Сергей",
                             Number = "+79123456783",
@@ -186,7 +287,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 6,
-                            Age = 26,
+                            Age = "26",
                             DepartmentID = 6,
                             Name = "Ольга",
                             Number = "+79123456784",
@@ -195,7 +296,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 7,
-                            Age = 29,
+                            Age = "29",
                             DepartmentID = 8,
                             Name = "Иван",
                             Number = "+79123456785",
@@ -204,7 +305,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 8,
-                            Age = 31,
+                            Age = "31",
                             DepartmentID = 8,
                             Name = "Анастасия",
                             Number = "+79123456786",
@@ -213,7 +314,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 9,
-                            Age = 40,
+                            Age = "40",
                             DepartmentID = 9,
                             Name = "Александр",
                             Number = "+79123456787",
@@ -222,7 +323,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 10,
-                            Age = 27,
+                            Age = "27",
                             DepartmentID = 9,
                             Name = "Юлия",
                             Number = "+79123456788",
@@ -231,7 +332,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 11,
-                            Age = 33,
+                            Age = "33",
                             DepartmentID = 9,
                             Name = "Михаил",
                             Number = "+79123456777",
@@ -240,7 +341,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 12,
-                            Age = 45,
+                            Age = "45",
                             DepartmentID = 9,
                             Name = "Елена",
                             Number = "+79123456776",
@@ -249,7 +350,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 13,
-                            Age = 39,
+                            Age = "39",
                             DepartmentID = 9,
                             Name = "Андрей",
                             Number = "+79123456775",
@@ -258,7 +359,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 14,
-                            Age = 23,
+                            Age = "23",
                             DepartmentID = 10,
                             Name = "Мария",
                             Number = "+79123456774",
@@ -267,7 +368,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 15,
-                            Age = 41,
+                            Age = "41",
                             DepartmentID = 10,
                             Name = "Владимир",
                             Number = "+79123456773",
@@ -276,7 +377,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 16,
-                            Age = 30,
+                            Age = "30",
                             DepartmentID = 10,
                             Name = "Евгения",
                             Number = "+79123456772",
@@ -285,7 +386,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 17,
-                            Age = 37,
+                            Age = "37",
                             DepartmentID = 10,
                             Name = "Николай",
                             Number = "+79123456771",
@@ -294,7 +395,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 18,
-                            Age = 34,
+                            Age = "34",
                             DepartmentID = 11,
                             Name = "Татьяна",
                             Number = "+79123456770",
@@ -303,7 +404,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 19,
-                            Age = 42,
+                            Age = "42",
                             DepartmentID = 11,
                             Name = "Павел",
                             Number = "+79123456769",
@@ -312,7 +413,7 @@ namespace Company.Migrations
                         new
                         {
                             ID = 20,
-                            Age = 22,
+                            Age = "22",
                             DepartmentID = 12,
                             Name = "Алиса",
                             Number = "+79123456768",
@@ -326,15 +427,21 @@ namespace Company.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("DepartmentName")
-                        .HasColumnType("longtext");
-
                     b.Property<int>("EmployeeCount")
                         .HasColumnType("int");
 
                     b.HasKey("DepartmentID");
 
                     b.ToTable("NumberOfEmployees");
+                });
+
+            modelBuilder.Entity("Company.Models.Department", b =>
+                {
+                    b.HasOne("Company.Models.DepartmentDescription", "DepartmentDescription")
+                        .WithMany()
+                        .HasForeignKey("DepartmentDescriptionID");
+
+                    b.Navigation("DepartmentDescription");
                 });
 #pragma warning restore 612, 618
         }

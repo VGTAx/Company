@@ -8,6 +8,7 @@ namespace Company.Data
         public DbSet<Department> Departments { get; set; }       
         public DbSet<Employee> Employees { get; set; }
         public DbSet<NumberOfEmployee> NumberOfEmployees { get; set; }
+        public DbSet<DepartmentDescription> DepartmentDescriptions { get; set; }
 
         public DepartmentContext(DbContextOptions<DepartmentContext> options) 
             : base(options) 
@@ -23,20 +24,106 @@ namespace Company.Data
         {
             modelBuilder.Ignore<DepartmentNumberPoco>();
 
-            modelBuilder.Entity<Department>().HasKey(d => d.ID);            
+            modelBuilder.Entity<DepartmentDescription>().HasKey(d => d.DepartmentDescriptionID);
+            modelBuilder.Entity<DepartmentDescription>().HasData(
+                    new DepartmentDescription { DepartmentDescriptionID = 1,
+                    Description = "Мы ценим наших клиентов и стремимся предоставить им высокий уровень обслуживания. " +
+                    "Наш отдел по обслуживанию клиентов отвечает на вопросы, принимает заказы и разрешает любые " +
+                    "возникающие проблемы, чтобы удовлетворить потребности наших клиентов. Отдел состоит из отдела продаж" +
+                    "и отдела логистики"
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 2,
+                        Description = "Наш производственный отдел отвечает за процесс производства. " +
+                        "Мы используем передовые технологии и строгий контроль качества, чтобы обеспечить высокое " +
+                        "качество нашей продукции. Отдел состоит из инженерного отдела, отдела проверки качества и" +
+                        "отдела закупок"
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 3,
+                        Description = "Наша бухгалтерия отвечает за финансовое управление и учет наших операций, включая" +
+                        " учет расходов, доходов и подготовку финансовых отчетов."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 4,
+                        Description = "Наш отдел продаж активно продвигает нашу продукцию на рынке. Мы работаем с " +
+                        "оптовыми и розничными покупателями, устанавливая долгосрочные партнерские отношения и предлагая" +
+                        " разнообразную продукцию."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 5,
+                        Description = "Отдел, специализирующийся на обслуживании оптовых покупателей "+
+                        "Мы предлагаем выгодные условия сотрудничества, широкий ассортимент продукции и " +
+                        "помогаем нашим клиентам выбрать наиболее подходящую продукцию для их бизнеса.."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 6,
+                        Description = "Наша компания имеет сеть розничных магазинов, где мы предлагаем нашу продукцию " +
+                        "напрямую потребителям. Наш отдел розничных продаж работает на создание привлекательных витрин и" +
+                        " предоставление высокого уровня обслуживания нашим клиентам."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 7,
+                        Description = " Мы уделяем особое внимание эффективному управлению логистическими процессами." +
+                        " Наш отдел логистики отвечает за координацию поставок, управление запасами, складирование и " +
+                        "своевременную доставку наших продуктов."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 8,
+                        Description = "У нас есть собственный склад, где мы храним наши товары в соответствии с " +
+                        "высокими стандартами качества и безопасности."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 9,
+                        Description = "Наш отдел доставки отвечает за оперативную и надежную доставку наших продуктов " +
+                        "клиентам. Мы обеспечиваем, чтобы наша продуция достигала наших клиентов в сохранности " +
+                        "и вовремя."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 10,
+                        Description = " Наш инженерный отдел занимается разработкой и совершенствованием наших " +
+                        "производственных процессов, а также внедрением новых технологий для повышения эффективности " +
+                        "и качества нашей продукции."
+                    },                   
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 11,
+                        Description = "Мы придерживаемся строгих стандартов качества, и наш отдел проверки качества " +
+                        "осуществляет тщательный контроль качества на всех этапах производства, чтобы гарантировать, " +
+                        "что наши продукты отвечают высоким стандартам и требованиям клиентов."
+                    },
+                    new DepartmentDescription
+                    {
+                        DepartmentDescriptionID = 12,
+                        Description = " Отдел закупок занимается поиском и приобретением качественных и надежных " +
+                        "сырьевых материалов и компонентов для производства нашей продукции."
+                    }
+                    );
+
+            modelBuilder.Entity<Department>().HasKey(d => d.ID);
+           
             modelBuilder.Entity<Department>().HasData(
-                 new Department(1, "Отдел по обслуживанию клиентов", null),
-                 new Department(2, "Производственный отдел", null),
-                 new Department(3, "Бухгалтерия", null),
-                 new Department(4, "Отдел продаж", 1),
-                 new Department(5, "Отдел оптовых продаж", 4),
-                 new Department(6, "Отдел розничных продаж", 4),
-                 new Department(7, "Отдел логистики", 1),
-                 new Department(8, "Склад", 7),
-                 new Department(9, "Отдел доставки", 7),
-                 new Department(10, "Инженерный отдел", 2),
-                 new Department(11, "Отдел проверки качества", 2),
-                 new Department(12, "Отдел закупок", 2)
+                 new Department(1, "Отдел по обслуживанию клиентов", null, 1, null),
+                 new Department(2, "Производственный отдел", null, 2,null),
+                 new Department(3, "Бухгалтерия", null, 3, null),
+                 new Department(4, "Отдел продаж", 1, 4, null),
+                 new Department(5, "Отдел оптовых продаж", 4, 5, null),
+                 new Department(6, "Отдел розничных продаж", 4, 6, null),
+                 new Department(7, "Отдел логистики", 1, 7, null),
+                 new Department(8, "Склад", 7, 8, null),
+                 new Department(9, "Отдел доставки", 7, 9, null),
+                 new Department(10, "Инженерный отдел", 2, 10, null),
+                 new Department(11, "Отдел проверки качества", 2, 11, null),
+                 new Department(12, "Отдел закупок", 2, 12, null)
                 );      
             
             modelBuilder.Entity<Employee>()

@@ -189,12 +189,15 @@ namespace Company.Controllers
                 employeesDepartment.AddRange(GetEmployees(departmentId, _context.Departments.ToList(), _context.Employees.ToList()));
             }
            
-
+            
             var departments = _context.Departments
                 .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
+            var departmentsDescription = _context.DepartmentDescriptions
+                .FirstOrDefault(d => d.DepartmentDescriptionID == departmentId).Description;
 
             ViewBag.Departments = departments;
             ViewBag.MainDepartment = departmentId;
+            ViewData["DepartmentDescription"] = departmentsDescription;
 
             return View("Details", employeesDepartment);
         }

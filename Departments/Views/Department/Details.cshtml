@@ -1,10 +1,11 @@
 ﻿@model IEnumerable<Company.Models.Employee>
-
 @{
     ViewData["Title"] = "View";
 }
 
-<h1>Список сотрудников</h1>
+<h2>@ViewData["DepartmentDescription"]</h2>
+
+<h4>Список сотрудников</h4>
 
 <p>
     <a asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>

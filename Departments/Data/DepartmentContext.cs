@@ -112,18 +112,18 @@ namespace Company.Data
             modelBuilder.Entity<Department>().HasKey(d => d.ID);
            
             modelBuilder.Entity<Department>().HasData(
-                 new Department(1, "Отдел по обслуживанию клиентов", null, 1, null),
-                 new Department(2, "Производственный отдел", null, 2,null),
-                 new Department(3, "Бухгалтерия", null, 3, null),
-                 new Department(4, "Отдел продаж", 1, 4, null),
-                 new Department(5, "Отдел оптовых продаж", 4, 5, null),
-                 new Department(6, "Отдел розничных продаж", 4, 6, null),
-                 new Department(7, "Отдел логистики", 1, 7, null),
-                 new Department(8, "Склад", 7, 8, null),
-                 new Department(9, "Отдел доставки", 7, 9, null),
-                 new Department(10, "Инженерный отдел", 2, 10, null),
-                 new Department(11, "Отдел проверки качества", 2, 11, null),
-                 new Department(12, "Отдел закупок", 2, 12, null)
+                 new Department(1, "Отдел по обслуживанию клиентов", null, 1, "/images/DepartmentImg/customer service department.jpg"),
+                 new Department(2, "Производственный отдел", null, 2, "/images/DepartmentImg/production department.jpg"),
+                 new Department(3, "Бухгалтерия", null, 3, "/images/DepartmentImg/bookkeeping.jpg"),
+                 new Department(4, "Отдел продаж", 1, 4, "/images/DepartmentImg/sales department.jpg"),
+                 new Department(5, "Отдел оптовых продаж", 4, 5, "/images/DepartmentImg/wholesale department.jpg"),
+                 new Department(6, "Отдел розничных продаж", 4, 6, "/images/DepartmentImg/retail sales department.jpg"),
+                 new Department(7, "Отдел логистики", 1, 7, "/images/DepartmentImg/logistics department.jpg"),
+                 new Department(8, "Склад", 7, 8, "/images/DepartmentImg/stock.jpg"),
+                 new Department(9, "Отдел доставки", 7, 9, "/images/DepartmentImg/bookkeeping.jpg"),
+                 new Department(10, "Инженерный отдел", 2, 10, "/images/DepartmentImg/engineering department.jpg"),
+                 new Department(11, "Отдел проверки качества", 2, 11, "/images/DepartmentImg/quality control department.jpg"),
+                 new Department(12, "Отдел закупок", 2, 12, "/images/DepartmentImg/purchasing department.jpg")
                 );      
             
             modelBuilder.Entity<Employee>()

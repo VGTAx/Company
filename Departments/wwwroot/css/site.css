@@ -70,3 +70,10 @@ li {
     outline: 0;
     box-shadow: 0 0 0 0.1rem #86b7fe;
 }
+
+.departmentContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

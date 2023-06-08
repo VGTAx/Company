@@ -195,9 +195,13 @@ namespace Company.Controllers
             var departmentsDescription = _context.DepartmentDescriptions
                 .FirstOrDefault(d => d.DepartmentDescriptionID == departmentId).Description;
 
+            var imageLink = _context.Departments
+                .FirstOrDefault(d => d.ID == departmentId).DepartmentImageLink;
+
             ViewBag.Departments = departments;
             ViewBag.MainDepartment = departmentId;
             ViewData["DepartmentDescription"] = departmentsDescription;
+            ViewData["DepartmentImageLink"] = imageLink;
 
             return View("Details", employeesDepartment);
         }

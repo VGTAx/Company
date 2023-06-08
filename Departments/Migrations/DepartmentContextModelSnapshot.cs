@@ -49,24 +49,28 @@ namespace Company.Migrations
                         {
                             ID = 1,
                             DepartmentDescriptionID = 1,
+                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
                             DepartmentName = "Отдел по обслуживанию клиентов"
                         },
                         new
                         {
                             ID = 2,
                             DepartmentDescriptionID = 2,
+                            DepartmentImageLink = "/images/DeaprtmentImg/production department.jpg",
                             DepartmentName = "Производственный отдел"
                         },
                         new
                         {
                             ID = 3,
                             DepartmentDescriptionID = 3,
+                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
                             DepartmentName = "Бухгалтерия"
                         },
                         new
                         {
                             ID = 4,
                             DepartmentDescriptionID = 4,
+                            DepartmentImageLink = "/images/DeaprtmentImg/sales department.jpg",
                             DepartmentName = "Отдел продаж",
                             ParentDepartmentID = 1
                         },
@@ -74,6 +78,7 @@ namespace Company.Migrations
                         {
                             ID = 5,
                             DepartmentDescriptionID = 5,
+                            DepartmentImageLink = "/images/DeaprtmentImg/wholesale department.jpg",
                             DepartmentName = "Отдел оптовых продаж",
                             ParentDepartmentID = 4
                         },
@@ -81,6 +86,7 @@ namespace Company.Migrations
                         {
                             ID = 6,
                             DepartmentDescriptionID = 6,
+                            DepartmentImageLink = "/images/DeaprtmentImg/retail sales department.jpg",
                             DepartmentName = "Отдел розничных продаж",
                             ParentDepartmentID = 4
                         },
@@ -88,6 +94,7 @@ namespace Company.Migrations
                         {
                             ID = 7,
                             DepartmentDescriptionID = 7,
+                            DepartmentImageLink = "/images/DeaprtmentImg/logistics department.jpg",
                             DepartmentName = "Отдел логистики",
                             ParentDepartmentID = 1
                         },
@@ -95,6 +102,7 @@ namespace Company.Migrations
                         {
                             ID = 8,
                             DepartmentDescriptionID = 8,
+                            DepartmentImageLink = "/images/DeaprtmentImg/stock.jpg",
                             DepartmentName = "Склад",
                             ParentDepartmentID = 7
                         },
@@ -102,6 +110,7 @@ namespace Company.Migrations
                         {
                             ID = 9,
                             DepartmentDescriptionID = 9,
+                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
                             DepartmentName = "Отдел доставки",
                             ParentDepartmentID = 7
                         },
@@ -109,6 +118,7 @@ namespace Company.Migrations
                         {
                             ID = 10,
                             DepartmentDescriptionID = 10,
+                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
                             DepartmentName = "Инженерный отдел",
                             ParentDepartmentID = 2
                         },
@@ -116,6 +126,7 @@ namespace Company.Migrations
                         {
                             ID = 11,
                             DepartmentDescriptionID = 11,
+                            DepartmentImageLink = "/images/DeaprtmentImg/quality control department.jpg",
                             DepartmentName = "Отдел проверки качества",
                             ParentDepartmentID = 2
                         },
@@ -123,6 +134,7 @@ namespace Company.Migrations
                         {
                             ID = 12,
                             DepartmentDescriptionID = 12,
+                            DepartmentImageLink = "/images/DeaprtmentImg/purchasing department.jpg",
                             DepartmentName = "Отдел закупок",
                             ParentDepartmentID = 2
                         });

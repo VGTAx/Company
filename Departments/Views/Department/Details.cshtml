@@ -3,13 +3,16 @@
     ViewData["Title"] = "View";
 }
 
-<h2>@ViewData["DepartmentDescription"]</h2>
 
-<h4>Список сотрудников</h4>
+<div class="departmentContainer">
+    <img class="departmentImg" src="@ViewData["DepartmentImageLink"]" width="540" height="360" alt="department img"/>
+    <h4>@ViewData["DepartmentDescription"]</h4>
+</div>
 
-<p>
-    <a asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
-</p>
+
+<h4>Список сотрудников:</h4>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -65,3 +68,6 @@
 }
     </tbody>
 </table>
+<p>
+    <a class="btn btn-primary" asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
+</p>

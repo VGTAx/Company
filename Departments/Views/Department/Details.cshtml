@@ -3,9 +3,15 @@
     ViewData["Title"] = "View";
 }
 
+@{
+    var srcImg = @ViewData["DepartmentImageLink"];
+}
 
 <div class="departmentContainer">
-    <img class="departmentImg" src="@ViewData["DepartmentImageLink"]" width="540" height="360" alt="department img"/>
+    @if(srcImg != null)
+    {
+        <img class="departmentImg" src="@ViewData["DepartmentImageLink"]" width="540" height="320" alt="department img"/>
+    }    
     <h4>@ViewData["DepartmentDescription"]</h4>
 </div>
 
@@ -16,7 +22,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th>                
                 @Html.DisplayName("Имя")                
             </th>
             <th>

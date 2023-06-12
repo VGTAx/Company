@@ -1,5 +1,4 @@
 ﻿@model List<Company.Models.DepartmentNumberPoco>
-
 @using Company.Helpers
 @{
     ViewData["Title"] = "Home Page";
@@ -16,7 +15,7 @@
             <ul class="nested-list">
              @foreach(var department in subdepartments)
                 {
-                   <li style="visibility:hidden" class="hierarchy-item"><a class="nav-link" asp-action="DetailsDepartment" asp-route-departmentId="@department.ID" asp-controller="Department">@department.DepartmentName</a></li>
+                   <li class="hierarchy-item"><a class="nav-link" asp-action="Delivery"  asp-controller="Department">@department.DepartmentName</a></li>
                    await RenderSubDepartment(department.ID, departments);
                 }
             </ul>
@@ -27,11 +26,11 @@
 <ul id="hierarchy" class="hierarchy"> 
     @foreach (var department in Model.Where(d => d.ParentID == null))
     {        
-        <li style="visibility:hidden" class="hierarchy-item"><a class="nav-link" asp-action="DetailsDepartment" asp-route-departmentId="@department.ID" asp-controller="Department">@department.DepartmentName</a></li>        
+        <li class="hierarchy-item"><a class="nav-link" asp-action="Delivery"  asp-controller="Department">@department.DepartmentName</a></li>        
         await RenderSubDepartment(department.ID, Model); 
     }
 </ul>
 
 
 
-         
+         //asp-route-departmentId="department.ID"

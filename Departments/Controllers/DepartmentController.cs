@@ -176,6 +176,11 @@ namespace Company.Controllers
             return View(employee);
         }
 
+        public IActionResult Delivery()
+        {
+            return View();
+        }
+
         public IActionResult DetailsDepartment(int? departmentId)
         {
             if (departmentId == null)

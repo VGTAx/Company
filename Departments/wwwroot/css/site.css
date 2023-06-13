@@ -71,9 +71,14 @@ li {
     box-shadow: 0 0 0 0.1rem #86b7fe;
 }
 
-.departmentContainer {
+/*.departmentContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}*/
+
+.departmentImg {
+    width: 548px;
+    height: 320px;
 }

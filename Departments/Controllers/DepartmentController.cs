@@ -26,197 +26,100 @@ namespace Company.Controllers
 
             return View(await numberOfEmployyes.ToListAsync());
         }
+
        
-        
-        public IActionResult Create(int? departmentId)
-        {
-            var departments = _context.Departments
-                .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
-                .Select(item => new SelectListItem
-                {
-                    Value = item.ID.ToString(),
-                    Text = item.DepartmentName
-                }).AsEnumerable();
 
-            if (departmentId != null)
-            {
-                var tempDep = GetDepartments(departmentId, _context.Departments.ToList());
-                departments = tempDep
-                    .Select(item => new SelectListItem
-                    {
-                        Value = item.ID.ToString(),
-                        Text = item.DepartmentName,
-                        Selected = (tempDep.Count == 1)                        
-                    });  
-            }                    
-
-            ViewData["Departments"] = departments;
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> Create([Bind("ID, Name, Surname, Age, Number, DepartmentID")] Employee employee)
+        public IActionResult Details(int? departmentId = 0, string? departmentName = null)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Employees.Add(employee);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View();
-        }
-
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if(id == null || _context.Employees == null)
+            if (departmentName == null && departmentId == null)
             {
                 return NotFound();
             }
-
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id); 
-
-            if(employee == null)
+            else if (departmentId == 0 && !String.IsNullOrEmpty(departmentName))
             {
-                return NotFound();
+                departmentId = _context.Departments.FirstOrDefault(d => d.DepartmentName == departmentName).ID;
             }
 
-            var departments = _context.Departments
-                .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
-                .Select(item => new SelectListItem
-                {
-                    Value = item.ID.ToString(),
-                    Text = item.DepartmentName
-                });
+            var department = _context.Departments.FirstOrDefault(d => d.ID == departmentId);
 
-            ViewData["Departments"] = departments;
-
-            return View("Edit",employee);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, [Bind("ID, Name, Surname, Age, Number, DepartmentID")] Employee employee)
-        {
-            if(id != employee.ID)
+            switch (departmentId)
             {
-                return NotFound();
+                case 1:
+                    return View("CustomerService", department);
+                case 2:
+                    return View("Production", department);
+                case 3:
+                    return View("Bookkeeping", department);
+                case 4:
+                    return View("Sales", department);
+                case 5:
+                    return View("WholeSales", department);
+                case 6:
+                    return View("RetailSales", department);
+                case 7:
+                    return View("Logistic", department);
+                case 8:
+                    return View("Stock", department);
+                case 9:
+                    return View("Delivery", department);
+                case 10:
+                    return View("Engineering", department);
+                case 11:
+                    return View("QualityControl", department);
+                case 12:
+                    return View("Purchasing", department);
+                default:
+                    return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeExists(employee.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Details));
-            }
-            return View();
-        }
-
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if(id == null || _context.Employees == null)
-            {
-                return NotFound();
-            }
-
-            var employee =  await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
-
-            if(employee == null)
-            {
-                return NotFound();
-            }
-
-            var department = await _context.Departments
-                .FirstOrDefaultAsync(d => d.ID == employee.DepartmentID);            
-            
-            ViewBag.Department = department!.DepartmentName;
-
-            return View(employee);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if(_context.Employees == null)
-            {
-                return Problem("Entity set 'DepartmentContext.Employee' is null.");
-            }
-
-            var employee = _context.Employees.FirstOrDefault(e => e.ID == id);
+            //var departments = _context.Departments.ToList();
+            //var employee = _context.Employees;
            
-            if(employee != null)
-            {
-                _context.Employees.Remove(employee);
-            }
+            //ViewBag.Departments = departments;
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        public IActionResult Details()
-        {
-            var departments = _context.Departments.ToList();
-            var employee = _context.Employees;
-           
-            ViewBag.Departments = departments;
-
-            return View(employee);
+            //return View("Delivery", employee);
         }
 
         public IActionResult Delivery()
         {
             return View();
         }
+        //Описание отдела с сотрудниками отдела/подотделов
+        //public IActionResult DetailsDepartment(int? departmentId)
+        //{
+        //    if (departmentId == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-        public IActionResult DetailsDepartment(int? departmentId)
-        {
-            if (departmentId == null)
-            {
-                return NotFound();
-            }
-
-            var employeesDepartment = _context.Employees.Where(e => e.DepartmentID == departmentId).ToList();
-            if (employeesDepartment.Count == 0)
-            {
-                employeesDepartment.AddRange(GetEmployees(departmentId, _context.Departments.ToList(), _context.Employees.ToList()));
-            }
+        //    var employeesDepartment = _context.Employees.Where(e => e.DepartmentID == departmentId).ToList();
+        //    if (employeesDepartment.Count == 0)
+        //    {
+        //        employeesDepartment.AddRange(GetEmployees(departmentId, _context.Departments.ToList(), _context.Employees.ToList()));
+        //    }
            
             
-            var departments = _context.Departments
-                .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
-            var departmentsDescription = _context.DepartmentDescriptions
-                .FirstOrDefault(d => d.DepartmentDescriptionID == departmentId).Description;
+        //    var departments = _context.Departments
+        //        .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
+        //    var departmentsDescription = _context.DepartmentDescriptions
+        //        .FirstOrDefault(d => d.DepartmentDescriptionID == departmentId).Description;
 
-            var imageLink = _context.Departments
-                .FirstOrDefault(d => d.ID == departmentId).DepartmentImageLink;
+        //    var imageLink = _context.Departments
+        //        .FirstOrDefault(d => d.ID == departmentId).DepartmentImageLink;
 
-            ViewBag.Departments = departments;
-            ViewBag.MainDepartment = departmentId;
-            ViewData["DepartmentDescription"] = departmentsDescription;
-            ViewData["DepartmentImageLink"] = imageLink;
+        //    ViewBag.Departments = departments;
+        //    ViewBag.MainDepartment = departmentId;
+        //    ViewData["DepartmentDescription"] = departmentsDescription;
+        //    ViewData["DepartmentImageLink"] = imageLink;
 
-            return View("Details", employeesDepartment);
-        }
+        //    return View("Details", employeesDepartment);
+        //}
+
+
 
         
 
-        private bool EmployeeExists(int? id)
-        {
-            return _context.Employees.Any(e => e.ID == id);
-        }
+        
 
         private List<Employee> GetEmployees(int? id, List<Department> departments, List<Employee> empl)
         {           
@@ -241,31 +144,6 @@ namespace Company.Controllers
             return employees;
         }
 
-        private List<Department> GetDepartments(int? id, List<Department> departments)
-        {
-            var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();
-            var deps = new List<Department>();
-
-            if (subdepartments.Any())
-            {
-                foreach (var department in subdepartments)
-                {
-                   var childDep =  GetDepartments(department.ID, departments);
-                   if (childDep.Count == 0)
-                   {
-                      deps.Add(department);
-                   }
-                   else
-                   {
-                      deps.AddRange(childDep);
-                   }
-                }
-            }
-            else
-            {
-                deps.Add(departments.FirstOrDefault(d => d.ID == id));
-            }
-            return deps;
-        }
+        
     }
 }

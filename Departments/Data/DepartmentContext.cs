@@ -122,7 +122,7 @@ namespace Company.Data
                  new Department(8, "Склад", 7, 8, "/images/DepartmentImg/stock.jpg"),
                  new Department(9, "Отдел доставки", 7, 9, "/images/DepartmentImg/bookkeeping.jpg"),
                  new Department(10, "Инженерный отдел", 2, 10, "/images/DepartmentImg/engineering department.jpg"),
-                 new Department(11, "Отдел проверки качества", 2, 11, "/images/DepartmentImg/quality control department.jpg"),
+                 new Department(11, "Отдел контроля качества", 2, 11, "/images/DepartmentImg/quality control department.jpg"),
                  new Department(12, "Отдел закупок", 2, 12, "/images/DepartmentImg/purchasing department.jpg")
                 );      
             

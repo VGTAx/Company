@@ -1,0 +1,20 @@
+﻿@model Company.Models.Department
+@{
+    ViewData["Title"] = Model.DepartmentName;    
+}
+
+<h1>@Model.DepartmentName</h1>
+
+<div class="departmentContainer">
+    <p>
+        Отдел логистики, включающий 
+        <a asp-action="Details" asp-route-departmentName="Склад">складское подразделение</a> и 
+        <a asp-action="Details" asp-route-departmentName="Отдел доставки">отдел доставки</a>, играет ключевую роль 
+        в эффективном управлении поставками и распределении продукции, производимой нашей компанией, а так же 
+        материалов и информации внутри организации.
+    <img class="departmentImg" src="/images/DepartmentImg/logistics.jpg" alt="logistics department"/>
+    <p>
+        Цель: Обеспечить эффективную и надежную поставку и доставку товаров или услуг, минимизировать затраты на 
+        логистику и оптимизировать цепочку поставок.
+    </p>
+</div>

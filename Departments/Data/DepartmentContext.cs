@@ -1,14 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Company.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Company.Data
 {
-    public class DepartmentContext : DbContext
+    public class DepartmentContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Department> Departments { get; set; }       
         public DbSet<Employee> Employees { get; set; }
         public DbSet<NumberOfEmployee> NumberOfEmployees { get; set; }
         public DbSet<DepartmentDescription> DepartmentDescriptions { get; set; }
+        
 
         public DepartmentContext(DbContextOptions<DepartmentContext> options) 
             : base(options) 
@@ -108,7 +111,14 @@ namespace Company.Data
                         "сырьевых материалов и компонентов для производства нашей продукции."
                     }
                     );
-
+            modelBuilder.Entity<IdentityRole<string>>().HasKey(d => d.Id);
+            modelBuilder.Entity<IdentityUser<string>>().HasKey(d => d.Id);
+            modelBuilder.Entity<IdentityRoleClaim<string>>().HasKey(d => d.Id);
+            modelBuilder.Entity<IdentityUserClaim<string>>().HasKey(d => d.Id);
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasKey(d => new { d.LoginProvider, d.ProviderKey });
+            modelBuilder.Entity<IdentityUserRole<string>>().HasKey(d => new { d.UserId, d.RoleId }); 
+            modelBuilder.Entity<IdentityUserToken<string>>().HasKey(d => new { d.UserId, d.LoginProvider, d.Name });
+            
             modelBuilder.Entity<Department>().HasKey(d => d.ID);
            
             modelBuilder.Entity<Department>().HasData(

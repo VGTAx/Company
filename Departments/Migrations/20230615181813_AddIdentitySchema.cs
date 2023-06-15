@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
@@ -8,80 +9,80 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace Company.Migrations
 {
     /// <inheritdoc />
-    public partial class create_db_company : Migration
+    public partial class AddIdentitySchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(
                 @"INSERT IGNORE INTO numberofemployees(DepartmentID, EmployeeCount)
-		            WITH table_1 
-		                AS (
-		                    WITH RECURSIVE cte
-		                        AS ( 
-		                            SELECT d.ID, d.ID AS DepartmentID    
-		                            FROM departments AS d   
-		                            UNION   
-		                            SELECT d.ID, cte.DepartmentID     
-		                            FROM cte     
-		                            JOIN departments AS d ON d.ParentDepartmentID = cte.ID
-		                        ) 	
-		                    SELECT cte.DepartmentID, COUNT(*) AS Employees  
-		                    FROM cte   
-		                    JOIN employees AS e ON e.DepartmentID = cte.ID   
-		                    GROUP BY cte.DepartmentID 
-		                )
-		            SELECT * FROM Table_1;");
+                   WITH table_1 
+                       AS (
+                           WITH RECURSIVE cte
+                               AS ( 
+                                   SELECT d.ID, d.ID AS DepartmentID    
+                                   FROM departments AS d   
+                                   UNION   
+                                   SELECT d.ID, cte.DepartmentID     
+                                   FROM cte     
+                                   JOIN departments AS d ON d.ParentDepartmentID = cte.ID
+                               ) 	
+                           SELECT cte.DepartmentID, COUNT(*) AS Employees  
+                           FROM cte   
+                           JOIN employees AS e ON e.DepartmentID = cte.ID   
+                           GROUP BY cte.DepartmentID 
+                       )
+                   SELECT * FROM Table_1;");
 
             migrationBuilder.Sql(
                 @"CREATE procedure UpdNumberOfEmployee()
-                    BEGIN
-	                    UPDATE numberofemployees
-	                    INNER JOIN (
-		                    WITH RECURSIVE cte
-		                    AS ( 
-		                    SELECT d.ID, d.ID AS DepartmentID    
-		                    FROM departments AS d   
-		                    UNION   
-		                    SELECT d.ID, cte.DepartmentID     
-		                    FROM cte     
-		                    JOIN departments AS d ON d.ParentDepartmentID = cte.ID
-		                    ) 	
-		                    SELECT cte.DepartmentID, COUNT(*) AS Employees  
-		                    FROM cte   
-		                    JOIN employees AS e ON e.DepartmentID = cte.ID   
-		                    GROUP BY cte.DepartmentID
-	                    ) as Result USING(DepartmentID)
-							SET numberofemployees.EmployeeCount = Result.Employees
-							WHERE numberofemployees.DepartmentID = Result.DepartmentID 
-								AND numberofemployees.EmployeeCount <> Result.Employees;
-                    END"
+                         BEGIN
+                          UPDATE numberofemployees
+                          INNER JOIN (
+                           WITH RECURSIVE cte
+                           AS ( 
+                           SELECT d.ID, d.ID AS DepartmentID    
+                           FROM departments AS d   
+                           UNION   
+                           SELECT d.ID, cte.DepartmentID     
+                           FROM cte     
+                           JOIN departments AS d ON d.ParentDepartmentID = cte.ID
+                           ) 	
+                           SELECT cte.DepartmentID, COUNT(*) AS Employees  
+                           FROM cte   
+                           JOIN employees AS e ON e.DepartmentID = cte.ID   
+                           GROUP BY cte.DepartmentID
+                          ) as Result USING(DepartmentID)
+            SET numberofemployees.EmployeeCount = Result.Employees
+            WHERE numberofemployees.DepartmentID = Result.DepartmentID 
+            	AND numberofemployees.EmployeeCount <> Result.Employees;
+                         END"
                 );
             migrationBuilder.Sql(
                 @"CREATE TRIGGER UpdNumberOfEmployee_Insert 
-                    AFTER INSERT ON employees
-                    FOR EACH ROW
-                    BEGIN
-	                    CALL UpdNumberOfEmployee();
-                    END"
+                         AFTER INSERT ON employees
+                         FOR EACH ROW
+                         BEGIN
+                          CALL UpdNumberOfEmployee();
+                         END"
                 );
 
             migrationBuilder.Sql(
                @"CREATE TRIGGER UpdNumberOfEmployee_Delete
-                    AFTER DELETE ON employees
-                    FOR EACH ROW
-                    BEGIN
-	                    CALL UpdNumberOfEmployee();
-                    END"
+                         AFTER DELETE ON employees
+                         FOR EACH ROW
+                         BEGIN
+                          CALL UpdNumberOfEmployee();
+                         END"
                );
 
             migrationBuilder.Sql(
                @"CREATE TRIGGER UpdNumberOfEmployee_Delete
-                    AFTER UPDATE ON employees
-                    FOR EACH ROW
-                    BEGIN
-	                    CALL UpdNumberOfEmployee();
-                    END"
+                         AFTER UPDATE ON employees
+                         FOR EACH ROW
+                         BEGIN
+                          CALL UpdNumberOfEmployee();
+                         END"
                );
 
             migrationBuilder.AlterDatabase()
@@ -120,6 +121,49 @@ namespace Company.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "IdentityRole<string>",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: true),
+                    NormalizedName = table.Column<string>(type: "longtext", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true),
+                    Discriminator = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityRole<string>", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "IdentityUser<string>",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false),
+                    UserName = table.Column<string>(type: "longtext", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "longtext", nullable: true),
+                    Email = table.Column<string>(type: "longtext", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "longtext", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "longtext", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "longtext", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false),
+                    Discriminator = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityUser<string>", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "NumberOfEmployees",
                 columns: table => new
                 {
@@ -130,6 +174,81 @@ namespace Company.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NumberOfEmployees", x => x.DepartmentID);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "RoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    RoleId = table.Column<string>(type: "longtext", nullable: true),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true),
+                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "UserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "longtext", nullable: true),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true),
+                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserClaims", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "UserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true),
+                    UserId = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "UserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Value = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -206,18 +325,18 @@ namespace Company.Migrations
                 columns: new[] { "ID", "DepartmentDescriptionID", "DepartmentImageLink", "DepartmentName", "ParentDepartmentID" },
                 values: new object[,]
                 {
-                    { 1, 1, "/images/DeaprtmentImg/bookkeeping.jpg", "Отдел по обслуживанию клиентов", null },
-                    { 2, 2, "/images/DeaprtmentImg/production department.jpg", "Производственный отдел", null },
-                    { 3, 3, "/images/DeaprtmentImg/bookkeeping.jpg", "Бухгалтерия", null },
-                    { 4, 4, "/images/DeaprtmentImg/sales department.jpg", "Отдел продаж", 1 },
-                    { 5, 5, "/images/DeaprtmentImg/wholesale department.jpg", "Отдел оптовых продаж", 4 },
-                    { 6, 6, "/images/DeaprtmentImg/retail sales department.jpg", "Отдел розничных продаж", 4 },
-                    { 7, 7, "/images/DeaprtmentImg/logistics department.jpg", "Отдел логистики", 1 },
-                    { 8, 8, "/images/DeaprtmentImg/stock.jpg", "Склад", 7 },
-                    { 9, 9, "/images/DeaprtmentImg/bookkeeping.jpg", "Отдел доставки", 7 },
-                    { 10, 10, "/images/DeaprtmentImg/bookkeeping.jpg", "Инженерный отдел", 2 },
-                    { 11, 11, "/images/DeaprtmentImg/quality control department.jpg", "Отдел проверки качества", 2 },
-                    { 12, 12, "/images/DeaprtmentImg/purchasing department.jpg", "Отдел закупок", 2 }
+                    { 1, 1, "/images/DepartmentImg/customer service department.jpg", "Отдел по обслуживанию клиентов", null },
+                    { 2, 2, "/images/DepartmentImg/production department.jpg", "Производственный отдел", null },
+                    { 3, 3, "/images/DepartmentImg/bookkeeping.jpg", "Бухгалтерия", null },
+                    { 4, 4, "/images/DepartmentImg/sales department.jpg", "Отдел продаж", 1 },
+                    { 5, 5, "/images/DepartmentImg/wholesale department.jpg", "Отдел оптовых продаж", 4 },
+                    { 6, 6, "/images/DepartmentImg/retail sales department.jpg", "Отдел розничных продаж", 4 },
+                    { 7, 7, "/images/DepartmentImg/logistics department.jpg", "Отдел логистики", 1 },
+                    { 8, 8, "/images/DepartmentImg/stock.jpg", "Склад", 7 },
+                    { 9, 9, "/images/DepartmentImg/bookkeeping.jpg", "Отдел доставки", 7 },
+                    { 10, 10, "/images/DepartmentImg/engineering department.jpg", "Инженерный отдел", 2 },
+                    { 11, 11, "/images/DepartmentImg/quality control department.jpg", "Отдел контроля качества", 2 },
+                    { 12, 12, "/images/DepartmentImg/purchasing department.jpg", "Отдел закупок", 2 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -236,7 +355,28 @@ namespace Company.Migrations
                 name: "Employees");
 
             migrationBuilder.DropTable(
+                name: "IdentityRole<string>");
+
+            migrationBuilder.DropTable(
+                name: "IdentityUser<string>");
+
+            migrationBuilder.DropTable(
                 name: "NumberOfEmployees");
+
+            migrationBuilder.DropTable(
+                name: "RoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "UserClaims");
+
+            migrationBuilder.DropTable(
+                name: "UserLogins");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "UserTokens");
 
             migrationBuilder.DropTable(
                 name: "DepartmentDescriptions");

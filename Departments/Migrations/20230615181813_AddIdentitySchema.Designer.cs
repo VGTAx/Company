@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Company.Migrations
 {
     [DbContext(typeof(DepartmentContext))]
-    [Migration("20230608201352_create_db_company")]
-    partial class create_db_company
+    [Migration("20230615181813_AddIdentitySchema")]
+    partial class AddIdentitySchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Company.Models.Department", b =>
@@ -52,28 +52,28 @@ namespace Company.Migrations
                         {
                             ID = 1,
                             DepartmentDescriptionID = 1,
-                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/customer service department.jpg",
                             DepartmentName = "Отдел по обслуживанию клиентов"
                         },
                         new
                         {
                             ID = 2,
                             DepartmentDescriptionID = 2,
-                            DepartmentImageLink = "/images/DeaprtmentImg/production department.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/production department.jpg",
                             DepartmentName = "Производственный отдел"
                         },
                         new
                         {
                             ID = 3,
                             DepartmentDescriptionID = 3,
-                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Бухгалтерия"
                         },
                         new
                         {
                             ID = 4,
                             DepartmentDescriptionID = 4,
-                            DepartmentImageLink = "/images/DeaprtmentImg/sales department.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/sales department.jpg",
                             DepartmentName = "Отдел продаж",
                             ParentDepartmentID = 1
                         },
@@ -81,7 +81,7 @@ namespace Company.Migrations
                         {
                             ID = 5,
                             DepartmentDescriptionID = 5,
-                            DepartmentImageLink = "/images/DeaprtmentImg/wholesale department.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/wholesale department.jpg",
                             DepartmentName = "Отдел оптовых продаж",
                             ParentDepartmentID = 4
                         },
@@ -89,7 +89,7 @@ namespace Company.Migrations
                         {
                             ID = 6,
                             DepartmentDescriptionID = 6,
-                            DepartmentImageLink = "/images/DeaprtmentImg/retail sales department.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/retail sales department.jpg",
                             DepartmentName = "Отдел розничных продаж",
                             ParentDepartmentID = 4
                         },
@@ -97,7 +97,7 @@ namespace Company.Migrations
                         {
                             ID = 7,
                             DepartmentDescriptionID = 7,
-                            DepartmentImageLink = "/images/DeaprtmentImg/logistics department.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/logistics department.jpg",
                             DepartmentName = "Отдел логистики",
                             ParentDepartmentID = 1
                         },
@@ -105,7 +105,7 @@ namespace Company.Migrations
                         {
                             ID = 8,
                             DepartmentDescriptionID = 8,
-                            DepartmentImageLink = "/images/DeaprtmentImg/stock.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/stock.jpg",
                             DepartmentName = "Склад",
                             ParentDepartmentID = 7
                         },
@@ -113,7 +113,7 @@ namespace Company.Migrations
                         {
                             ID = 9,
                             DepartmentDescriptionID = 9,
-                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Отдел доставки",
                             ParentDepartmentID = 7
                         },
@@ -121,7 +121,7 @@ namespace Company.Migrations
                         {
                             ID = 10,
                             DepartmentDescriptionID = 10,
-                            DepartmentImageLink = "/images/DeaprtmentImg/bookkeeping.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/engineering department.jpg",
                             DepartmentName = "Инженерный отдел",
                             ParentDepartmentID = 2
                         },
@@ -129,15 +129,15 @@ namespace Company.Migrations
                         {
                             ID = 11,
                             DepartmentDescriptionID = 11,
-                            DepartmentImageLink = "/images/DeaprtmentImg/quality control department.jpg",
-                            DepartmentName = "Отдел проверки качества",
+                            DepartmentImageLink = "/images/DepartmentImg/quality control department.jpg",
+                            DepartmentName = "Отдел контроля качества",
                             ParentDepartmentID = 2
                         },
                         new
                         {
                             ID = 12,
                             DepartmentDescriptionID = 12,
-                            DepartmentImageLink = "/images/DeaprtmentImg/purchasing department.jpg",
+                            DepartmentImageLink = "/images/DepartmentImg/purchasing department.jpg",
                             DepartmentName = "Отдел закупок",
                             ParentDepartmentID = 2
                         });
@@ -445,6 +445,198 @@ namespace Company.Migrations
                     b.HasKey("DepartmentID");
 
                     b.ToTable("NumberOfEmployees");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<string>", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdentityRole<string>");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole<string>");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoleClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser<string>", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdentityUser<string>");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser<string>");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.ToTable("UserLogins");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("UserTokens");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole<string>");
+
+                    b.HasDiscriminator().HasValue("IdentityRole");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser<string>");
+
+                    b.HasDiscriminator().HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Company.Models.Department", b =>

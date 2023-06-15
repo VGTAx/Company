@@ -1,4 +1,5 @@
 using Company.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DepartmentContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("MySqlConnection")!));
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+    options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<DepartmentContext>();
+
+builder.Services.AddMvc();
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
 
 var app = builder.Build();
 
@@ -24,8 +31,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Department}/{action=Index}/{id?}");

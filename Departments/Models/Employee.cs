@@ -4,24 +4,23 @@ namespace Company.Models
 {
     public class Employee
     {
-        public int ?ID { get; set; }
+        public int? ID { get; set; }
         [Required]
-        public string ?Name { get; set; }
+        public string? Name { get; set; }
         [Required]
-        public string ?Surname { get; set; }
+        public string? Surname { get; set; }
         [Required]
-        public string ?Age { get; set; }
-        [Required]        
-        public string ?Number { get; set; }
+        public string? Age { get; set; }
         [Required]
-        
-        public int ?DepartmentID { get; set; }
+        public string? Number { get; set; }
+        [Required]
+        public int? DepartmentID { get; set; }
 
         public Employee(int? ID, int? DepartmentID)
         {
             this.ID = ID;
             this.DepartmentID = DepartmentID;
-        }       
+        }
 
         public Employee(int? iD, string name, string surname, string age, string number, int? departmentID)
         {

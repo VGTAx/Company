@@ -1,16 +1,18 @@
 ﻿using Company.Data;
 using Company.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Controllers
 {
+    
     public class EmployeeController : Controller
     {
-        private readonly DepartmentContext _context;
+        private readonly CompanyContext _context;
 
-        public EmployeeController(DepartmentContext context)
+        public EmployeeController(CompanyContext context)
         {
             _context = context;
         }
@@ -132,6 +134,7 @@ namespace Company.Controllers
             return View(employee);
         }
 
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -153,6 +156,7 @@ namespace Company.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        
         public IActionResult Details()
         {
             var departments = _context.Departments.ToList();

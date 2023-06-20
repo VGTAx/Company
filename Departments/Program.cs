@@ -6,11 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<DepartmentContext>(options =>
-    options.UseMySQL(builder.Configuration.GetConnectionString("MySqlConnection")!));
+builder.Services.AddDbContext<CompanyContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("MySqlConnection")!,
+    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))));
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<DepartmentContext>();
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<CompanyContext>();
 
 builder.Services.AddMvc();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();

@@ -1,33 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Company.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Company.Data;
 using Company.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using NuGet.Packaging;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Company.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly DepartmentContext _context;
+        private readonly CompanyContext _context;
 
-        public DepartmentController(DepartmentContext context)
+        public DepartmentController(CompanyContext context)
         {
             _context = context;
         }
-        
 
         public async Task<IActionResult> Index()
         {
             var numberOfEmployyes = from d in _context.NumberOfEmployees
                                     join e in _context.Departments on d.DepartmentID equals e.ID
                                     select new DepartmentNumberPoco(e.ID, e.DepartmentName,
-                                                                e.ParentDepartmentID, d.EmployeeCount);                                   
+                                                                e.ParentDepartmentID, d.EmployeeCount);
 
             return View(await numberOfEmployyes.ToListAsync());
         }
-
-       
 
         public IActionResult Details(int? departmentId = 0, string? departmentName = null)
         {
@@ -74,7 +69,7 @@ namespace Company.Controllers
 
             //var departments = _context.Departments.ToList();
             //var employee = _context.Employees;
-           
+
             //ViewBag.Departments = departments;
 
             //return View("Delivery", employee);
@@ -97,8 +92,8 @@ namespace Company.Controllers
         //    {
         //        employeesDepartment.AddRange(GetEmployees(departmentId, _context.Departments.ToList(), _context.Employees.ToList()));
         //    }
-           
-            
+
+
         //    var departments = _context.Departments
         //        .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
         //    var departmentsDescription = _context.DepartmentDescriptions
@@ -117,33 +112,33 @@ namespace Company.Controllers
 
 
 
-        
 
-        
+
+
 
         private List<Employee> GetEmployees(int? id, List<Department> departments, List<Employee> empl)
-        {           
-            var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();            
+        {
+            var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();
             var employees = new List<Employee>();
 
             if (subdepartments.Count != 0)
             {
-                employees = empl.Where(e => subdepartments.Select(s => s.ID).Contains(e.ID)).ToList();                
+                employees = empl.Where(e => subdepartments.Select(s => s.ID).Contains(e.ID)).ToList();
             }
             employees = empl.Where(e => e.DepartmentID == id).ToList();
 
             if (subdepartments.Any())
             {
                 foreach (var dep in subdepartments)
-                {       
+                {
                     var children = GetEmployees(dep.ID, departments, empl);
                     employees.AddRange(children);
                 }
             }
-           
+
             return employees;
         }
 
-        
+
     }
 }

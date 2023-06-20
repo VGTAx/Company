@@ -4,16 +4,19 @@ using Company.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Company.Migrations
 {
-    [DbContext(typeof(DepartmentContext))]
-    partial class DepartmentContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(CompanyContext))]
+    [Migration("20230620174639_create_db")]
+    partial class create_db
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,9 +27,6 @@ namespace Company.Migrations
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartmentDescriptionID")
                         .HasColumnType("int");
 
                     b.Property<string>("DepartmentImageLink")
@@ -40,36 +40,30 @@ namespace Company.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DepartmentDescriptionID");
-
                     b.ToTable("Departments");
 
                     b.HasData(
                         new
                         {
                             ID = 1,
-                            DepartmentDescriptionID = 1,
                             DepartmentImageLink = "/images/DepartmentImg/customer service department.jpg",
                             DepartmentName = "Отдел по обслуживанию клиентов"
                         },
                         new
                         {
                             ID = 2,
-                            DepartmentDescriptionID = 2,
                             DepartmentImageLink = "/images/DepartmentImg/production department.jpg",
                             DepartmentName = "Производственный отдел"
                         },
                         new
                         {
                             ID = 3,
-                            DepartmentDescriptionID = 3,
                             DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Бухгалтерия"
                         },
                         new
                         {
                             ID = 4,
-                            DepartmentDescriptionID = 4,
                             DepartmentImageLink = "/images/DepartmentImg/sales department.jpg",
                             DepartmentName = "Отдел продаж",
                             ParentDepartmentID = 1
@@ -77,7 +71,6 @@ namespace Company.Migrations
                         new
                         {
                             ID = 5,
-                            DepartmentDescriptionID = 5,
                             DepartmentImageLink = "/images/DepartmentImg/wholesale department.jpg",
                             DepartmentName = "Отдел оптовых продаж",
                             ParentDepartmentID = 4
@@ -85,7 +78,6 @@ namespace Company.Migrations
                         new
                         {
                             ID = 6,
-                            DepartmentDescriptionID = 6,
                             DepartmentImageLink = "/images/DepartmentImg/retail sales department.jpg",
                             DepartmentName = "Отдел розничных продаж",
                             ParentDepartmentID = 4
@@ -93,7 +85,6 @@ namespace Company.Migrations
                         new
                         {
                             ID = 7,
-                            DepartmentDescriptionID = 7,
                             DepartmentImageLink = "/images/DepartmentImg/logistics department.jpg",
                             DepartmentName = "Отдел логистики",
                             ParentDepartmentID = 1
@@ -101,7 +92,6 @@ namespace Company.Migrations
                         new
                         {
                             ID = 8,
-                            DepartmentDescriptionID = 8,
                             DepartmentImageLink = "/images/DepartmentImg/stock.jpg",
                             DepartmentName = "Склад",
                             ParentDepartmentID = 7
@@ -109,7 +99,6 @@ namespace Company.Migrations
                         new
                         {
                             ID = 9,
-                            DepartmentDescriptionID = 9,
                             DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Отдел доставки",
                             ParentDepartmentID = 7
@@ -117,7 +106,6 @@ namespace Company.Migrations
                         new
                         {
                             ID = 10,
-                            DepartmentDescriptionID = 10,
                             DepartmentImageLink = "/images/DepartmentImg/engineering department.jpg",
                             DepartmentName = "Инженерный отдел",
                             ParentDepartmentID = 2
@@ -125,7 +113,6 @@ namespace Company.Migrations
                         new
                         {
                             ID = 11,
-                            DepartmentDescriptionID = 11,
                             DepartmentImageLink = "/images/DepartmentImg/quality control department.jpg",
                             DepartmentName = "Отдел контроля качества",
                             ParentDepartmentID = 2
@@ -133,86 +120,9 @@ namespace Company.Migrations
                         new
                         {
                             ID = 12,
-                            DepartmentDescriptionID = 12,
                             DepartmentImageLink = "/images/DepartmentImg/purchasing department.jpg",
                             DepartmentName = "Отдел закупок",
                             ParentDepartmentID = 2
-                        });
-                });
-
-            modelBuilder.Entity("Company.Models.DepartmentDescription", b =>
-                {
-                    b.Property<int>("DepartmentDescriptionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("DepartmentDescriptionID");
-
-                    b.ToTable("DepartmentDescriptions");
-
-                    b.HasData(
-                        new
-                        {
-                            DepartmentDescriptionID = 1,
-                            Description = "Мы ценим наших клиентов и стремимся предоставить им высокий уровень обслуживания. Наш отдел по обслуживанию клиентов отвечает на вопросы, принимает заказы и разрешает любые возникающие проблемы, чтобы удовлетворить потребности наших клиентов. Отдел состоит из отдела продажи отдела логистики"
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 2,
-                            Description = "Наш производственный отдел отвечает за процесс производства. Мы используем передовые технологии и строгий контроль качества, чтобы обеспечить высокое качество нашей продукции. Отдел состоит из инженерного отдела, отдела проверки качества иотдела закупок"
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 3,
-                            Description = "Наша бухгалтерия отвечает за финансовое управление и учет наших операций, включая учет расходов, доходов и подготовку финансовых отчетов."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 4,
-                            Description = "Наш отдел продаж активно продвигает нашу продукцию на рынке. Мы работаем с оптовыми и розничными покупателями, устанавливая долгосрочные партнерские отношения и предлагая разнообразную продукцию."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 5,
-                            Description = "Отдел, специализирующийся на обслуживании оптовых покупателей Мы предлагаем выгодные условия сотрудничества, широкий ассортимент продукции и помогаем нашим клиентам выбрать наиболее подходящую продукцию для их бизнеса.."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 6,
-                            Description = "Наша компания имеет сеть розничных магазинов, где мы предлагаем нашу продукцию напрямую потребителям. Наш отдел розничных продаж работает на создание привлекательных витрин и предоставление высокого уровня обслуживания нашим клиентам."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 7,
-                            Description = " Мы уделяем особое внимание эффективному управлению логистическими процессами. Наш отдел логистики отвечает за координацию поставок, управление запасами, складирование и своевременную доставку наших продуктов."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 8,
-                            Description = "У нас есть собственный склад, где мы храним наши товары в соответствии с высокими стандартами качества и безопасности."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 9,
-                            Description = "Наш отдел доставки отвечает за оперативную и надежную доставку наших продуктов клиентам. Мы обеспечиваем, чтобы наша продуция достигала наших клиентов в сохранности и вовремя."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 10,
-                            Description = " Наш инженерный отдел занимается разработкой и совершенствованием наших производственных процессов, а также внедрением новых технологий для повышения эффективности и качества нашей продукции."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 11,
-                            Description = "Мы придерживаемся строгих стандартов качества, и наш отдел проверки качества осуществляет тщательный контроль качества на всех этапах производства, чтобы гарантировать, что наши продукты отвечают высоким стандартам и требованиям клиентов."
-                        },
-                        new
-                        {
-                            DepartmentDescriptionID = 12,
-                            Description = " Отдел закупок занимается поиском и приобретением качественных и надежных сырьевых материалов и компонентов для производства нашей продукции."
                         });
                 });
 
@@ -627,22 +537,22 @@ namespace Company.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole<string>");
 
                     b.HasDiscriminator().HasValue("IdentityRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1",
+                            ConcurrencyStamp = "6f20ab57-0a73-40f5-957e-7755ce4273c3",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+            modelBuilder.Entity("Company.Data.ApplicationUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser<string>");
 
-                    b.HasDiscriminator().HasValue("IdentityUser");
-                });
-
-            modelBuilder.Entity("Company.Models.Department", b =>
-                {
-                    b.HasOne("Company.Models.DepartmentDescription", "DepartmentDescription")
-                        .WithMany()
-                        .HasForeignKey("DepartmentDescriptionID");
-
-                    b.Navigation("DepartmentDescription");
+                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 #pragma warning restore 612, 618
         }

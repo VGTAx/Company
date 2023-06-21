@@ -32,7 +32,7 @@ namespace Company.Controllers
             }
             else if (departmentId == 0 && !String.IsNullOrEmpty(departmentName))
             {
-                departmentId = _context.Departments.FirstOrDefault(d => d.DepartmentName == departmentName).ID;
+                departmentId = _context.Departments.FirstOrDefault(d => d.DepartmentName == departmentName)!.ID;
             }
 
             var department = _context.Departments.FirstOrDefault(d => d.ID == departmentId);

@@ -38,8 +38,19 @@ namespace Company.Controllers
             _context = context;
         }    
 
-        public IActionResult ConfirmEmail()
+        public async Task<IActionResult> ConfirmEmail(string userId, string code, string returnUrl) 
         {
+            var user = await _userManager.FindByIdAsync(userId);
+            if(user is not null){
+                var result = await _userManager.ConfirmEmailAsync(user, code);
+                if (result.Succeeded)
+                {
+                    return View("EmailConfrim");
+                }
+            }
+            
+           
+
             return View();
         }
 
@@ -50,7 +61,7 @@ namespace Company.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([Bind("Email, Name, Password, ConfirmPassword")] Register model, string returnUrl = null)
+        public async Task<IActionResult> Register([Bind("Email, Name, Password, ConfirmPassword")] Register model, string? returnUrl = null)
         {
 
             returnUrl ??= Url.Content("~/");
@@ -65,7 +76,7 @@ namespace Company.Controllers
                 await _userStore.SetUserNameAsync(user, model.Name, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _userManager.CreateAsync(user, model.Password!);
 
                 if (result.Succeeded)
                 {
@@ -82,7 +93,7 @@ namespace Company.Controllers
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callBackUrl)}'>clicking here</a>.");
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}'>clicking here</a>.");
 
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)

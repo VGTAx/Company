@@ -21,9 +21,12 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 builder.Services.AddMvc();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 
-builder.Services.Configure<SmptSettings>(builder.Configuration.GetSection("SmptSettings"));
 builder.Services.AddTransient<SmptSettings>();
+builder.Services.Configure<SmptSettings>(builder.Configuration.GetSection("SmptSettings"));
+
+
 builder.Services.AddTransient<IEmailSender, MailKitEmailSender>();
+
 
 var app = builder.Build();
 

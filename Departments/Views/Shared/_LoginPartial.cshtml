@@ -7,40 +7,26 @@
     {
          <li class="nav-item">
              <a class="nav-link text-dark" asp-area="Identity"
-             asp-page="/Account/Manage/Index" title="Manage">Hello
-             @User.Claims.FirstOrDefault(x=>x.Type == "FullName")?.Value</a>
+             asp-page="/Account/Manage/Index" title="Manage">Привет,
+             @User.Identity!.Name</a>
          </li>
          <li class="nav-item">
              <form class="form-inline" asp-page="/Account/Logout" 
                 asp-route-returnUrl="@Url.Page("/", new { area = "" })" asp-area="Identity" method="post" >
-                 <button class="nav-link btn btn-link text-dark"type="submit">Logout</button>
+                 <button class="nav-link btn btn-link text-dark"type="submit">Выйти</button>
              </form>
          </li>
     } 
-     else
+        
+    else
     {
          <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Register" asp-action="Register">Регистрация</a>
          </li>
          <li class="nav-item">
              <a class="nav-link text-dark" asp-area="Identity"
-             asp-page="/Account/Login">Login</a>
+             asp-page="/Account/Login">Вход</a>
          </li>
     }
-    @*  else
-    {
-         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link text-dark" asp-area="Identity"
-             asp-page="/Account/Login">Login</a>
-         </li>
-    }
-    *@
-   
-   
-
-    <!--Для разор пейдж-->
    
 </ul>

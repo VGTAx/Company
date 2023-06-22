@@ -17,9 +17,9 @@ namespace Company.Controllers
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
-        private readonly CompanyContext _context;
-        public string ReturnUrl { get; set; }
+        private readonly IEmailSender _emailSender;   
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public string? ReturnUrl { get; set; }
 
         public RegisterController(
             UserManager<ApplicationUser> userManager,
@@ -27,29 +27,37 @@ namespace Company.Controllers
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            CompanyContext context)
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
-            _emailStore = GetEmailStore();
+            _emailStore = GetEmailStore()!;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _context = context;
+            _roleManager = roleManager;
+            
         }    
 
-        public async Task<IActionResult> ConfirmEmail(string userId, string code, string returnUrl) 
+        public async Task<IActionResult> ConfirmEmail(string userId, string code) 
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if(user is not null){
-                var result = await _userManager.ConfirmEmailAsync(user, code);
-                if (result.Succeeded)
-                {
-                    return View("EmailConfrim");
-                }
+            if (userId == null || code == null)
+            {
+                return RedirectToAction("Index","Department");
             }
-            
-           
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{userId}'.");
+            }
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                return View("ConfirmEmail");
+            }
 
             return View();
         }
@@ -63,7 +71,6 @@ namespace Company.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([Bind("Email, Name, Password, ConfirmPassword")] Register model, string? returnUrl = null)
         {
-
             returnUrl ??= Url.Content("~/");
             if (ModelState.IsValid)
             {
@@ -73,8 +80,9 @@ namespace Company.Controllers
                     Email = model.Email,
                 };
 
-                await _userStore.SetUserNameAsync(user, model.Name, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
+                
 
                 var result = await _userManager.CreateAsync(user, model.Password!);
 
@@ -91,22 +99,20 @@ namespace Company.Controllers
                         controller: "Register",
                         values: new { userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
-
+                    await _userManager.AddToRoleAsync(user, "user");                    
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}'>clicking here</a>.");
+                        $"Для подтверждения регистрации <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a>.");
 
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToAction("ConfirmEmail",
-                            new { email = model.Email, returnUrl = returnUrl });
+                        return RedirectToAction("ConfirmEmail");
                     }
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
-
                 }
 
                 foreach (var error in result.Errors)

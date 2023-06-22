@@ -16,7 +16,7 @@ namespace Company.Controllers
         {
             _context = context;
         }
-
+        [Authorize(Roles = "user")]
         public IActionResult Create(int? departmentId)
         {
             var departments = _context.Departments
@@ -191,7 +191,7 @@ namespace Company.Controllers
             }
             else
             {
-                deps.Add(departments.FirstOrDefault(d => d.ID == id));
+                deps.Add(departments.FirstOrDefault(d => d.ID == id)!);
             }
             return deps;
         }

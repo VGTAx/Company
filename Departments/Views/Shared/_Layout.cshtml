@@ -1,12 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Company.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Departments</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Departments.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />    
 </head>
 <body>
     <header>
@@ -16,8 +20,11 @@
                 <div class="grid-container-nav">
                      <a class="" asp-area="" asp-controller="Department" asp-action="Index">
                     <img src="/images/logo.jpg" width="100" length="100" alt="logo"/></a>
-                     <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Create">Добавить сотрудника</a>
-                     <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
+                    @if(SignInManager.IsSignedIn(User) && User.IsInRole("user"))
+                    {
+                        <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Create">Добавить сотрудника</a>
+                        <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
+                    }                    
                      <a class="nav-link" asp-area="" asp-controller="Department" asp-action="Index">Структура компании</a>
                      
                 </div>
@@ -35,8 +42,7 @@
         <div class="container">
             &copy; 2023 - Departments - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    </footer>  
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

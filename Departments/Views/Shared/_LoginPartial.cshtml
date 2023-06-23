@@ -2,31 +2,28 @@
 @using Company.Data
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
          <li class="nav-item">
              <a class="nav-link text-dark" asp-area="Identity"
              asp-page="/Account/Manage/Index" title="Manage">Привет,
-             @User.Identity!.Name</a>
+             @User.Claims.FirstOrDefault(c => c.Type == "Name").Value</a>
          </li>
          <li class="nav-item">
-             <form class="form-inline" asp-page="/Account/Logout" 
-                asp-route-returnUrl="@Url.Page("/", new { area = "" })" asp-area="Identity" method="post" >
+             <form class="form-inline" asp-action="Logout" asp-controller="Account" method="post" >
                  <button class="nav-link btn btn-link text-dark"type="submit">Выйти</button>
              </form>
-         </li>
-    } 
-        
+         </li>    
+    }         
     else
     {
          <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Register" asp-action="Register">Регистрация</a>
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Регистрация</a>
          </li>
          <li class="nav-item">
-             <a class="nav-link text-dark" asp-area="Identity"
-             asp-page="/Account/Login">Вход</a>
+             <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Вход</a>
          </li>
-    }
-   
+    }   
 </ul>

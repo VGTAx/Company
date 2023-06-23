@@ -17,6 +17,9 @@ html {
 
 
 
+
+
+
 @keyframes fadeIn {
       to {        
         opacity: 1;        
@@ -46,8 +49,20 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+    height: 100%;   
 }
+
+.wrapper {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex-grow: 1;
+}
+
 
 form {
     display: inline-block;

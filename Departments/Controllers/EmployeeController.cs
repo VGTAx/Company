@@ -16,7 +16,7 @@ namespace Company.Controllers
         {
             _context = context;
         }
-        [Authorize(Roles = "user")]
+        
         public IActionResult Create(int? departmentId)
         {
             var departments = _context.Departments
@@ -43,7 +43,7 @@ namespace Company.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("ID, Name, Surname, Age, Number, DepartmentID")] Employee employee)
+        public async Task<IActionResult> Create([Bind("ID, Name, Surname, Age, Number, DepartmentID")] EmployeeModel employee)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace Company.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, [Bind("ID, Name, Surname, Age, Number, DepartmentID")] Employee employee)
+        public async Task<IActionResult> Edit(int? id, [Bind("ID, Name, Surname, Age, Number, DepartmentID")] EmployeeModel employee)
         {
             if (id != employee.ID)
             {
@@ -169,10 +169,10 @@ namespace Company.Controllers
 
 
 
-        private List<Department> GetDepartments(int? id, List<Department> departments)
+        private List<DepartmentModel> GetDepartments(int? id, List<DepartmentModel> departments)
         {
             var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();
-            var deps = new List<Department>();
+            var deps = new List<DepartmentModel>();
 
             if (subdepartments.Any())
             {

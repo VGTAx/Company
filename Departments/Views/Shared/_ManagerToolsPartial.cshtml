@@ -1,0 +1,10 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Company.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+ @if(SignInManager.IsSignedIn(User) && User.IsInRole("User"))
+ {
+    <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Create">Добавить сотрудника</a>
+    <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
+ } 

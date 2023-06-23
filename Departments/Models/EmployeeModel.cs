@@ -2,7 +2,7 @@
 
 namespace Company.Models
 {
-    public class Employee
+    public class EmployeeModel
     {
         public int? ID { get; set; }
         [Required]
@@ -16,13 +16,13 @@ namespace Company.Models
         [Required]
         public int? DepartmentID { get; set; }
 
-        public Employee(int? ID, int? DepartmentID)
+        public EmployeeModel(int? ID, int? DepartmentID)
         {
             this.ID = ID;
             this.DepartmentID = DepartmentID;
         }
 
-        public Employee(int? iD, string name, string surname, string age, string number, int? departmentID)
+        public EmployeeModel(int? iD, string name, string surname, string age, string number, int? departmentID)
         {
             ID = iD;
             Name = name;
@@ -32,6 +32,6 @@ namespace Company.Models
             DepartmentID = departmentID;
         }
 
-        public Employee() { }
+        public EmployeeModel() { }
     }
 }

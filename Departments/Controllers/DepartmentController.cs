@@ -75,51 +75,10 @@ namespace Company.Controllers
             //return View("Delivery", employee);
         }
 
-        public IActionResult Delivery()
-        {
-            return View();
-        }
-        //Описание отдела с сотрудниками отдела/подотделов
-        //public IActionResult DetailsDepartment(int? departmentId)
-        //{
-        //    if (departmentId == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var employeesDepartment = _context.Employees.Where(e => e.DepartmentID == departmentId).ToList();
-        //    if (employeesDepartment.Count == 0)
-        //    {
-        //        employeesDepartment.AddRange(GetEmployees(departmentId, _context.Departments.ToList(), _context.Employees.ToList()));
-        //    }
-
-
-        //    var departments = _context.Departments
-        //        .Where(d => employeesDepartment.Select(e => e.DepartmentID).Contains(d.ID));
-        //    var departmentsDescription = _context.DepartmentDescriptions
-        //        .FirstOrDefault(d => d.DepartmentDescriptionID == departmentId).Description;
-
-        //    var imageLink = _context.Departments
-        //        .FirstOrDefault(d => d.ID == departmentId).DepartmentImageLink;
-
-        //    ViewBag.Departments = departments;
-        //    ViewBag.MainDepartment = departmentId;
-        //    ViewData["DepartmentDescription"] = departmentsDescription;
-        //    ViewData["DepartmentImageLink"] = imageLink;
-
-        //    return View("Details", employeesDepartment);
-        //}
-
-
-
-
-
-
-
-        private List<Employee> GetEmployees(int? id, List<Department> departments, List<Employee> empl)
+        private List<EmployeeModel> GetEmployees(int? id, List<DepartmentModel> departments, List<EmployeeModel> empl)
         {
             var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();
-            var employees = new List<Employee>();
+            var employees = new List<EmployeeModel>();
 
             if (subdepartments.Count != 0)
             {
@@ -135,7 +94,6 @@ namespace Company.Controllers
                     employees.AddRange(children);
                 }
             }
-
             return employees;
         }
 

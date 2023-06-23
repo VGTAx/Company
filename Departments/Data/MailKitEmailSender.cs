@@ -1,14 +1,16 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
 using MimeKit;
+using System;
 
 namespace Company.Data
 {
     public class MailKitEmailSender : IEmailSender
     {
-        private readonly SmptSettings _smtpSettings;
+        private readonly SmtpSettings _smtpSettings;
 
-        public MailKitEmailSender(SmptSettings smtpSettings)
+        public MailKitEmailSender(SmtpSettings smtpSettings)
         {
             _smtpSettings = smtpSettings;
         }
@@ -16,18 +18,19 @@ namespace Company.Data
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("Company", "myemailforstudyasp.net@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.Email));
             emailMessage.To.Add(new MailboxAddress("",email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
                 Text = htmlMessage
             };
+           
 
-            using(var client = new SmtpClient())
-            {
-                await client.ConnectAsync("smtp.gmail.com", 465);
-                await client.AuthenticateAsync("myemailforstudyasp.net@gmail.com", "imojzoszildvvzjy");
+            using (var client = new SmtpClient())
+            {                
+                await client.ConnectAsync(_smtpSettings.Host, _smtpSettings.Port);
+                await client.AuthenticateAsync(_smtpSettings.Email, _smtpSettings.Password);
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
             }

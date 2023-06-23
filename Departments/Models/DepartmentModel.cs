@@ -2,7 +2,7 @@
 
 namespace Company.Models
 {
-    public class Department
+    public class DepartmentModel
     {
         public int? ID { get; set; }
         public string? DepartmentName { get; set; }
@@ -11,7 +11,7 @@ namespace Company.Models
        
         public string? DepartmentImageLink { get; set; }
 
-        public Department(int ID, string? DepartmentName, int? ParentDepartmentID,
+        public DepartmentModel(int ID, string? DepartmentName, int? ParentDepartmentID,
             string? DepartmentImageLink)
         {
             this.ID = ID;
@@ -19,6 +19,6 @@ namespace Company.Models
             this.ParentDepartmentID = ParentDepartmentID;            
             this.DepartmentImageLink = DepartmentImageLink;
         }
-        public Department() { }
+        public DepartmentModel() { }
     }
 }

@@ -1,10 +1,7 @@
 using Company.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +18,9 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 builder.Services.AddMvc();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 
-builder.Services.AddTransient<SmptSettings>();
-builder.Services.Configure<SmptSettings>(builder.Configuration.GetSection("SmptSettings"));
+var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+builder.Services.AddSingleton(smtpSettings);
+    
 
 
 builder.Services.AddTransient<IEmailSender, MailKitEmailSender>();

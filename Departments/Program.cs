@@ -1,4 +1,6 @@
 using Company.Data;
+using Company.Filters;
+using Company.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -20,14 +22,17 @@ builder.Services.AddScoped<UserManager<ApplicationUser>>();
 
 var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
 builder.Services.AddSingleton(smtpSettings);
-    
+//builder.Services.AddControllersWithViews(options =>
+//{
+//    options.Filters.Add(typeof(CheckUserExistFilter));
+//});
+
 
 
 builder.Services.AddTransient<IEmailSender, MailKitEmailSender>();
 
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -44,7 +49,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<CheckExistUser>();
+
 app.MapRazorPages();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Department}/{action=Index}/{id?}");

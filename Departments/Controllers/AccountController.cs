@@ -1,13 +1,11 @@
-﻿using Company.Areas.Identity.Pages.Account;
-using Company.Data;
-using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Company.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
-using Company.Models;
-using System.Text.Encodings.Web;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Company.Controllers
 {
@@ -18,8 +16,9 @@ namespace Company.Controllers
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<Areas.Identity.Pages.Account.RegisterModel> _logger;
-        private readonly IEmailSender _emailSender; 
-       
+        private readonly IEmailSender _emailSender;
+
+
         private string? ReturnUrl { get; set; }
 
         public AccountController(
@@ -34,14 +33,16 @@ namespace Company.Controllers
             _emailStore = GetEmailStore()!;
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender; 
+            _emailSender = emailSender;
         }
-       
-        public async Task<IActionResult> ConfirmEmail(string userId, string code) 
+        [TempData]
+        public string StatusMessage { get; set; }
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
             {
-                return RedirectToAction("Index","Department");
+                ViewBag.StatusMessage = $"Пожалуйста, проверьте свою электронную почту, чтобы подтвердить свою учетную запись.";
+                return View();
             }
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -53,10 +54,7 @@ namespace Company.Controllers
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
 
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("ConfirmEmail", "Account");
-            }
+            ViewBag.StatusMessage = result.Succeeded ? "Регистрация завершена." : "Ошибка при подтверждении эл.почты";
 
             return View();
         }
@@ -81,7 +79,7 @@ namespace Company.Controllers
 
                 await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
-                
+
 
                 var result = await _userManager.CreateAsync(user, model.Password!);
 
@@ -102,9 +100,10 @@ namespace Company.Controllers
                         values: new { userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _userManager.AddToRoleAsync(user, "user");                    
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
-                        $"Для подтверждения регистрации <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a>.");
+                    await _userManager.AddToRoleAsync(user, "user");
+                    await _emailSender.SendEmailAsync(model.Email, "Подтверждение регистрации",
+                        $"Спасибо за регистрацию. Пожалуйста, перейдите по ссылке , чтобы подтвердить ваш адрес электронной почты: <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a>." +
+                        $"\n\nЕсли вы получили это письмо случайно - удалите это письмо.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -120,8 +119,8 @@ namespace Company.Controllers
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
-                }               
-            }     
+                }
+            }
             return View();
         }
 

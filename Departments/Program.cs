@@ -1,9 +1,10 @@
 using Company.Data;
 using Company.Filters;
-using Company.Middleware;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,13 +20,26 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 builder.Services.AddMvc();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+
+    });
+builder.Services.AddMemoryCache();
 
 var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
 builder.Services.AddSingleton(smtpSettings);
-//builder.Services.AddControllersWithViews(options =>
-//{
-//    options.Filters.Add(typeof(CheckUserExistFilter));
-//});
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<CheckUserExistFilter>();
+});
 
 
 
@@ -49,10 +63,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<CheckExistUser>();
 
 app.MapRazorPages();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Department}/{action=Index}/{id?}");

@@ -1,6 +1,6 @@
 ﻿namespace Company.Models
 {
-    public class ConfirmEmailModel
+    public class RegisterConfirmationModel
     {
         public string StatusMessage { get; set; }
     }

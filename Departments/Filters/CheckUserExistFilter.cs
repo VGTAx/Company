@@ -1,55 +1,59 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Company.Data;
+﻿using Company.Data;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Company.Filters
 {
-    public class CheckUserExistFilter : IAsyncActionFilter
+    public class CheckUserExistFilter : IAsyncAuthorizationFilter
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser>? _userManager;
+        private readonly IMemoryCache _cache;
 
-        public CheckUserExistFilter(UserManager<ApplicationUser> userManager)
+        public CheckUserExistFilter(UserManager<ApplicationUser> userManager, IMemoryCache cache)
         {
             _userManager = userManager;
+            _cache = cache;
         }
 
-        //public async Task OnActionExecutedAsync(ActionExecutedContext context)
-        //{
-        //    var userName = context.HttpContext.User.Identity.Name;
-        //    var user = await _userManager.FindByNameAsync(userName) != null;
-        //    if (!user)
-        //    {
-        //        await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-        //    }
-        //}
-
-        //public async Task OnActionExecutingAsync(ActionExecutingContext context)
-        //{
-        //    var userName = context.HttpContext.User.Identity.Name;
-        //    var user = await _userManager.FindByNameAsync(userName) != null;
-        //    if(!user)
-        //    {
-        //       await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-        //    }
-        //}
-
-        public  async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
+            
             var userName = context.HttpContext.User.Identity.Name;
-            if(userName is not null)
+
+            if (!string.IsNullOrEmpty(userName))
             {
-                var user = await _userManager.FindByNameAsync(userName);
-                if (user != null)
+                // Проверяем, было ли уже выполнено перенаправление
+                var alreadyRedirected = _cache.TryGetValue($"{userName}_AlreadyRedirected", out bool cachedAlreadyRedirected) && cachedAlreadyRedirected;
+                ApplicationUser user = await _userManager.FindByNameAsync(userName!);
+                if (!alreadyRedirected)
                 {
-                    await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+                    // Получение значения SecurityStamp из кэша
+                    if (!_cache.TryGetValue($"{userName}_SecurityStamp", out string cachedSecurityStamp))
+                    {
+                        // Если значение отсутствует в кэше, получение его из базы данных                    
+                        cachedSecurityStamp = user?.SecurityStamp ?? string.Empty;
+
+                        // Сохранение значения SecurityStamp в кэше
+                        _cache.Set($"{userName}_SecurityStamp", cachedSecurityStamp);
+                    }
+
+                    // Проверка значения SecurityStamp
+                    var userSecurityStamp = user != null ? await _userManager.GetSecurityStampAsync(user) : null;
+
+                    if (cachedSecurityStamp != userSecurityStamp)
+                    {
+                        // Устанавливаем флаг в MemoryCache, чтобы пометить, что уже выполнено перенаправление или выход из аккаунта
+                        _cache.Set($"{userName}_AlreadyRedirected", true);
+
+                        await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                        context.Result = new RedirectToActionResult("Logout", "Account", null);
+                    }
                 }
             }
-
-            
-           
-
-            
         }
     }
 }

@@ -23,7 +23,14 @@
                         <input class="form-check-input" asp-for="RememberMe" />
                         Запомнить меня
                     </label>
+                    <p>
+                        <a asp-action="ForgotPassword" asp-controller="Account" method>Забыли пароль?</a>
+                    </p>
+                     <p>
+                        <a asp-action="Registration" asp-controller="Account" method>Регистрация</a>
+                    </p>
                 </div>
+                
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Войти</button>
                 </div>               

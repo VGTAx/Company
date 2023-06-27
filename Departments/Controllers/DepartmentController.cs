@@ -1,10 +1,12 @@
 ﻿using Company.Data;
 using Company.Models;
+using Company.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Controllers
 {
+    
     public class DepartmentController : Controller
     {
         private readonly CompanyContext _context;

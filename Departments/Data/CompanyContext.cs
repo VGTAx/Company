@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Company.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Company.Models.Department;
+using Company.Models.Employee;
 
 namespace Company.Data
 {

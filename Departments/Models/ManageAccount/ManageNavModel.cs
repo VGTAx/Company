@@ -1,16 +1,12 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
+﻿
 
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Company.Areas.Identity.Pages.Account.Manage
+namespace Company.Models.ManageAccount
 {
-    
-    public static class ManageNavModel_
+    public static class ManageNavModel
     {
-        
-        public static string Index => "Index";
+        public static string Profile => "Profile";
 
         public static string Email => "Email";
 
@@ -26,7 +22,7 @@ namespace Company.Areas.Identity.Pages.Account.Manage
 
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
 
-        public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
+        public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Profile);
 
         public static string EmailNavClass(ViewContext viewContext) => PageNavClass(viewContext, Email);
 

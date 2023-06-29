@@ -1,4 +1,4 @@
-﻿using Company.Models;
+﻿using Company.Models.Department;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

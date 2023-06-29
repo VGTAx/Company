@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Company.Models
+namespace Company.Models.Department
 {
     public class DepartmentModel
     {
@@ -8,7 +8,7 @@ namespace Company.Models
         public string? DepartmentName { get; set; }
         public int? ParentDepartmentID { get; set; }
 
-       
+
         public string? DepartmentImageLink { get; set; }
 
         public DepartmentModel(int ID, string? DepartmentName, int? ParentDepartmentID,
@@ -16,7 +16,7 @@ namespace Company.Models
         {
             this.ID = ID;
             this.DepartmentName = DepartmentName;
-            this.ParentDepartmentID = ParentDepartmentID;            
+            this.ParentDepartmentID = ParentDepartmentID;
             this.DepartmentImageLink = DepartmentImageLink;
         }
         public DepartmentModel() { }

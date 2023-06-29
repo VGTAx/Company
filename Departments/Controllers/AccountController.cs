@@ -1,6 +1,5 @@
-﻿using Company.Areas.Identity.Pages.Account;
-using Company.Models;
-using Company.Data;
+﻿using Company.Data;
+using Company.Models.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +7,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Company.Controllers
 {
@@ -45,7 +42,7 @@ namespace Company.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([Bind("Email, Name, Password, ConfirmPassword")] Models.RegisterModel model, string? returnUrl = null)
+        public async Task<IActionResult> Register([Bind("Email, Name, Password, ConfirmPassword")] RegisterModel model, string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             if (ModelState.IsValid)
@@ -107,7 +104,7 @@ namespace Company.Controllers
         {
             if (userId == null || code == null)
             {
-                ViewBag.StatusMessage = $"Пожалуйста, проверьте свою электронную почту, чтобы подтвердить свою учетную запись.";
+                ViewBag.StatusMessage = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
                 return View();
             }
 
@@ -132,7 +129,7 @@ namespace Company.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([Bind("Email, Password, RememberMe")] Models.LoginModel model)
+        public async Task<IActionResult> Login([Bind("Email, Password, RememberMe")] LoginModel model)
         {
             if (ModelState.IsValid)
             {
@@ -158,21 +155,23 @@ namespace Company.Controllers
             _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Department");
         }
-        
+
         [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View();
         }
+
         [HttpPost]
-        public async Task<IActionResult> ForgotPassword([Bind("Email")] Models.ForgorPasswordModel model)
+        public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgorPasswordModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if(user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                var user = await _userManager.FindByEmailAsync(model.Email!);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
-                    return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                    ModelState.AddModelError(string.Empty, "Пользователя с такой эл.почтой не существует.");
+                    return View();
                 }
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -182,14 +181,15 @@ namespace Company.Controllers
                     controller: "Account",
                     values: new { code = code, Email = model.Email },
                     protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(model.Email, "Восстановление пароля",
-                    $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl)}'>нажмите сюда</a >.");
+                await _emailSender.SendEmailAsync(model.Email!, "Восстановление пароля",
+                    $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a >.");
 
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
-            }
+            }           
 
             return View();
         }
+
         [HttpGet]
         public IActionResult ForgotPasswordConfirmation()
         {
@@ -199,13 +199,14 @@ namespace Company.Controllers
         [HttpGet]
         public IActionResult ResetPassword(string code = null, string email = null)
         {
-            if(code == null || email == null)
+            if (code == null || email == null)
             {
                 return BadRequest("A code must be supplied for password reset.");
-            }     
-            
-            return View();                          
+            }
+
+            return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> ResetPassword([Bind("Email, Password, ConfirmPassword, Code")] ResetPasswordModel model)
         {
@@ -215,7 +216,7 @@ namespace Company.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if(user == null)
+            if (user == null)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }

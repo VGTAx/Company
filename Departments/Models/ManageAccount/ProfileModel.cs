@@ -6,10 +6,13 @@ namespace Company.Models.ManageAccount
     {
         [Required]
         [EmailAddress]
+        [Display(Name = "Эл.почта")]
         public string? Email { get; set; }
         
-        [Phone]
+        
         [Display(Name = "Номер телефона")]
         public string? Phone { get; set; }
+
+        public string? StatusMessage { get; set; }
     }
 }

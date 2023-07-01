@@ -97,3 +97,12 @@ li {
     width: 548px;
     height: 320px;
 }
+
+.navContainer {
+    display: flex;
+    flex-direction: row;     
+}
+
+.statusMessage {
+    width: 30%;
+}

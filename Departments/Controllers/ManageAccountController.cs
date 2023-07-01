@@ -21,22 +21,28 @@ namespace Company.Controllers
 
         public IActionResult _ManageNav()
         {
-            return View();
+            return View("_ManageNav");
         }
 
         [HttpGet]
-        public async Task<IActionResult> Profile()
+        public async Task<IActionResult> Profile(string partialViewName)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            };
+            }
 
             var userName = await _userManager.GetUserNameAsync(user);
             var userPhone = await _userManager.GetPhoneNumberAsync(user);
 
-            return View();
+            var model = new ProfileModel
+            {
+                Email = userName,
+                Phone = userPhone,
+            };
+
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -47,10 +53,11 @@ namespace Company.Controllers
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-            if(!ModelState.IsValid)
-            {
-                return View();
-            }
+            //if(!ModelState.IsValid)
+            //{
+            //    ModelState.AddModelError("", "Ошибка при добавлении номера телефона");
+            //    return View();
+            //}
            
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
@@ -63,9 +70,31 @@ namespace Company.Controllers
                     return View();
                 }
             }
-            await _signInManager.RefreshSignInAsync(user);            
+            await _signInManager.RefreshSignInAsync(user);
+            model.StatusMessage = "Профиль обновлен";
+            return PartialView(model);
+        }
 
-            return View();
+        [HttpGet]
+        public async Task<IActionResult> ChangeEmail()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var email =  await _userManager.GetEmailAsync(user);
+            var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+
+            var model = new EmailModel
+            {
+                Email = email,
+                IsEmailConfirmed = isEmailConfirmed,
+            };                      
+
+            return PartialView(model);
         }
     }
 }

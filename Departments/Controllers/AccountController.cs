@@ -1,4 +1,4 @@
-﻿using Company.Data;
+﻿using Company.Models;
 using Company.Models.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -12,18 +12,18 @@ namespace Company.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUserStore<ApplicationUser> _userStore;
-        private readonly IUserEmailStore<ApplicationUser> _emailStore;
-        private readonly ILogger<Areas.Identity.Pages.Account.RegisterModel> _logger;
+        private readonly SignInManager<ApplicationUserModel> _signInManager;
+        private readonly UserManager<ApplicationUserModel> _userManager;
+        private readonly IUserStore<ApplicationUserModel> _userStore;
+        private readonly IUserEmailStore<ApplicationUserModel> _emailStore;
+        private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public AccountController(
-            UserManager<ApplicationUser> userManager,
-            IUserStore<ApplicationUser> userStore,
-            SignInManager<ApplicationUser> signInManager,
-            ILogger<Areas.Identity.Pages.Account.RegisterModel> logger,
+            UserManager<ApplicationUserModel> userManager,
+            IUserStore<ApplicationUserModel> userStore,
+            SignInManager<ApplicationUserModel> signInManager,
+            ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -47,10 +47,11 @@ namespace Company.Controllers
             returnUrl ??= Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser
+                var user = new ApplicationUserModel
                 {
                     UserName = model.Email,
                     Email = model.Email,
+                    Name = model.Name,
                 };
 
                 await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
@@ -146,6 +147,7 @@ namespace Company.Controllers
                     return View();
                 }
             }
+           
             return View();
         }
 
@@ -240,13 +242,13 @@ namespace Company.Controllers
             return View();
         }
 
-        private IUserEmailStore<ApplicationUser>? GetEmailStore()
+        private IUserEmailStore<ApplicationUserModel>? GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<ApplicationUser>)_userStore;
+            return (IUserEmailStore<ApplicationUserModel>)_userStore;
         }
     }
 }

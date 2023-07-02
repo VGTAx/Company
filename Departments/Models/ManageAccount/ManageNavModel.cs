@@ -1,9 +1,11 @@
 ﻿
 
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Company.Models.ManageAccount
 {
+    [NotMapped]
     public static class ManageNavModel
     {
         public static string Profile => "Profile";

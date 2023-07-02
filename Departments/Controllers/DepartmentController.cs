@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Company.Models.Department;
 using Company.Models.Employee;
+using Company.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Company.Controllers
 {
@@ -11,11 +13,22 @@ namespace Company.Controllers
     public class DepartmentController : Controller
     {
         private readonly CompanyContext _context;
+        private readonly UserManager<ApplicationUserModel> _userManager;
+        private readonly SignInManager<ApplicationUserModel> _signInManager;
 
-        public DepartmentController(CompanyContext context)
+
+        public DepartmentController(CompanyContext context, UserManager<ApplicationUserModel> userManager, SignInManager<ApplicationUserModel> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
+
+        //public async Task<IActionResult> _LoginPartial()
+        //{
+            
+        //    return PartialView(User);
+        //}
 
         public async Task<IActionResult> Index()
         {
@@ -23,6 +36,12 @@ namespace Company.Controllers
                                     join e in _context.Departments on d.DepartmentID equals e.ID
                                     select new DepartmentNumberPoco(e.ID, e.DepartmentName,
                                                                 e.ParentDepartmentID, d.EmployeeCount);
+
+            //var model = new IndexViewModel
+            //{
+            //    departmentNumberPoco = await numberOfEmployyes.ToListAsync(),
+            //    applicationUser = await _userManager.GetUserAsync(User),
+            //};
 
             return View(await numberOfEmployyes.ToListAsync());
         }

@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Company.Models.ManageAccount
 {
+    [NotMapped]
     public class ProfileModel
     {
         [Required]
@@ -12,6 +14,9 @@ namespace Company.Models.ManageAccount
         
         [Display(Name = "Номер телефона")]
         public string? Phone { get; set; }
+
+        [Display(Name = "Имя")]
+        public string? Name { get; set; }
 
         public string? StatusMessage { get; set; }
     }

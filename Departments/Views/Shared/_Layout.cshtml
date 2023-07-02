@@ -12,15 +12,16 @@
     <div class="wrapper">
         <header>
             <nav class="navbar navbar-light  border-bottom box-shadow mb-3">
-                <div class="container-fluid">                
-                
+                <div class="container-fluid">
                     <div class="grid-container-nav">
                          <a class="" asp-area="" asp-controller="Department" asp-action="Index">
                         <img src="/images/logo.jpg" width="100" length="100" alt="logo"/></a>
-                        <a class="nav-link" asp-area="" asp-controller="Department" asp-action="Index">Структура компании</a> 
-                        <partial name="_ManagerToolsPartial" />
+                        <a class="nav-link" asp-area="" asp-controller="Department" asp-action="Index">Структура компании</a>  
+                        <partial name="_ManagerToolsPartial"></partial>
                     </div>
-                    <partial name="_LoginPartial" />
+                    <div>
+                        @await Component.InvokeAsync("Login")
+                    </div>                                     
                 </div>
             </nav>
         </header>

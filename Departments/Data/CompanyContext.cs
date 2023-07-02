@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Company.Models.Department;
 using Company.Models.Employee;
+using Company.Models;
 
 namespace Company.Data
 {
-    public class CompanyContext : IdentityDbContext<ApplicationUser>
+    public class CompanyContext : IdentityDbContext<ApplicationUserModel>
     {
         public DbSet<DepartmentModel> Departments { get; set; }       
         public DbSet<EmployeeModel> Employees { get; set; }

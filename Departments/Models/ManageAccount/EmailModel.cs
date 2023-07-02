@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Company.Models.ManageAccount
 {
+    [NotMapped]
     public class EmailModel
     {
         [EmailAddress]

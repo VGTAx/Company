@@ -1,5 +1,5 @@
 ﻿@using Company.Models.ManageAccount;
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<ApplicationUserModel> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

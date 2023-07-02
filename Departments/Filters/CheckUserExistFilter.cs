@@ -1,4 +1,4 @@
-﻿using Company.Data;
+﻿using Company.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -10,10 +10,10 @@ namespace Company.Filters
 {
     public class CheckUserExistFilter : IAsyncAuthorizationFilter
     {
-        private readonly UserManager<ApplicationUser>? _userManager;
+        private readonly UserManager<ApplicationUserModel>? _userManager;
         private readonly IMemoryCache _cache;
 
-        public CheckUserExistFilter(UserManager<ApplicationUser> userManager, IMemoryCache cache)
+        public CheckUserExistFilter(UserManager<ApplicationUserModel> userManager, IMemoryCache cache)
         {
             _userManager = userManager;
             _cache = cache;
@@ -28,7 +28,7 @@ namespace Company.Filters
             {
                 // Проверяем, было ли уже выполнено перенаправление
                 var alreadyRedirected = _cache.TryGetValue($"{userName}_AlreadyRedirected", out bool cachedAlreadyRedirected) && cachedAlreadyRedirected;
-                ApplicationUser user = await _userManager.FindByNameAsync(userName!);
+                ApplicationUserModel user = await _userManager.FindByNameAsync(userName!);
                 if (!alreadyRedirected)
                 {
                     // Получение значения SecurityStamp из кэша

@@ -1,9 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", (event) => {    
 
     let navLink = document.querySelector(".navContainerLink");    
-    //let btnSendForm = document.querySelector('[data-btn]');
-    //let check = true;
-
     function attachButtonHandler() {
         let submitButton = document.getElementById('profile-form');
         if (submitButton) {
@@ -11,23 +8,26 @@
                 event.preventDefault();
 
                 let url = "/ManageAccount/Profile"
-                const form = document.getElementById('profile-form');
-                
+                const form = document.getElementById('profile-form');                
                 const formData = new FormData(form);
-
                 const email = document.querySelector("#Email").value;
-                formData.append("Email", email);
-                //formData.append("Email", formData.get("Email"));
-                //formData.append("Email", formData.get("Phone"));
 
+                formData.append("Email", email);
 
                 fetch(url, {
                     method: "POST",
                     body: formData
-                }).then(response => response.text())
+                }).then(response => response.text()
                     .then(html => {
-                        document.getElementById('partialContainer').innerHTML = html;
-                    })
+                        const tempDiv = document.getElementById('partialContainer');
+                        tempDiv.innerHTML = html;
+                    }));
+                
+                let updatedData = document.querySelector("#Name").value;
+
+                let dataUpdatedEvent = new CustomEvent('dataUpdated', { detail: { data: updatedData } });
+                // Отправка события
+                document.dispatchEvent(dataUpdatedEvent);                
             });
         }
     }
@@ -40,40 +40,26 @@
         let url = "/ManageAccount/" + target;
         fetch(url, {
             method: "GET"
-        }).then(response => response.text())
-            .then(html => {
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка авторизации, пройдите авторизацию");
+            }
+            return response.text()
+        }).then(html => {
                 const tempDiv = document.getElementById('partialContainer');
-                tempDiv.innerHTML = html;               
-
-                // При обновлении partialView повесим обработчик на кнопку
+                tempDiv.innerHTML = html;       
+                // При обновлении partialView вешаем обработчик на отправку формы
                 attachButtonHandler();
 
-            });      
-    });
-
-    //if (check) {    
-
-    //    btnSendForm.addEventListener("click", (event) => {
-    //        event.preventDefault();
-
-    //        let target = event.target.dataset.target;
-    //        let url = "/ManageAccount/" + target;
-    //        const formData = new FormData(document.querySelector("form"));
-
-    //        fetch(url, {
-    //            method: "POST",
-    //            body: formData
-    //        }).then(response => response.text())
-    //            .then(html => {
-    //                document.getElementById('partialContainer').innerHTML = html;
-
-    //            })
-
-    //    })
-    //}
-    
-    
+        }).catch(error => {
+            window.location.href = "/Account/Login";
+        })
+           
+    });    
 
 })
 
 
+    //.catch(error => {
+    //    window.location.href = '/Account/Login';
+    //});      

@@ -1,5 +1,6 @@
 using Company.Data;
 using Company.Filters;
+using Company.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -13,13 +14,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<CompanyContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("MySqlConnection")!,
     ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))));
-builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+builder.Services.AddDefaultIdentity<ApplicationUserModel>(options =>
     options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<CompanyContext>();
 
 builder.Services.AddMvc();
-builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddScoped<UserManager<ApplicationUserModel>>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;

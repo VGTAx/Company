@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Company.Models.Account
 {
+    [NotMapped]
     public class LoginModel
     {
         [Required]

@@ -2,7 +2,6 @@
     
     let btnSendForm = document.querySelector("[data-BtnSendForm]");
 
-
     btnSendForm.addEventListener("click", (event) => {
         event.preventDefault();
 

@@ -1,5 +1,8 @@
-﻿namespace Company.Models.Department
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Company.Models.Department
 {
+    [NotMapped]
     public class DepartmentNumberPoco
     {
         public int? ID { get; set; }

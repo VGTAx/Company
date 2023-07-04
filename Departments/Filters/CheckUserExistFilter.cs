@@ -20,8 +20,7 @@ namespace Company.Filters
         }
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
-        {
-            
+        {            
             var userName = context.HttpContext.User.Identity.Name;
 
             if (!string.IsNullOrEmpty(userName))
@@ -29,29 +28,13 @@ namespace Company.Filters
                 // Проверяем, было ли уже выполнено перенаправление
                 var alreadyRedirected = _cache.TryGetValue($"{userName}_AlreadyRedirected", out bool cachedAlreadyRedirected) && cachedAlreadyRedirected;
                 ApplicationUserModel user = await _userManager.FindByNameAsync(userName!);
-                if (!alreadyRedirected)
+                if (!alreadyRedirected && user == null)
                 {
-                    // Получение значения SecurityStamp из кэша
-                    if (!_cache.TryGetValue($"{userName}_SecurityStamp", out string cachedSecurityStamp))
-                    {
-                        // Если значение отсутствует в кэше, получение его из базы данных                    
-                        cachedSecurityStamp = user?.SecurityStamp ?? string.Empty;
+                    // Устанавливаем флаг в MemoryCache, чтобы пометить, что уже выполнено перенаправление или выход из аккаунта
+                    _cache.Set($"{userName}_AlreadyRedirected", true);
 
-                        // Сохранение значения SecurityStamp в кэше
-                        _cache.Set($"{userName}_SecurityStamp", cachedSecurityStamp);
-                    }
-
-                    // Проверка значения SecurityStamp
-                    var userSecurityStamp = user != null ? await _userManager.GetSecurityStampAsync(user) : null;
-
-                    if (cachedSecurityStamp != userSecurityStamp)
-                    {
-                        // Устанавливаем флаг в MemoryCache, чтобы пометить, что уже выполнено перенаправление или выход из аккаунта
-                        _cache.Set($"{userName}_AlreadyRedirected", true);
-
-                        await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                        context.Result = new RedirectToActionResult("Logout", "Account", null);
-                    }
+                    await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    context.Result = new RedirectToActionResult("Logout", "Account", null);
                 }
             }
         }

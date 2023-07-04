@@ -34,7 +34,6 @@ namespace Company.Controllers
             _emailSender = emailSender;
         }
 
-
         [HttpGet]
         public IActionResult Register()
         {
@@ -147,7 +146,7 @@ namespace Company.Controllers
                     return View();
                 }
             }
-           
+
             return View();
         }
 
@@ -187,7 +186,7 @@ namespace Company.Controllers
                     $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a >.");
 
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
-            }           
+            }
 
             return View();
         }

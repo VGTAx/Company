@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Company.Migrations
 {
     [DbContext(typeof(CompanyContext))]
-    [Migration("20230620174639_create_db")]
-    partial class create_db
+    [Migration("20230703173440_create_db_1")]
+    partial class create_db_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +23,7 @@ namespace Company.Migrations
                 .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Company.Models.Department", b =>
+            modelBuilder.Entity("Company.Models.Department.DepartmentModel", b =>
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
@@ -126,7 +126,21 @@ namespace Company.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Company.Models.Employee", b =>
+            modelBuilder.Entity("Company.Models.Department.NumberOfEmployee", b =>
+                {
+                    b.Property<int?>("DepartmentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("DepartmentID");
+
+                    b.ToTable("NumberOfEmployees");
+                });
+
+            modelBuilder.Entity("Company.Models.Employee.EmployeeModel", b =>
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
@@ -340,20 +354,6 @@ namespace Company.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Company.Models.NumberOfEmployee", b =>
-                {
-                    b.Property<int?>("DepartmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("DepartmentID");
-
-                    b.ToTable("NumberOfEmployees");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<string>", b =>
                 {
                     b.Property<string>("Id")
@@ -542,17 +542,34 @@ namespace Company.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "6f20ab57-0a73-40f5-957e-7755ce4273c3",
+                            ConcurrencyStamp = "39004f6a-07db-4125-a41a-c0b255bc19af",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            ConcurrencyStamp = "ae254dfe-d00c-4bbb-aeb7-3d8745953bc4",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "3",
+                            ConcurrencyStamp = "b8eeceb9-e2da-4aae-ae75-efaec7986796",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
                         });
                 });
 
-            modelBuilder.Entity("Company.Data.ApplicationUser", b =>
+            modelBuilder.Entity("Company.Models.ApplicationUserModel", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser<string>");
 
-                    b.HasDiscriminator().HasValue("ApplicationUser");
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.HasDiscriminator().HasValue("ApplicationUserModel");
                 });
 #pragma warning restore 612, 618
         }

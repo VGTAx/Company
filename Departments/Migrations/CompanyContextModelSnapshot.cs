@@ -539,34 +539,34 @@ namespace Company.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "eb16bba3-22c8-48fe-861f-ed2760527bf3",
+                            ConcurrencyStamp = "39004f6a-07db-4125-a41a-c0b255bc19af",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "407182e0-da63-440e-b3e5-cac6219e3d0f",
+                            ConcurrencyStamp = "ae254dfe-d00c-4bbb-aeb7-3d8745953bc4",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "a4b652e0-e22a-46cc-bf19-7441b3e57808",
+                            ConcurrencyStamp = "b8eeceb9-e2da-4aae-ae75-efaec7986796",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });
                 });
 
-            modelBuilder.Entity("Company.Data.ApplicationUser", b =>
+            modelBuilder.Entity("Company.Models.ApplicationUserModel", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser<string>");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
-                    b.HasDiscriminator().HasValue("ApplicationUser");
+                    b.HasDiscriminator().HasValue("ApplicationUserModel");
                 });
 #pragma warning restore 612, 618
         }

@@ -23,7 +23,7 @@ namespace Company.Migrations
                {
                    ID = table.Column<int>(type: "int", nullable: false)
                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                   Name = table.Column<string>(type: "longtext", nullable: false)
+                   FullName = table.Column<string>(type: "longtext", nullable: false)
                        .Annotation("MySql:CharSet", "utf8mb4"),
                    Surname = table.Column<string>(type: "longtext", nullable: false)
                        .Annotation("MySql:CharSet", "utf8mb4"),
@@ -55,7 +55,9 @@ namespace Company.Migrations
                 {
                     table.PrimaryKey("PK_Departments", x => x.ID);
                 })
-                .Annotation("MySql:CharSet", "utf8mb4");            
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+           
 
             migrationBuilder.CreateTable(
                 name: "IdentityRole<string>",
@@ -107,6 +109,8 @@ namespace Company.Migrations
                     LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     AccessFailedCount = table.Column<int>(type: "int", nullable: false),
                     Discriminator = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -241,7 +245,7 @@ namespace Company.Migrations
 
             migrationBuilder.InsertData(
                 table: "Employees",
-                columns: new[] { "ID", "Age", "DepartmentID", "Name", "Number", "Surname" },
+                columns: new[] { "ID", "Age", "DepartmentID", "FullName", "Number", "Surname" },
                 values: new object[,]
                 {
                     { 1, "28", 3, "Алексей", "+79123456789", "Иванов" },
@@ -269,7 +273,12 @@ namespace Company.Migrations
             migrationBuilder.InsertData(
                 table: "IdentityRole<string>",
                 columns: new[] { "Id", "ConcurrencyStamp", "Discriminator", "Name", "NormalizedName" },
-                values: new object[] { "1", "6f20ab57-0a73-40f5-957e-7755ce4273c3", "IdentityRole", "Admin", "ADMIN" });
+                values: new object[,]
+                {
+                    { "1", "ce97d922-c244-4fe4-a235-935a9f5b552a", "IdentityRole", "Admin", "ADMIN" },
+                    { "2", "65dd32a3-73db-4315-a7ed-734a8507e406", "IdentityRole", "User", "USER" },
+                    { "3", "92d4474a-4382-4bfc-95e1-070c242a4844", "IdentityRole", "Manager", "MANAGER" }
+                });
 
             migrationBuilder.Sql(@"INSERT IGNORE INTO numberofemployees(DepartmentID, EmployeeCount)
                    WITH table_1 
@@ -340,7 +349,6 @@ namespace Company.Migrations
                           CALL UpdNumberOfEmployee();
                          END"
                );
-
         }
 
         /// <inheritdoc />

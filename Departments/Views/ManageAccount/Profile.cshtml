@@ -1,14 +1,12 @@
-﻿
-@model ProfileModel;
+﻿@model ProfileModel;
 @{
     ViewData["Title"] = "Профиль";   
 }
 
 <h3>@ViewData["Title"]</h3>
-<partial name="_StatusMessage" for="StatusMessage" />
 <div class="row partial">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
+        <form id="profile-form" data-form="Profile" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
                 <input asp-for="Email" class="form-control" id="Email" placeholder="Please choose your username." disabled />
@@ -24,8 +22,7 @@
                 <label asp-for="Phone" class="form-label"></label>
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
-
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary btnSend" data-btn="Profile">Save</button>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary btnSend" data-btn="Profile">Сохранить</button>
         </form>
     </div>
 </div>

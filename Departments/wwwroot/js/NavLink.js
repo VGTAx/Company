@@ -1,11 +1,11 @@
 ﻿document.addEventListener("DOMContentLoaded", (event) => {    
 
     let navLink = document.querySelector(".navContainerLink");    
-
-    function attachButtonHandler() {
+      
+    function attachButtonFormHandler() {
         let form = document.querySelector('[data-form]');
-        if (form) {
-            
+        attachButtonDeleteDataFormHandler();
+        if (form) {            
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
                 let target = form.dataset.form;
@@ -17,31 +17,69 @@
                     const email = document.querySelector("#Email").value;
                     formData.append("Email", email);
                 }               
-
+                
                 fetch(url, {
                     method: "POST",
                     body: formData
-                }).then(response => response.text())
+                }).then(response => {
+                    if (response.ok) {
+                        return response.text()
+                    }
+                    if (response.status == 400) {
+                        
+                    }
+                   
+                })
                     .then(html => {
                         const tempDiv = document.getElementById('partialContainer');
-                        tempDiv.innerHTML = html;
-                        attachButtonHandler();
-                    }).catch(error => {
-                        attachButtonHandler();
+                        if (form != "DeletePersonalData") {
+                            tempDiv.innerHTML = html;
+                            attachButtonDeleteDataFormHandler();
+                            attachButtonFormHandler();
+                        }                        
+                        window.location.href = "/Department/Index";
+                    }).catch(error => { 
                         console.error(error);
-                        window.location.href = "/Account/Login";
+                        /*window.location.href = "/Account/Login";*/
                     });
                 if (form.dataset.form == "Profile") {
                     let updatedData = document.querySelector("#Name").value;
 
                     let dataUpdatedEvent = new CustomEvent('dataUpdated', { detail: { data: updatedData } });
                     // Отправка события
-                    document.dispatchEvent(dataUpdatedEvent);    
-                }
-                            
+                    document.dispatchEvent(dataUpdatedEvent);
+                }           
             });            
         }
     }    
+    //обработчик для формы, которая 
+    function attachButtonDeleteDataFormHandler() {
+        let deletePersonalDataForm = document.querySelector("#delete-personal-data"); 
+        if (deletePersonalDataForm) {
+            deletePersonalDataForm.addEventListener('click', function (event) {
+                event.preventDefault();
+                let target = deletePersonalDataForm.dataset.form;
+                let url = "/ManageAccount/" + target;   
+                fetch(url, {
+                    method: "GET"
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error("Ошибка при попытке удалить учетную запись");
+                    }
+                    return response.text()
+                }).then(html => {
+                    const tempDiv = document.getElementById('partialContainer');
+                    tempDiv.innerHTML = html;
+                    // При обновлении partialView вешаем обработчик на отправку формы
+                    attachButtonFormHandler();
+                }).catch(error => {                    
+                    console.error(error);
+                    window.location.href = "/Account/Login";
+                })    
+            });
+        }
+        
+    }
 
     navLink.addEventListener("click", (event) => {
         event.preventDefault();
@@ -61,9 +99,9 @@
                 const tempDiv = document.getElementById('partialContainer');
                 tempDiv.innerHTML = html;       
                 // При обновлении partialView вешаем обработчик на отправку формы
-                attachButtonHandler();
+                attachButtonFormHandler();
         }).catch(error => {
-            attachButtonHandler();
+            attachButtonFormHandler();
             console.error(error);
             window.location.href = "/Account/Login";
         })    

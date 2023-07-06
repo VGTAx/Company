@@ -230,5 +230,52 @@ namespace Company.Controllers
             return PartialView("_StatusMessage");
         }
 
+        [HttpGet]
+        public IActionResult PersonalData()
+        {            
+            return PartialView();
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeletePersonalData()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var model = new DeletePersonalDataModel
+            {
+                RequirePassword = await _userManager.HasPasswordAsync(user),
+                Password = "",
+            };
+            
+            return PartialView(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeletePersonalData([Bind("RequirePassword, Password")] DeletePersonalDataModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            
+            model.RequirePassword = await _userManager.HasPasswordAsync(user!);
+            if (String.IsNullOrEmpty(model.Password))
+            {
+                ModelState.AddModelError(string.Empty, "Введите пароль!");
+                return PartialView(model);
+            }
+            if (model.RequirePassword)
+            {
+                if (!await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    ModelState.AddModelError(string.Empty, "Неверный пароль");
+                    return BadRequest(ModelState);                    
+                }
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("Неизвестная ошибка при удалении пользователя");
+            }
+
+            await _signInManager.SignOutAsync();
+
+            return Redirect("~/");
+        }
     }
 }

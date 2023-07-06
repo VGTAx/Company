@@ -366,3 +366,5 @@ FodyWeavers.xsd
 /Departments/appsettings.json
 /SqlScript.sql
 /Departments/Areas/Identity/Pages
+/Departments/appsettings.json
+/Departments/appsettings.Development.json

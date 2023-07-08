@@ -1,23 +1,23 @@
 ﻿@using Company.Models.ManageAccount;
 @inject SignInManager<ApplicationUserModel> SignInManager
 @{
-    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+   var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
 <div class="navContainer">
-    <div class="navContainerLink">
-        <ul class="nav nav-pills flex-column">
-            <li class="nav-item"><a class="nav-link @ManageNavModel.IndexNavClass(ViewContext)" id="profile" href="" data-target="Profile">Профиль</a></li>
-            <li class="nav-item"><a class="nav-link @ManageNavModel.EmailNavClass(ViewContext)" id="email" href="" data-target="ChangeEmail">Эл.почта</a></li>
-            <li class="nav-item"><a class="nav-link @ManageNavModel.ChangePasswordNavClass(ViewContext)" href="" data-target="ChangePassword">Пароль</a></li>
-            @if (hasExternalLogins)
-            {
-                @*<li id="external-logins" class="nav-item"><a id="external-login" class="nav-link@ManageNavModel.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>*@
-            }
-            @*<li class="nav-item"><a class="nav-link @ManageNavModel.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" href="" data-target="2FA">Двухфакторная аутентификация</a></li>*@
-            <li class="nav-item"><a class="nav-link @ManageNavModel.PersonalDataNavClass(ViewContext)" id="personal-data" href="" data-target="PersonalData">Персональные данные</a></li>
-        </ul>
-    </div>
-    <div class="container" id="partialContainer"></div>    
+  <div class="navContainerLink">
+    <ul class="nav nav-pills flex-column">
+      <li class="nav-item"><a class="nav-link @ManageNavModel.IndexNavClass(ViewContext)" id="profile" href="" data-target="Profile">Профиль</a></li>
+      <li class="nav-item"><a class="nav-link @ManageNavModel.EmailNavClass(ViewContext)" id="email" href="" data-target="ChangeEmail">Эл.почта</a></li>
+      <li class="nav-item"><a class="nav-link @ManageNavModel.ChangePasswordNavClass(ViewContext)" href="" data-target="ChangePassword">Пароль</a></li>
+      @if (hasExternalLogins)
+      {
+            @*<li id="external-logins" class="nav-item"><a id="external-login" class="nav-link@ManageNavModel.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>*@
+      }
+      @*<li class="nav-item"><a class="nav-link @ManageNavModel.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" href="" data-target="2FA">Двухфакторная аутентификация</a></li>*@
+      <li class="nav-item"><a class="nav-link @ManageNavModel.PersonalDataNavClass(ViewContext)" id="personal-data" href="" data-target="PersonalData">Персональные данные</a></li>
+    </ul>
+  </div>
+  <div class="container" id="partialContainer"></div>    
 </div>
 
 <script src="~/js/NavLink.js"></script>

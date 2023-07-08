@@ -1,31 +1,30 @@
 ﻿@model DeletePersonalDataModel
 @{
-    ViewData["Title"] = "Удаление учетной записи";    
+   ViewData["Title"] = "Удаление учетной записи";    
 }
 
 <h3>@ViewData["Title"]</h3>
 
 <div class="alert alert-warning" role="alert">
-    <p>
-        <strong>Удаление этих данных навсегда удалит вашу учетную запись, без возможности восстановления.</strong>
-    </p>
+  <p>
+    <strong>Удаление этих данных навсегда удалит вашу учетную запись, без возможности восстановления.</strong>
+  </p>
 </div>
 
 <div>
-    <form id="delete-user" data-form="DeletePersonalData" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>        
-        @if (Model.RequirePassword)
-        {
-            <div class="form-floating mb-3">
-                <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
-                <label asp-for="Password" class="form-label"></label>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-        }
-        <button class="w-100 btn btn-lg btn-danger" type="submit">Удалить данные и закрыть учетную запись</button>
-    </form>
+  <form id="DeletePersonalData" data-form="DeletePersonalData" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>        
+    @if (Model.RequirePassword)
+    {
+      <div class="form-floating mb-3">
+        <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
+        <label asp-for="Password" class="form-label"></label>
+        <span asp-validation-for="Password" id="SpanPassword" class="text-danger"></span>
+      </div>
+    }
+    <button class="w-100 btn btn-lg btn-danger" type="submit">Удалить данные и закрыть учетную запись</button>
+  </form>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+
+

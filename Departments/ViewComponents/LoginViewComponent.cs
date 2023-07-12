@@ -4,22 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Company.ViewComponents
 {
-    [ViewComponent]
-    public class LoginViewComponent : ViewComponent
+  [ViewComponent]
+  public class LoginViewComponent : ViewComponent
+  {
+    private readonly UserManager<ApplicationUserModel>? _userManger;
+    public LoginViewComponent(UserManager<ApplicationUserModel> userManager)
     {
-        private readonly UserManager<ApplicationUserModel>? _userManger;
-
-        public LoginViewComponent(UserManager<ApplicationUserModel> signInManager)
-        {
-            _userManger = signInManager;
-        }
-
-        public IViewComponentResult  Invoke()
-        {
-            var user = _userManger.GetUserAsync((System.Security.Claims.ClaimsPrincipal)User).GetAwaiter().GetResult();
-
-            return View(user);
-        }
-
+      _userManger = userManager;
     }
+
+    public IViewComponentResult Invoke()
+    {
+      var user = _userManger.GetUserAsync((System.Security.Claims.ClaimsPrincipal)User).GetAwaiter().GetResult();
+
+      return View(user);
+    }
+
+
+  }
 }

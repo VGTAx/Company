@@ -5,11 +5,11 @@
 @inject UserManager<ApplicationUserModel> UserManager
 
 @{
-    var user = UserManager.GetUserAsync(User);
+  var user = UserManager.GetUserAsync(User);  
 }
 
 <ul class="navbar-nav">
-    @if (SignInManager.IsSignedIn(User) && user != null && Model != null)
+    @if (SignInManager.IsSignedIn(User))
     {        
         <li class="nav-item">         
             <a class="nav-link text-dark" id="NameAccount" asp-action="_ManageNav" asp-controller="ManageAccount" title="Manage">Привет, @Model.Name</a>

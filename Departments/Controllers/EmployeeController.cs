@@ -1,6 +1,7 @@
 ﻿using Company.Data;
 using Company.Models.Department;
 using Company.Models.Employee;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Company.Controllers
 {
-
-    public class EmployeeController : Controller
+  [Authorize(Policy = "MyPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+  public class EmployeeController : Controller
     {
         private readonly CompanyContext _context;
 

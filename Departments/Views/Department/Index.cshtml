@@ -1,14 +1,14 @@
-﻿@model List<DepartmentNumberPoco>
-@using Company.Helpers
+﻿@model List<DepartmentModel>
+
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Company";
 }
 ﻿
 <h1>Структура компании</h1>
 @{
-    async Task RenderSubDepartment(int? departmentID, List<DepartmentNumberPoco> departments)
+    async Task RenderSubDepartment(int? departmentID, List<DepartmentModel> departments)
     {
-        var subdepartments = departments.Where(d => d.ParentID == departmentID);
+        var subdepartments = departments.Where(d => d.ParentDepartmentID == departmentID);
 
         if (subdepartments.Any())
         {
@@ -24,7 +24,7 @@
 }
 
 <ul id="hierarchy" class="hierarchy"> 
-    @foreach (var department in Model.Where(d => d.ParentID == null))
+    @foreach (var department in Model.Where(d => d.ParentDepartmentID == null))
     {        
         <li class="hierarchy-item"><a class="nav-link" asp-route-departmentId="@department.ID" asp-action="Details"  asp-controller="Department">@department.DepartmentName</a></li>        
         await RenderSubDepartment(department.ID, Model); 

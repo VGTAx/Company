@@ -6,19 +6,19 @@
 <div class="navContainer">
   <div class="navContainerLink">
     <ul class="nav nav-pills flex-column">
-      <li class="nav-item"><a class="nav-link @ManageNavModel.IndexNavClass(ViewContext)" id="profile" href="" data-target="Profile">Профиль</a></li>
-      <li class="nav-item"><a class="nav-link @ManageNavModel.EmailNavClass(ViewContext)" id="email" href="" data-target="ChangeEmail">Эл.почта</a></li>
-      <li class="nav-item"><a class="nav-link @ManageNavModel.ChangePasswordNavClass(ViewContext)" href="" data-target="ChangePassword">Пароль</a></li>
+      <li class="nav-item"><a class="nav-link account" id="profile" href="" data-target="Profile">Профиль</a></li>
+      <li class="nav-item"><a class="nav-link account" id="email" href="" data-target="ChangeEmail">Эл.почта</a></li>
+      <li class="nav-item"><a class="nav-link account" href="" data-target="ChangePassword">Пароль</a></li>
       @if (hasExternalLogins)
       {
             @*<li id="external-logins" class="nav-item"><a id="external-login" class="nav-link@ManageNavModel.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>*@
       }
       @*<li class="nav-item"><a class="nav-link @ManageNavModel.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" href="" data-target="2FA">Двухфакторная аутентификация</a></li>*@
-      <li class="nav-item"><a class="nav-link @ManageNavModel.PersonalDataNavClass(ViewContext)" id="personal-data" href="" data-target="PersonalData">Персональные данные</a></li>
+      <li class="nav-item"><a class="nav-link account" id="personal-data" href="" data-target="PersonalData">Персональные данные</a></li>
     </ul>
   </div>
   <div class="container" id="partialContainer"></div>    
 </div>
 
-<script src="~/js/NavLink.js"></script>
-@*<script src="~/js/btnSendForm.js"></script>*@
+<script src="~/js/NavLinkAccount.js"></script>
+<script src="~/js/HighligthLink.js"></script>

@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Company.ViewComponents
 {
   [ViewComponent]
-  public class LoginViewComponent : ViewComponent
+  public class AdminViewComponent : ViewComponent
   {
     private readonly UserManager<ApplicationUserModel>? _userManger;
 
-    public LoginViewComponent(UserManager<ApplicationUserModel> userManager)
+    public AdminViewComponent(UserManager<ApplicationUserModel>? userManger)
     {
-      _userManger = userManager;
+      _userManger = userManger;
     }
 
     public IViewComponentResult Invoke()

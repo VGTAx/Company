@@ -1,4 +1,4 @@
-﻿
+﻿@inject SignInManager<ApplicationUserModel> SignInManager
 @model IEnumerable<EmployeeModel>
 @{
     ViewData["Title"] = "View";
@@ -18,6 +18,12 @@
 
 <h4>Список сотрудников:</h4>
 
+<p>
+   @if(SignInManager.IsSignedIn(User) && !User.IsInRole("User"))
+   {
+      <a class="btn btn-primary" asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
+   }         
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -65,13 +71,15 @@
                 }
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Изменить</a> |          
-                <a asp-action="Delete" asp-route-id="@item.ID">Удалить</a>
+               @if(SignInManager.IsSignedIn(User) && !User.IsInRole("User"))
+               {
+                  <a asp-action="Edit" asp-route-id="@item.ID">Изменить</a><span> | </span>
+                  <a asp-action="Delete" asp-route-id="@item.ID">Удалить</a>
+               }
+          
             </td>
         </tr>
 }
     </tbody>
 </table>
-<p>
-    <a class="btn btn-primary" asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
-</p>
+

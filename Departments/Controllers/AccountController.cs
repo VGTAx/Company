@@ -13,7 +13,7 @@ using System.Text.Encodings.Web;
 
 namespace Company.Controllers
 {
-
+  
   public class AccountController : Controller
   {
     private readonly SignInManager<ApplicationUserModel> _signInManager;
@@ -44,11 +44,6 @@ namespace Company.Controllers
     [HttpGet]
     public IActionResult Register()
     {
-      //var role = _roleManager.FindByNameAsync("User").GetAwaiter().GetResult();
-      //var claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "manager");
-      //_roleManager.AddClaimAsync(role, claim).GetAwaiter().GetResult();
-      //var claims = _roleManager.GetClaimsAsync(role).GetAwaiter().GetResult();
-
       return View();
     }
 
@@ -67,7 +62,6 @@ namespace Company.Controllers
 
         await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
         await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
-
 
         var result = await _userManager.CreateAsync(user, model.Password!);
 

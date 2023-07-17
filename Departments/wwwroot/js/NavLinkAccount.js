@@ -1,6 +1,14 @@
 ﻿document.addEventListener("DOMContentLoaded", (event) => {
 
-   let navLink = document.querySelector(".navContainerLink");
+   let navLink = document.querySelectorAll(".nav-link.account");
+
+   navLink.forEach(function (link) {
+      link.addEventListener("click", (event) => {
+         let link = event.target;
+         let partialView = link.dataset.target;
+         getManageAccountPartialView(event, partialView);
+      });
+   });
 
    function attachButtonFormHandler() {
       let form = document.querySelector('[data-form]');
@@ -28,12 +36,10 @@
                         const tempDiv = document.querySelector('#partialContainer');
                         if (form.id == "DeletePersonalData") {
                            location = "/";
-                        }
-                        else {
-                           tempDiv.innerHTML = html;
-                           attachButtonDeleteDataFormHandler();
-                           attachButtonFormHandler();
-                        }
+                        }                        
+                        tempDiv.innerHTML = html;
+                        attachButtonDeleteDataFormHandler();
+                        attachButtonFormHandler();                        
                      })
                }
                if (response.status == 400) {
@@ -44,7 +50,7 @@
                }
             }).catch(error => {
                console.error(error);
-               /*window.location.href = "/Account/Login";*/
+               window.location.href = "/Account/Login";
             });
             if (form.dataset.form == "Profile") {
                let updatedData = document.querySelector("#Name").value;
@@ -66,14 +72,8 @@
             getManageAccountPartialView(event, partialView);
          });
       }
-
    }
-
-   navLink.addEventListener("click", (event) => {
-      let link = event.target;
-      let partialView = link.dataset.target;
-      getManageAccountPartialView(event, partialView);
-   });
+   
    //возвращает PartialView на страницу в профиле
    function getManageAccountPartialView(event, partialView) {
       event.preventDefault();
@@ -125,6 +125,9 @@
          }
       }
    }
+
+   
+  
 })
 
 

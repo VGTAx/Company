@@ -11,7 +11,7 @@ using System.Text.Encodings.Web;
 
 namespace Company.Controllers
 {
-  [Authorize(Policy = "MyPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+  [Authorize(Policy = "AdminOnlyPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]  
   public class ManageAccountController : Controller
   {
     private readonly UserManager<ApplicationUserModel> _userManager;
@@ -26,12 +26,7 @@ namespace Company.Controllers
       _userManager = userManager;
       _signInManager = signInManager;
       _emailSender = emailSender;
-    }
-
-    //public IActionResult InvokeComponent(string componentName)
-    //{
-    //    return ViewComponent(componentName);
-    //}
+    }  
 
     public IActionResult _ManageNav()
     {
@@ -53,7 +48,7 @@ namespace Company.Controllers
         Name = user.Name,
         Phone = user.PhoneNumber,
       };
-
+      ViewData["ActiveLink"] = "profile";
       return PartialView(model);
     }
 
@@ -67,7 +62,7 @@ namespace Company.Controllers
       }
       if (!ModelState.IsValid)
       {
-        model.StatusMessage = "Ошибка при обновлении профиля";
+        ViewData["StatusMessage"] = "Ошибка при обновлении профиля";
         return PartialView(model);
       }
 
@@ -78,10 +73,10 @@ namespace Company.Controllers
         var setPhoneNumberResult = await _userManager.SetPhoneNumberAsync(user, model.Phone);
         if (!setPhoneNumberResult.Succeeded)
         {
-          model.StatusMessage = "Ошибка при обновлении профиля";
+          ViewData["StatusMessage"] = "Ошибка при обновлении профиля";
           return PartialView(model);
         }
-        model.StatusMessage = "Профиль изменен"!;
+        ViewData["StatusMessage"] = "Профиль изменен"!;
       }
       if (user.Name != model.Name)
       {
@@ -89,15 +84,15 @@ namespace Company.Controllers
         var upadateNameResult = await _userManager.UpdateAsync(user);
         if (!upadateNameResult.Succeeded)
         {
-          model.StatusMessage = "Ошибка при обновлении профиля";
+          ViewData["StatusMessage"] = "Ошибка при обновлении профиля";
           return PartialView(model);
         }
-        model.StatusMessage = "Профиль изменен"!;
+        ViewData["StatusMessage"] = "Профиль изменен"!;
       }
-      if (model.StatusMessage == "Профиль изменен"!)
+      if (ViewData["StatusMessage"]!.ToString() == "Профиль изменен"!)
       {
         await _signInManager.RefreshSignInAsync(user);
-        return PartialView("_StatusMessage", model.StatusMessage);
+        return PartialView("_StatusMessage", ViewData["StatusMessage"]);
       }
       else
       {
@@ -173,14 +168,14 @@ namespace Company.Controllers
     {
       if (userId == null || code == null || email == null)
       {
-        ViewBag.StatusMessage = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
+        ViewData["StatusMessage"] = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
         return PartialView("_StatusMessage");
       }
 
       var user = await _userManager.FindByIdAsync(userId);
       if (user == null)
       {
-        return PartialView("_StatusMessage", "Ошибка");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
       }
 
       code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
@@ -189,7 +184,6 @@ namespace Company.Controllers
       {
         ViewData["StatusMessage"] = "Ошибка при подтверждении электронной почты";
         return PartialView("_StatusMessage");
-
       }
       await _userManager.SetUserNameAsync(user, email);
 
@@ -215,14 +209,13 @@ namespace Company.Controllers
     {
       if (!ModelState.IsValid)
       {
-
         return PartialView();
       }
 
       var user = await _userManager.GetUserAsync(User);
       if (user == null)
       {
-        ViewData["StatusMessage"] = $"Unable to load user with ID '{_userManager.GetUserId(User)}'.";
+        ViewData["StatusMessage"] = $"Ошибка! Пользователь не найден.";
         return PartialView("_StatusMessage");
       }
 
@@ -269,13 +262,10 @@ namespace Company.Controllers
         ModelState.AddModelError("Password", "Введите пароль");
         return BadRequest(ModelState);
       }
-      if (model.RequirePassword)
+      if (model.RequirePassword && !await _userManager.CheckPasswordAsync(user!, model.Password))
       {
-        if (!await _userManager.CheckPasswordAsync(user!, model.Password))
-        {
-          ModelState.AddModelError("Password", "Неверный пароль");
-          return BadRequest(ModelState);
-        }
+        ModelState.AddModelError("Password", "Неверный пароль");
+        return BadRequest(ModelState);
       }
 
       var result = await _userManager.DeleteAsync(user!);

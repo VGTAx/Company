@@ -1,24 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Company.Models.Department
+﻿namespace Company.Models.Department
 {
-    public class DepartmentModel
+  public class DepartmentModel
+  {
+    public int? ID { get; set; }
+    public string? DepartmentName { get; set; }
+    public int? ParentDepartmentID { get; set; }
+
+    public DepartmentModel(int? id, string? departmentName, int? parentDepartmentID)
     {
-        public int? ID { get; set; }
-        public string? DepartmentName { get; set; }
-        public int? ParentDepartmentID { get; set; }
-
-
-        public string? DepartmentImageLink { get; set; }
-
-        public DepartmentModel(int ID, string? DepartmentName, int? ParentDepartmentID,
-            string? DepartmentImageLink)
-        {
-            this.ID = ID;
-            this.DepartmentName = DepartmentName;
-            this.ParentDepartmentID = ParentDepartmentID;
-            this.DepartmentImageLink = DepartmentImageLink;
-        }
-        public DepartmentModel() { }
+      ID = id;
+      DepartmentName = departmentName;
+      ParentDepartmentID = parentDepartmentID;
     }
+    public DepartmentModel() { }
+  }
 }

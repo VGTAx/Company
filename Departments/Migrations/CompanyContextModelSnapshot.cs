@@ -26,9 +26,6 @@ namespace Company.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("DepartmentImageLink")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("DepartmentName")
                         .HasColumnType("longtext");
 
@@ -43,98 +40,72 @@ namespace Company.Migrations
                         new
                         {
                             ID = 1,
-                            DepartmentImageLink = "/images/DepartmentImg/customer service department.jpg",
                             DepartmentName = "Отдел по обслуживанию клиентов"
                         },
                         new
                         {
                             ID = 2,
-                            DepartmentImageLink = "/images/DepartmentImg/production department.jpg",
                             DepartmentName = "Производственный отдел"
                         },
                         new
                         {
                             ID = 3,
-                            DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Бухгалтерия"
                         },
                         new
                         {
                             ID = 4,
-                            DepartmentImageLink = "/images/DepartmentImg/sales department.jpg",
                             DepartmentName = "Отдел продаж",
                             ParentDepartmentID = 1
                         },
                         new
                         {
                             ID = 5,
-                            DepartmentImageLink = "/images/DepartmentImg/wholesale department.jpg",
                             DepartmentName = "Отдел оптовых продаж",
                             ParentDepartmentID = 4
                         },
                         new
                         {
                             ID = 6,
-                            DepartmentImageLink = "/images/DepartmentImg/retail sales department.jpg",
                             DepartmentName = "Отдел розничных продаж",
                             ParentDepartmentID = 4
                         },
                         new
                         {
                             ID = 7,
-                            DepartmentImageLink = "/images/DepartmentImg/logistics department.jpg",
                             DepartmentName = "Отдел логистики",
                             ParentDepartmentID = 1
                         },
                         new
                         {
                             ID = 8,
-                            DepartmentImageLink = "/images/DepartmentImg/stock.jpg",
                             DepartmentName = "Склад",
                             ParentDepartmentID = 7
                         },
                         new
                         {
                             ID = 9,
-                            DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Отдел доставки",
                             ParentDepartmentID = 7
                         },
                         new
                         {
                             ID = 10,
-                            DepartmentImageLink = "/images/DepartmentImg/engineering department.jpg",
                             DepartmentName = "Инженерный отдел",
                             ParentDepartmentID = 2
                         },
                         new
                         {
                             ID = 11,
-                            DepartmentImageLink = "/images/DepartmentImg/quality control department.jpg",
                             DepartmentName = "Отдел контроля качества",
                             ParentDepartmentID = 2
                         },
                         new
                         {
                             ID = 12,
-                            DepartmentImageLink = "/images/DepartmentImg/purchasing department.jpg",
                             DepartmentName = "Отдел закупок",
                             ParentDepartmentID = 2
                         });
-                });
-
-            modelBuilder.Entity("Company.Models.Department.NumberOfEmployee", b =>
-                {
-                    b.Property<int?>("DepartmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("DepartmentID");
-
-                    b.ToTable("NumberOfEmployees");
                 });
 
             modelBuilder.Entity("Company.Models.Employee.EmployeeModel", b =>
@@ -476,6 +447,15 @@ namespace Company.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserClaims");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 11,
+                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                            ClaimValue = "Admin",
+                            UserId = "d2a2170f-1a1b-4341-81d3-af3088a22402"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -539,21 +519,21 @@ namespace Company.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "39004f6a-07db-4125-a41a-c0b255bc19af",
+                            ConcurrencyStamp = "ff409fbd-0aea-4c5d-acca-7c6e02f7445e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "ae254dfe-d00c-4bbb-aeb7-3d8745953bc4",
+                            ConcurrencyStamp = "f075da41-8929-4807-9dfa-b0b9a84de098",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "b8eeceb9-e2da-4aae-ae75-efaec7986796",
+                            ConcurrencyStamp = "d4f1bb5a-fafd-465f-a54f-2510bf379c58",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });
@@ -567,6 +547,24 @@ namespace Company.Migrations
                         .HasColumnType("longtext");
 
                     b.HasDiscriminator().HasValue("ApplicationUserModel");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "d2a2170f-1a1b-4341-81d3-af3088a22402",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "b5d448ea-0d80-44c3-95e5-5bdd0b9c05a2",
+                            Email = "putinvodkagta@yandex.by",
+                            EmailConfirmed = true,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "PUTINVODKAGTA@YANDEX.BY",
+                            NormalizedUserName = "PUTINVODKAGTA@YANDEX.BY",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDHhCwj3vdAZ+8HkJt6+R/FthrKsnDZ3QAuDM36ysFiVoqMy2LIEyFmbdnYiMRKjmg==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "ddb1a014-e91f-49f0-815d-ee9505a09eac",
+                            TwoFactorEnabled = false,
+                            UserName = "putinvodkagta@yandex.by"
+                        });
                 });
 #pragma warning restore 612, 618
         }

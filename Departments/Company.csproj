@@ -18,11 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\js\NavLink.js" />
+    <Content Remove="wwwroot\js\NavLinkAccount.js" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\js\NavLink.js" />
+    <None Include="wwwroot\js\NavLinkAccount.js" />
   </ItemGroup>
 
   <ItemGroup>

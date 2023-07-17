@@ -1,10 +1,11 @@
-﻿using MailKit.Net.Smtp;
+﻿using Company.Models;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System;
 
-namespace Company.Data
+namespace Company.Services
 {
     public class MailKitEmailSender : IEmailSender
     {
@@ -19,16 +20,16 @@ namespace Company.Data
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.Email));
-            emailMessage.To.Add(new MailboxAddress("",email));
+            emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
                 Text = htmlMessage
             };
-           
+
 
             using (var client = new SmtpClient())
-            {                
+            {
                 await client.ConnectAsync(_smtpSettings.Host, _smtpSettings.Port);
                 await client.AuthenticateAsync(_smtpSettings.Email, _smtpSettings.Password);
                 await client.SendAsync(emailMessage);

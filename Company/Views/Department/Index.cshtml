@@ -1,0 +1,32 @@
+﻿@model List<DepartmentModel>
+
+@{
+    ViewData["Title"] = "Company";
+}
+﻿
+<h1>Структура компании</h1>
+@{
+    async Task RenderSubDepartment(int? departmentID, List<DepartmentModel> departments)
+    {
+        var subdepartments = departments.Where(d => d.ParentDepartmentID == departmentID);
+
+        if (subdepartments.Any())
+        {
+            <ul class="nested-list">
+             @foreach(var department in subdepartments)
+                {
+                   <li class="hierarchy-item"><a class="nav-link" asp-route-departmentId="@department.ID" asp-action="Details"  asp-controller="Department">@department.DepartmentName</a></li>
+                   await RenderSubDepartment(department.ID, departments);
+                }
+            </ul>
+        }        
+    }
+}
+
+<ul id="hierarchy" class="hierarchy"> 
+    @foreach (var department in Model.Where(d => d.ParentDepartmentID == null))
+    {        
+        <li class="hierarchy-item"><a class="nav-link" asp-route-departmentId="@department.ID" asp-action="Details"  asp-controller="Department">@department.DepartmentName</a></li>        
+        await RenderSubDepartment(department.ID, Model); 
+    }
+</ul>

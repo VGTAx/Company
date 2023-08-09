@@ -1,0 +1,77 @@
+﻿@model IEnumerable<EmployeeModel>
+@{
+    ViewData["Title"] = "View";
+}
+@{
+    var srcImg = @ViewData["DepartmentImageLink"];
+}
+
+<div class="departmentContainer">
+    @if(srcImg != null)
+    {
+        <img class="departmentImg" src="@ViewData["DepartmentImageLink"]" width="540" height="320" alt="department img"/>
+    }    
+    <h4>@ViewData["DepartmentDescription"]</h4>
+</div>
+
+
+<h4>Список сотрудников:</h4>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>                
+                @Html.DisplayName("Имя")                
+            </th>
+            <th>
+                @Html.DisplayName("Фамилия")
+            </th>
+            <th>
+                @Html.DisplayName("Возраст")
+            </th>
+            <th>
+                @Html.DisplayName("Номер телефона")
+            </th>
+            <th>
+                @Html.DisplayName("Отдел")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)               
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Number)
+            </td>
+            <td>
+                @foreach(DepartmentModel dep in ViewBag.Departments)
+                {
+                    if(item.DepartmentID == dep.ID)
+                    {
+                        <p>@dep.DepartmentName</p>
+                        break;
+                    }
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Изменить</a> |          
+                <a asp-action="Delete" asp-route-id="@item.ID">Удалить</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<p>
+    <a class="btn btn-primary" asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
+</p>

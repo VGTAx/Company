@@ -1,0 +1,19 @@
+﻿@model DepartmentModel
+@{
+    ViewData["Title"] = Model.DepartmentName;    
+}
+
+<h1>@Model.DepartmentName</h1>
+
+<div class="departmentContainer">
+    <p>
+        Отдел обслуживания клиентов является ключевым элементом взаимодействия компании с ее клиентами. Он объединяет в себе два важных подотдела
+        - <a asp-action="Details" asp-route-departmentName="Отдел продаж">отдел продаж</a> и 
+        <a asp-action="Details" asp-route-departmentName="Отдел логистики">отдел логистики</a>, чтобы обеспечить полный цикл обслуживания клиентов.
+        
+    </p>
+    <img class="departmentImg" src="/images/DepartmentImg/customerService.jpg" alt="customer department"/>
+    <p>
+        Общая цель: Обеспечение высокого уровня обслуживания клиентов и удовлетворение их потребностей.
+    </p>
+</div>

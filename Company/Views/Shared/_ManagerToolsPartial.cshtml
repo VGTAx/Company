@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Company.Data
+@inject SignInManager<ApplicationUserModel> SignInManager
+
+
+ @if(SignInManager.IsSignedIn(User) && (User.IsInRole("User") || User.IsInRole("Admin")))    
+ {    
+    <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
+ } 
+
+ @if(SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))  
+ {    
+    <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Create">Добавить сотрудника</a>
+ }
+
+ 

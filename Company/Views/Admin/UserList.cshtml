@@ -1,0 +1,35 @@
+﻿@model List<ApplicationUserModel> 
+
+@{
+	ViewData["Title"] = "User List";
+}
+<h2>Список пользователей</h2>
+<table class="table">
+	<thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Id")
+            </th>
+            <th>
+                @Html.DisplayName("Email")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var user in Model)
+    {
+      <tr>
+         <td>
+               @Html.DisplayFor(modelItem => user.Id)
+         </td>
+         <td>
+               @Html.DisplayFor(modelItem => user.Email)
+         </td> 
+         <td>                
+               <button type="submit" id="@user.Id" class="btn btn-info user-info">Информация</button>
+         </td>
+      </tr>
+    }
+    
+</table>

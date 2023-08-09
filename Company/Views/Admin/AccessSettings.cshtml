@@ -1,0 +1,72 @@
+﻿@model ApplicationUserModel
+
+@{
+	List<string> roles = ViewData["roles"] as List<string>;
+	List<string> userRoles = ViewData["userRoles"] as List<string>;
+}
+
+<div class="userInfoContainer">
+	<h5>Информация о пользователе:</h5>
+	 <hr />
+	<div class="">
+		<dl class="row">
+			<dt class = "col-sm-2">
+				 @Html.DisplayName("ID")
+			</dt>
+			<dd class = "col-sm-10" id="userId" value="@Model.Id">
+				 @Html.DisplayFor(model => model.Id)
+			</dd>
+			<dt class = "col-sm-2">
+						@Html.DisplayName("Username")
+			</dt>
+			<dd class = "col-sm-10">
+				 @Html.DisplayFor(model => model.UserName)
+			</dd>
+			<dt class = "col-sm-2">
+				 @Html.DisplayName("Email")
+			</dt>
+			<dd class = "col-sm-10">
+				 @Html.DisplayFor(model => model.Email)
+			</dd>
+			<dt class = "col-sm-2">
+				 @Html.DisplayName("Name")
+			</dt>
+			<dd class = "col-sm-10">
+				 @Html.DisplayFor(model => model.Name)
+			</dd>
+			</dl>
+	</div>
+	
+	 <form id="roles-form" method="post" data-form="AccessSettings">
+	 <div class="dropdown">
+	 		<button id="dropdown-btn" class="btn btn-outline-secondary dropdown-toggle btn-sm fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">Выберите роли</button>
+			<ul class="dropdown-menu">
+				 @foreach(var role in roles)
+				 {
+					 <li class="dropdown-item">
+							<input type="checkbox" name="selectedRoles" value="@role" @(userRoles.Contains(role) ? "checked" : "") /> 
+							<label><b>@role</b></label>
+					 </li>												 
+				 }
+			</ul>	
+			<input type="hidden" id="selectedRolesInput" name="selectedRoles" value="" />
+					
+			<button class="btn btn-outline-primary btn-sm fw-bold" type="submit" >Сохранить</button>
+			
+	 </div>
+	 </form>
+</div>
+
+<div class="m-2">
+	 <h4>Описание ролей:</h4>
+	 <ul>
+		 <li>
+			 <p>Manager -  имеет доступ к списку сотрудников компании. Может добавлять, изменять и удалять сотрудника</p>
+		 </li>
+		 <li>
+			 <p>User - имеет доступ к списку сотрудников без возможности изменения данных</p>
+		 </li>
+	 </ul>
+</div>
+
+<script src="~/js/getRolesForm.js"> </script>

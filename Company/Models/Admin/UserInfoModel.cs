@@ -1,4 +1,4 @@
-﻿namespace Company.Models.Admin
+﻿namespace Company_.Models.Admin
 {
   public class UserInfoModel
   {

@@ -1,7 +1,9 @@
-using Company.Data;
-using Company.Filters;
-using Company.Models;
-using Company.Services;
+using Company_.Data;
+using Company_.Filters;
+using Company_.IServices;
+using Company_.Middlewares;
+using Company_.Models;
+using Company_.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -28,13 +30,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
    });
 builder.Services.AddAuthorization(options =>
 {
-  options.AddPolicy("AdminOnlyPolicy", policy =>
+  options.AddPolicy("AdminPolicy", policy =>
   {
-    policy.RequireRole("Admin", "Manager");    
+    policy.RequireRole("Admin");
   });
-  options.AddPolicy("MyPolicy", policy =>
+  options.AddPolicy("ManagePolicy", policy =>
   {
-    policy.RequireRole("User");
+    policy.RequireRole("Admin", "Manager");
+  });
+  options.AddPolicy("BasicPolicy", policy =>
+  {
+    policy.RequireRole("Admin", "Manager", "User");
   });
 
 });
@@ -49,6 +55,8 @@ builder.Services.AddMvc();
 var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
 builder.Services.AddSingleton(smtpSettings);
 builder.Services.AddTransient<IEmailSender, MailKitEmailSenderService>();
+
+builder.Services.AddSingleton<INotificationService, ChangeRoleNotificationService>();
 
 builder.Services.AddScoped<AdminAccountService>();
 
@@ -77,14 +85,16 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapRazorPages();
 
+
+app.UseChangeRoleMiddleware();
 app.MapControllerRoute(
   name: "confirmationRegister",
   pattern: "Account/RegisterConfirmation/{userId}/{code}");
 app.MapControllerRoute(
   name: "default",
   pattern: "{controller=Department}/{action=Index}/{id?}");
+
 
 app.Run();

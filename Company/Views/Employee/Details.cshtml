@@ -1,31 +1,34 @@
-﻿@inject SignInManager<ApplicationUserModel> SignInManager
+﻿@using System.Security.Claims;
+@inject SignInManager<ApplicationUserModel> SignInManager
 @model IEnumerable<EmployeeModel>
-@{
-    ViewData["Title"] = "View";
-}
+
 
 @{
-    var srcImg = @ViewData["DepartmentImageLink"];
+  ViewData["Title"] = "View";
+  var roles = User.Claims
+   .Where(c => c.Type == ClaimTypes.Role)
+   .Select(c => c.Value);
 }
-
-<div class="departmentContainer">
-    @if(srcImg != null)
-    {
-        <img class="departmentImg" src="@ViewData["DepartmentImageLink"]" width="540" height="320" alt="department img"/>
-    }    
-    <h4>@ViewData["DepartmentDescription"]</h4>
-</div>
 
 <h4>Список сотрудников:</h4>
 
 <p>
-   @if(SignInManager.IsSignedIn(User) && !User.IsInRole("User"))
-   {
-      <a class="btn btn-primary" asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
-   }         
+  @foreach (var role in roles)
+  {
+     @switch (role)
+     {
+        case "Admin":
+        case "Manager":
+           <a class="btn btn-outline-primary btn-sm fw-bold" asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
+           break;
+        default:
+           break;
+     }   
+  }    
 </p>
-<table class="table">
-    <thead>
+
+<table class="table table-sm w-75 table-hover align-middle">
+    <thead class="table-light">
         <tr>
             <th>                
                 @Html.DisplayName("Имя")                
@@ -39,7 +42,7 @@
             <th>
                 @Html.DisplayName("Номер телефона")
             </th>
-            <th>
+            <th class="align-middle">
                 @Html.DisplayName("Отдел")
             </th>
             <th></th>
@@ -65,21 +68,28 @@
                 {
                     if(item.DepartmentID == dep.ID)
                     {
-                        <p>@dep.DepartmentName</p>
+                        @dep.DepartmentName
                         break;
                     }
                 }
             </td>
             <td>
-               @if(SignInManager.IsSignedIn(User) && !User.IsInRole("User"))
+               @foreach (var role in roles)
                {
-                  <a asp-action="Edit" asp-route-id="@item.ID">Изменить</a><span> | </span>
-                  <a asp-action="Delete" asp-route-id="@item.ID">Удалить</a>
+                  @switch (role)
+                  {
+                     case "Admin":
+                     case "Manager":
+                        <a asp-action="Edit" class="btn btn-outline-secondary btn-sm fw-bold" asp-route-id="@item.ID">Изменить</a><span> | </span>
+                        <a asp-action="Delete" class="btn btn-outline-danger btn-sm fw-bold" asp-route-id="@item.ID">Удалить</a>
+                        break;
+                     default:
+                        break;
+                  }   
                }
-          
             </td>
-        </tr>
-}
+        </tr> 
+     }
     </tbody>
 </table>
 

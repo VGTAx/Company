@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Company.Migrations
+namespace Company_.Migrations
 {
     /// <inheritdoc />
     public partial class create_db_1 : Migration

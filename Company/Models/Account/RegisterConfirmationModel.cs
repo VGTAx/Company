@@ -1,4 +1,4 @@
-﻿namespace Company.Models.Account
+﻿namespace Company_.Models.Account
 {
   public class RegisterConfirmationModel
   {

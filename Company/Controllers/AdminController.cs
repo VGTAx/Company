@@ -1,7 +1,7 @@
-﻿using Company.Data;
-using Company.Models;
-using Company.Models.Admin;
-using Microsoft.AspNetCore.Authentication;
+﻿using Company_.Data;
+using Company_.IServices;
+using Company_.Models;
+using Company_.Models.Admin;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,26 +9,33 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Claims;
 
-namespace Company.Controllers
+namespace Company_.Controllers
 {
-  [Authorize(Policy = "AdminOnlyPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+  [Authorize(Policy = "AdminPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class AdminController : Controller
   {
     private readonly UserManager<ApplicationUserModel>? _userManager;
     private readonly RoleManager<IdentityRole>? _roleManager;
-    private readonly CompanyContext _context;
     private readonly SignInManager<ApplicationUserModel> _signInManager;
+    private readonly INotificationService _changeRole;
+    private readonly CompanyContext _context;
+    private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
 
-    public AdminController(UserManager<ApplicationUserModel> userManager, RoleManager<IdentityRole> roleManager, CompanyContext context, SignInManager<ApplicationUserModel> signInManager)
+    public AdminController(UserManager<ApplicationUserModel> userManager,
+      RoleManager<IdentityRole> roleManager,
+      SignInManager<ApplicationUserModel> signInManager,
+      INotificationService changeRole,
+      CompanyContext context)
     {
       _userManager = userManager;
       _roleManager = roleManager;
-      _context = context;
       _signInManager = signInManager;
+      _changeRole = changeRole;
+      _context = context;
     }
 
     public async Task<IActionResult> Index()
-    { 
+    {
       return View();
     }
     [HttpGet]
@@ -37,18 +44,19 @@ namespace Company.Controllers
       var user = await _userManager?.FindByIdAsync(id!)!;
       if (user == null)
       {
-        return BadRequest();
+        return BadRequest("User not found");
       }
       var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
-      var userRoles = userPrincipal.Claims
+
+      ViewData["userRoles"] = userPrincipal.Claims
         .Where(c => c.Type == ClaimTypes.Role)
         .Select(c => c.Value)
         .ToList();
 
-      var roles = _roleManager.Roles.Select(r => r.Name).ToList();
-
-      ViewData["userRoles"] = userRoles;
-      ViewData["roles"] = roles;
+      ViewData["roles"] = _roleManager.Roles
+        .Where(r => !exceptRoles.Contains(r.Name))
+        .Select(r => r.Name)
+        .ToList();
 
 
       return PartialView(user);
@@ -56,62 +64,54 @@ namespace Company.Controllers
 
     [HttpPost]
     public async Task<IActionResult> AccessSettings([FromBody] UserInfoModel model)
-    {			
+    {
       var user = await _userManager?.FindByIdAsync(model.Id);
 
       if (user == null)
       {
-        return BadRequest();
-      }
-      var _userPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
-
-
-      var currentUserRoles = _userPrincipal.Claims
-				.Where(c => c.Type == ClaimTypes.Role)
-				.Select(c => c.Value)
-				.ToList();
-
-      var rolesToAdd = model.SelectedRoles.Except(currentUserRoles);
-      var rolesToRemove = currentUserRoles.Except(model.SelectedRoles);
-
-      if(currentUserRoles.SequenceEqual(model.SelectedRoles))
-      {
-				return View();
-			}     
-
-			foreach (var role in rolesToAdd)
-			{        
-        var claimRole = new Claim(ClaimTypes.Role, role);
-        await _userManager.AddClaimAsync(user, claimRole);        
+        return BadRequest("User not found");
       }
 
-      foreach (var role in rolesToRemove)
-      {
-        if(role == "User")  { continue; }
-        var claimRole = new Claim(ClaimTypes.Role, role);
-        await _userManager.RemoveClaimAsync(user, claimRole);
-      }
-
-      user.SecurityStamp = Guid.NewGuid().ToString();      
-      await _userManager.UpdateAsync(user);
-      var new_user = await _userManager?.FindByIdAsync(user.Id);
-      await _signInManager.SignOutAsync();
-
-      var userPrincipal = await _signInManager.CreateUserPrincipalAsync(new_user);
-      //Установка аутентификационных куки
-      await _signInManager.SignInAsync(new_user, false);
-     
-     
-
-
-      ViewData["userRoles"] = userPrincipal.Claims
+      var userClaims = await _userManager.GetClaimsAsync(user);
+      var userRoles = userClaims
         .Where(c => c.Type == ClaimTypes.Role)
         .Select(c => c.Value)
         .ToList();
 
-      ViewData["roles"] = _roleManager.Roles.Select(r => r.Name).ToList();
+      var rolesToAdd = model.SelectedRoles.Except(userRoles);
+      var rolesToRemove = userRoles.Except(model.SelectedRoles);
 
-			return PartialView(new_user);
+      if (!model.SelectedRoles.Contains("User"))
+      {
+        ViewData["StatusMessage"] = "Ошибка! Роль User не может быть удалена!"!;
+        return PartialView("_StatusMessage", ViewData["StatusMessage"]);
+      }
+
+      foreach (var role in rolesToAdd)
+      {
+        var claimRole = new Claim(ClaimTypes.Role, role);
+        await _userManager.AddClaimAsync(user, claimRole);
+        ViewData["StatusMessage"] = "Данные изменены!"!;
+      }
+
+      foreach (var role in rolesToRemove)
+      {
+        var claimRole = new Claim(ClaimTypes.Role, role);
+        await _userManager.RemoveClaimAsync(user, claimRole);
+        ViewData["StatusMessage"] = "Данные изменены!"!;
+      }
+
+      if (ViewData["StatusMessage"]?.ToString() == "Данные изменены!"!)
+      {
+        user.SecurityStamp = Guid.NewGuid().ToString();
+        await _userManager.UpdateAsync(user);
+
+        _changeRole.SendNotification(user.Id);
+        return PartialView("_StatusMessage", ViewData["StatusMessage"]);
+      }
+      var userList = _context.Users.ToList();
+      return PartialView("UserList", userList);
+
     }
 
     [HttpGet]

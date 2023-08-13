@@ -1,5 +1,5 @@
-﻿using Company.Models;
-using Company.Models.ManageAccount;
+﻿using Company_.Models;
+using Company_.Models.ManageAccount;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace Company.Controllers
+namespace Company_.Controllers
 {
-  
-  [Authorize(Policy = "MyPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+
+  [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class ManageAccountController : Controller
   {
     private readonly UserManager<ApplicationUserModel> _userManager;
@@ -27,7 +27,7 @@ namespace Company.Controllers
       _userManager = userManager;
       _signInManager = signInManager;
       _emailSender = emailSender;
-    }  
+    }
 
     public IActionResult _ManageAccountNav()
     {
@@ -79,6 +79,7 @@ namespace Company.Controllers
         }
         ViewData["StatusMessage"] = "Профиль изменен"!;
       }
+
       if (user.Name != model.Name)
       {
         user.Name = model.Name;
@@ -90,6 +91,7 @@ namespace Company.Controllers
         }
         ViewData["StatusMessage"] = "Профиль изменен"!;
       }
+
       if (ViewData["StatusMessage"]!.ToString() == "Профиль изменен"!)
       {
         await _signInManager.RefreshSignInAsync(user);

@@ -1,5 +1,5 @@
-﻿using Company.Models;
-using Company.Models.Account;
+﻿using Company_.Models;
+using Company_.Models.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace Company.Controllers
+namespace Company_.Controllers
 {
   
   public class AccountController : Controller

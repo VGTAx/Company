@@ -1,5 +1,5 @@
 ﻿document.addEventListener("DOMContentLoaded", (event) => {
-   let links = document.querySelectorAll(".nav-link.account");
+   let links = document.querySelectorAll(".nav-link.highLightLink");
 
    function highlightLink(event) {
       // Удаляем класс "active" у всех ссылок
@@ -13,10 +13,7 @@
 
    links.forEach(function (link) {
       link.addEventListener('click', highlightLink);
-   });
-
-  
-
+   }); 
 })
 
 

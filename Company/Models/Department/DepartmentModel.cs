@@ -1,4 +1,4 @@
-﻿namespace Company.Models.Department
+﻿namespace Company_.Models.Department
 {
   public class DepartmentModel
   {

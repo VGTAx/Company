@@ -1,19 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Company.Models.Employee
+namespace Company_.Models.Employee
 {
   public class EmployeeModel
-  {
+  {    
     public int? ID { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Введите имя")]
     public string? Name { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Введите фамилию")]
     public string? Surname { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Введите возраст")]
     public string? Age { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Введите номер телефона")]
     public string? Number { get; set; }
-    [Required]
+    [Required(ErrorMessage = "Введите отдел")]
     public int? DepartmentID { get; set; }
 
     public EmployeeModel(int? ID, int? DepartmentID)

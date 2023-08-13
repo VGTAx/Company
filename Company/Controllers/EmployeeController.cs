@@ -1,15 +1,16 @@
-﻿using Company.Data;
-using Company.Models.Department;
-using Company.Models.Employee;
+﻿using Company_.Data;
+using Company_.Models.Department;
+using Company_.Models.Employee;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace Company.Controllers
+namespace Company_.Controllers
 {
-  [Authorize(Policy = "MyPolicy")]  
+  
+  [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class EmployeeController : Controller
   {
     private readonly CompanyContext _context;
@@ -18,7 +19,8 @@ namespace Company.Controllers
     {
       _context = context;
     }
-    [Authorize(Policy = "AdminOnlyPolicy")]
+
+    [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public IActionResult Create(int? departmentId)
     {
       var departments = _context.Departments
@@ -43,19 +45,31 @@ namespace Company.Controllers
       ViewData["Departments"] = departments;
       return View();
     }
-    [Authorize(Policy = "AdminOnlyPolicy")]
-    [HttpPost]
+		
+		[HttpPost]    
     public async Task<IActionResult> Create([Bind("ID, Name, Surname, Age, Number, DepartmentID")] EmployeeModel employee)
     {
       if (ModelState.IsValid)
       {
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Details");
       }
-      return View();
+
+      var departments = _context.Departments
+          .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
+          .Select(item => new SelectListItem
+          {
+            Value = item.ID.ToString(),
+            Text = item.DepartmentName
+          }).AsEnumerable();
+
+      ViewData["Departments"] = departments;
+
+      return View("Create");
     }
-    [Authorize(Policy = "AdminOnlyPolicy")]
+
+    [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Edit(int? id)
     {
       if (id == null || _context.Employees == null)
@@ -82,9 +96,10 @@ namespace Company.Controllers
 
       return View("Edit", employee);
     }
-    [Authorize(Policy = "AdminOnlyPolicy")]
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Edit(int? id, [Bind("ID, Name, Surname, Age, Number, DepartmentID")] EmployeeModel employee)
     {
       if (id != employee.ID)
@@ -112,9 +127,21 @@ namespace Company.Controllers
         }
         return RedirectToAction(nameof(Details));
       }
+
+      var departments = _context.Departments
+          .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
+          .Select(item => new SelectListItem
+          {
+            Value = item.ID.ToString(),
+            Text = item.DepartmentName
+          }).AsEnumerable();
+
+      ViewData["Departments"] = departments;
+
       return View();
     }
-    [Authorize(Policy = "AdminOnlyPolicy")]
+
+    [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Delete(int? id)
     {
       if (id == null || _context.Employees == null)
@@ -137,9 +164,9 @@ namespace Company.Controllers
       return View(employee);
     }
 
-
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
       if (_context.Employees == null)
@@ -155,10 +182,10 @@ namespace Company.Controllers
       }
 
       await _context.SaveChangesAsync();
-
-      return RedirectToAction(nameof(Index));
+      return RedirectToAction("Details");
     }
 
+    [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]   
     public IActionResult Details()
     {
       var departments = _context.Departments.ToList();
@@ -169,6 +196,7 @@ namespace Company.Controllers
       return View(employee);
     }
 
+    [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     private List<DepartmentModel> GetDepartments(int? id, List<DepartmentModel> departments)
     {
       var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();

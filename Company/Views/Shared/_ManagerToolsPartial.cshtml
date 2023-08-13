@@ -1,16 +1,28 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Company.Data
+@using Company_.Data
+@using System.Security.Claims;
 @inject SignInManager<ApplicationUserModel> SignInManager
 
-
- @if(SignInManager.IsSignedIn(User) && (User.IsInRole("User") || User.IsInRole("Admin")))    
- {    
-    <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
- } 
-
- @if(SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))  
- {    
-    <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Create">Добавить сотрудника</a>
- }
-
  
+@{
+  var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+  var displayed = false;
+}
+
+@foreach (var role in roles)
+{
+  @switch (role)
+  {
+     case "Admin":
+     case "Manager":
+     case "User":
+        <a class="nav-link" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
+        displayed = true;
+        break;
+     default:
+        break;
+  }
+
+  if (displayed) 
+   break;
+}    

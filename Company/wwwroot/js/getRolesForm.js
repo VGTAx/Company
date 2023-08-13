@@ -15,15 +15,17 @@
       if (form) {
          form.addEventListener('submit', event => {
             event.preventDefault();
+
             let partialView = form.dataset.form;
             let url = "/Admin/" + partialView;
             let userId = document.querySelector("#userId").getAttribute("value");
+
             const selectedRoles = [];
             document.querySelectorAll('input[type="checkbox"][name="selectedRoles"]:checked')
                .forEach(function (checkbox) {
                   selectedRoles.push(checkbox.value);
             });
-            const dataTosend = {
+            const dataToSend = {
                id: userId,
                selectedRoles: selectedRoles
             }
@@ -32,7 +34,7 @@
                headers: {
                   'Content-Type': 'application/json'
                },
-               body: JSON.stringify(dataTosend)
+               body: JSON.stringify(dataToSend)
             }).then(response => {
                if (response.ok) {
                   return response.text()
@@ -40,12 +42,12 @@
                         const tempDiv = document.querySelector('#partialContainer');
                         tempDiv.innerHTML = html;
                         attachButtonFormHandler();
+                        getUser();
                      })
                }
             }).catch(error => {
                console.error(error);
             });
-
          });
       }
    }
@@ -91,6 +93,7 @@
                         const tempDiv = document.querySelector('#partialContainer');
                         tempDiv.innerHTML = html;
                         attachButtonFormHandler();
+                        getUser();
                      })
                }
             }).catch(error => {

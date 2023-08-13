@@ -1,9 +1,9 @@
-﻿using Company.Models;
+﻿using Company_.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Company.Services
+namespace Company_.Services
 {
   public class AdminAccountService
   {
@@ -33,16 +33,21 @@ namespace Company.Services
         var result = await _userManager.CreateAsync(newAdminUser, "Password123!");
         if (result.Succeeded)
         {
-          var role = await _roleManager.FindByNameAsync("Admin");
-          var roleClaim = new Claim(ClaimTypes.Role, role.Name);
+          var roleAdmin = await _roleManager.FindByNameAsync("Admin");
+          var roleUser = await _roleManager.FindByNameAsync("User");
+          
+          var claims = new List<Claim>
+          {
+            new Claim(ClaimTypes.Role, roleAdmin.Name),
+            new Claim(ClaimTypes.Role, roleUser.Name),
+          };
 
-          await _userManager.AddClaimAsync(newAdminUser, roleClaim);
+          await _userManager.AddClaimsAsync(newAdminUser, claims);         
         }
         else
         {
           throw new ArgumentNullException();
-        }
-        
+        }        
       }
     }
   }

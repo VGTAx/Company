@@ -1,8 +1,8 @@
-﻿using Company.Models;
+﻿using Company_.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Company.ViewComponents
+namespace Company_.ViewComponents
 {
   [ViewComponent]
   public class LoginViewComponent : ViewComponent

@@ -35,26 +35,27 @@
 				 @Html.DisplayFor(model => model.Name)
 			</dd>
 			</dl>
-	</div>
-	
-	 <form id="roles-form" method="post" data-form="AccessSettings">
-	 <div class="dropdown">
+	</div>		
+	@if (!userRoles.Contains("Admin"))
+	{
+		<form id="roles-form" method="post" data-form="AccessSettings">
+	  <div class="dropdown">
 	 		<button id="dropdown-btn" class="btn btn-outline-secondary dropdown-toggle btn-sm fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">Выберите роли</button>
 			<ul class="dropdown-menu">
 				 @foreach(var role in roles)
-				 {
+				 {					 
 					 <li class="dropdown-item">
-							<input type="checkbox" name="selectedRoles" value="@role" @(userRoles.Contains(role) ? "checked" : "") /> 
+							<input type="checkbox" name="selectedRoles" value="@role" @(userRoles.Contains(role) ? "checked" : "")  @(role == "User" ? "disabled": "") /> 
 							<label><b>@role</b></label>
 					 </li>												 
 				 }
 			</ul>	
-			<input type="hidden" id="selectedRolesInput" name="selectedRoles" value="" />
-					
-			<button class="btn btn-outline-primary btn-sm fw-bold" type="submit" >Сохранить</button>
-			
+			<input type="hidden" id="selectedRolesInput" name="selectedRoles" value="" />					
+			<button class="btn btn-outline-primary btn-sm fw-bold" type="submit" >Сохранить</button> 			
 	 </div>
 	 </form>
+	}
+	
 </div>
 
 <div class="m-2">

@@ -12,25 +12,22 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Company_.Migrations
 {
     [DbContext(typeof(CompanyContext))]
-    [Migration("20230703172712_create_db")]
-    partial class create_db
+    [Migration("20230813151638_rework")]
+    partial class rework
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Company.Models.Department.DepartmentModel", b =>
+            modelBuilder.Entity("Company_.Models.Department.DepartmentModel", b =>
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    b.Property<string>("DepartmentImageLink")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("DepartmentName")
                         .HasColumnType("longtext");
@@ -46,101 +43,75 @@ namespace Company_.Migrations
                         new
                         {
                             ID = 1,
-                            DepartmentImageLink = "/images/DepartmentImg/customer service department.jpg",
                             DepartmentName = "Отдел по обслуживанию клиентов"
                         },
                         new
                         {
                             ID = 2,
-                            DepartmentImageLink = "/images/DepartmentImg/production department.jpg",
                             DepartmentName = "Производственный отдел"
                         },
                         new
                         {
                             ID = 3,
-                            DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Бухгалтерия"
                         },
                         new
                         {
                             ID = 4,
-                            DepartmentImageLink = "/images/DepartmentImg/sales department.jpg",
                             DepartmentName = "Отдел продаж",
                             ParentDepartmentID = 1
                         },
                         new
                         {
                             ID = 5,
-                            DepartmentImageLink = "/images/DepartmentImg/wholesale department.jpg",
                             DepartmentName = "Отдел оптовых продаж",
                             ParentDepartmentID = 4
                         },
                         new
                         {
                             ID = 6,
-                            DepartmentImageLink = "/images/DepartmentImg/retail sales department.jpg",
                             DepartmentName = "Отдел розничных продаж",
                             ParentDepartmentID = 4
                         },
                         new
                         {
                             ID = 7,
-                            DepartmentImageLink = "/images/DepartmentImg/logistics department.jpg",
                             DepartmentName = "Отдел логистики",
                             ParentDepartmentID = 1
                         },
                         new
                         {
                             ID = 8,
-                            DepartmentImageLink = "/images/DepartmentImg/stock.jpg",
                             DepartmentName = "Склад",
                             ParentDepartmentID = 7
                         },
                         new
                         {
                             ID = 9,
-                            DepartmentImageLink = "/images/DepartmentImg/bookkeeping.jpg",
                             DepartmentName = "Отдел доставки",
                             ParentDepartmentID = 7
                         },
                         new
                         {
                             ID = 10,
-                            DepartmentImageLink = "/images/DepartmentImg/engineering department.jpg",
                             DepartmentName = "Инженерный отдел",
                             ParentDepartmentID = 2
                         },
                         new
                         {
                             ID = 11,
-                            DepartmentImageLink = "/images/DepartmentImg/quality control department.jpg",
                             DepartmentName = "Отдел контроля качества",
                             ParentDepartmentID = 2
                         },
                         new
                         {
                             ID = 12,
-                            DepartmentImageLink = "/images/DepartmentImg/purchasing department.jpg",
                             DepartmentName = "Отдел закупок",
                             ParentDepartmentID = 2
                         });
                 });
 
-            modelBuilder.Entity("Company.Models.Department.NumberOfEmployee", b =>
-                {
-                    b.Property<int?>("DepartmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("DepartmentID");
-
-                    b.ToTable("NumberOfEmployees");
-                });
-
-            modelBuilder.Entity("Company.Models.Employee.EmployeeModel", b =>
+            modelBuilder.Entity("Company_.Models.Employee.EmployeeModel", b =>
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
@@ -155,7 +126,7 @@ namespace Company_.Migrations
                         .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -177,7 +148,7 @@ namespace Company_.Migrations
                             ID = 1,
                             Age = "28",
                             DepartmentID = 3,
-                            FullName = "Алексей",
+                            Name = "Алексей",
                             Number = "+79123456789",
                             Surname = "Иванов"
                         },
@@ -186,7 +157,7 @@ namespace Company_.Migrations
                             ID = 2,
                             Age = "32",
                             DepartmentID = 3,
-                            FullName = "Екатерина",
+                            Name = "Екатерина",
                             Number = "+79123456780",
                             Surname = "Смирнова"
                         },
@@ -195,7 +166,7 @@ namespace Company_.Migrations
                             ID = 3,
                             Age = "21",
                             DepartmentID = 5,
-                            FullName = "Дмитрий",
+                            Name = "Дмитрий",
                             Number = "+79123456781",
                             Surname = "Козлов"
                         },
@@ -204,7 +175,7 @@ namespace Company_.Migrations
                             ID = 4,
                             Age = "35",
                             DepartmentID = 5,
-                            FullName = "Анна",
+                            Name = "Анна",
                             Number = "+79123456782",
                             Surname = "Петрова"
                         },
@@ -213,7 +184,7 @@ namespace Company_.Migrations
                             ID = 5,
                             Age = "43",
                             DepartmentID = 6,
-                            FullName = "Сергей",
+                            Name = "Сергей",
                             Number = "+79123456783",
                             Surname = "Михайлов"
                         },
@@ -222,7 +193,7 @@ namespace Company_.Migrations
                             ID = 6,
                             Age = "26",
                             DepartmentID = 6,
-                            FullName = "Ольга",
+                            Name = "Ольга",
                             Number = "+79123456784",
                             Surname = "Соколова"
                         },
@@ -231,7 +202,7 @@ namespace Company_.Migrations
                             ID = 7,
                             Age = "29",
                             DepartmentID = 8,
-                            FullName = "Иван",
+                            Name = "Иван",
                             Number = "+79123456785",
                             Surname = "Новиков"
                         },
@@ -240,7 +211,7 @@ namespace Company_.Migrations
                             ID = 8,
                             Age = "31",
                             DepartmentID = 8,
-                            FullName = "Анастасия",
+                            Name = "Анастасия",
                             Number = "+79123456786",
                             Surname = "Федорова"
                         },
@@ -249,7 +220,7 @@ namespace Company_.Migrations
                             ID = 9,
                             Age = "40",
                             DepartmentID = 9,
-                            FullName = "Александр",
+                            Name = "Александр",
                             Number = "+79123456787",
                             Surname = "Морозов"
                         },
@@ -258,7 +229,7 @@ namespace Company_.Migrations
                             ID = 10,
                             Age = "27",
                             DepartmentID = 9,
-                            FullName = "Юлия",
+                            Name = "Юлия",
                             Number = "+79123456788",
                             Surname = "Волкова"
                         },
@@ -267,7 +238,7 @@ namespace Company_.Migrations
                             ID = 11,
                             Age = "33",
                             DepartmentID = 9,
-                            FullName = "Михаил",
+                            Name = "Михаил",
                             Number = "+79123456777",
                             Surname = "Алексеев"
                         },
@@ -276,7 +247,7 @@ namespace Company_.Migrations
                             ID = 12,
                             Age = "45",
                             DepartmentID = 9,
-                            FullName = "Елена",
+                            Name = "Елена",
                             Number = "+79123456776",
                             Surname = "Лебедева"
                         },
@@ -285,7 +256,7 @@ namespace Company_.Migrations
                             ID = 13,
                             Age = "39",
                             DepartmentID = 9,
-                            FullName = "Андрей",
+                            Name = "Андрей",
                             Number = "+79123456775",
                             Surname = "Семенов"
                         },
@@ -294,7 +265,7 @@ namespace Company_.Migrations
                             ID = 14,
                             Age = "23",
                             DepartmentID = 10,
-                            FullName = "Мария",
+                            Name = "Мария",
                             Number = "+79123456774",
                             Surname = "Егорова"
                         },
@@ -303,7 +274,7 @@ namespace Company_.Migrations
                             ID = 15,
                             Age = "41",
                             DepartmentID = 10,
-                            FullName = "Владимир",
+                            Name = "Владимир",
                             Number = "+79123456773",
                             Surname = "Павлов"
                         },
@@ -312,7 +283,7 @@ namespace Company_.Migrations
                             ID = 16,
                             Age = "30",
                             DepartmentID = 10,
-                            FullName = "Евгения",
+                            Name = "Евгения",
                             Number = "+79123456772",
                             Surname = "Ковалева"
                         },
@@ -321,7 +292,7 @@ namespace Company_.Migrations
                             ID = 17,
                             Age = "37",
                             DepartmentID = 10,
-                            FullName = "Николай",
+                            Name = "Николай",
                             Number = "+79123456771",
                             Surname = "Орлов"
                         },
@@ -330,7 +301,7 @@ namespace Company_.Migrations
                             ID = 18,
                             Age = "34",
                             DepartmentID = 11,
-                            FullName = "Татьяна",
+                            Name = "Татьяна",
                             Number = "+79123456770",
                             Surname = "Андреева"
                         },
@@ -339,7 +310,7 @@ namespace Company_.Migrations
                             ID = 19,
                             Age = "42",
                             DepartmentID = 11,
-                            FullName = "Павел",
+                            Name = "Павел",
                             Number = "+79123456769",
                             Surname = "Макаров"
                         },
@@ -348,7 +319,7 @@ namespace Company_.Migrations
                             ID = 20,
                             Age = "22",
                             DepartmentID = 12,
-                            FullName = "Алиса",
+                            Name = "Алиса",
                             Number = "+79123456768",
                             Surname = "Николаева"
                         });
@@ -542,27 +513,27 @@ namespace Company_.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "ce97d922-c244-4fe4-a235-935a9f5b552a",
+                            ConcurrencyStamp = "e14bb3d5-59f5-4945-94a0-a9bed1e9a40b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "65dd32a3-73db-4315-a7ed-734a8507e406",
+                            ConcurrencyStamp = "f26edcc9-bf28-4855-aa0f-481462aac9b8",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "92d4474a-4382-4bfc-95e1-070c242a4844",
+                            ConcurrencyStamp = "116106a2-7cb1-4dd0-8e86-c86ee9524398",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });
                 });
 
-            modelBuilder.Entity("Company.Models.ApplicationUserModel", b =>
+            modelBuilder.Entity("Company_.Models.ApplicationUserModel", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser<string>");
 

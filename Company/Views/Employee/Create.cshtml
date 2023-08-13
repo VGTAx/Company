@@ -41,16 +41,13 @@
                 <span asp-validation-for="DepartmentID" class="text-danger"></span>
             </div>
             <div class="form-group my-3">
-                <input type="submit" value="Добавить" class="btn btn-primary " />
+                <input type="submit" value="Добавить" class="btn btn-outline-primary btn-sm fw-bold" />
+                <a asp-action="Details" class="btn btn-outline-secondary btn-sm fw-bold" asp-controller="Employee">Назад</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index" asp-controller="Department">На главную</a>
-</div>
+<script src="~/js/CreateUser.js"></script>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+

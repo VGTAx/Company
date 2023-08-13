@@ -1,10 +1,10 @@
-﻿using Company.Data;
-using Company.Models.Department;
-using Company.Models.Employee;
+﻿using Company_.Data;
+using Company_.Models.Department;
+using Company_.Models.Employee;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Company.Controllers
+namespace Company_.Controllers
 {
 
   public class DepartmentController : Controller

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Company.Models.Department
+namespace Company_.Models.Department
 {
   public class NumberOfEmployee
   {

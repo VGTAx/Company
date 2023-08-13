@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Company.Models.Account
+namespace Company_.Models.Account
 {
   public class ForgorPasswordModel
   {

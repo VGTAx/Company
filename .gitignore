@@ -368,3 +368,6 @@ FodyWeavers.xsd
 /Departments/Areas/Identity/Pages
 /Departments/appsettings.json
 /Departments/appsettings.Development.json
+/Company/Services/RedisListenerService.cs
+/Company/Services/RedisPublisherService.cs
+/Company/Models/RedisSettingsModel.cs

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Company_.Migrations
+namespace Company.Migrations
 {
     /// <inheritdoc />
     public partial class create_db : Migration

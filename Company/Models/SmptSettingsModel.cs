@@ -1,4 +1,4 @@
-﻿namespace Company_.Models
+﻿namespace Company.Models
 {
   public class SmtpSettings
   {

@@ -1,21 +1,29 @@
-﻿using Company_.Data;
-using Company_.Models.Department;
-using Company_.Models.Employee;
+﻿using Company.Data;
+using Company.Models.Department;
+using Company.Models.Employee;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Company_.Controllers
+namespace Company.Controllers
 {
-
+  /// <summary>
+  /// Контроллер для управления отделами.
+  /// </summary>
   public class DepartmentController : Controller
   {
     private readonly CompanyContext _context;
-
+    /// <summary>
+    /// Инициализирует новый экземпляр контроллера для управления отделами с использованием указанного контекста компании.
+    /// </summary>
+    /// <param name="context">Контекст компании для доступа к данным отделов.</param>
     public DepartmentController(CompanyContext context)
     {
       _context = context;
     }
-
+    /// <summary>
+    /// Отображает список отделов и информацию о количестве сотрудников в каждом отделе.
+    /// </summary>
+    /// <returns>View с данными об отделах и количестве сотрудников.</returns>
     public async Task<IActionResult> Index()
     {
       var numberOfEmployyes = from e in _context.Departments
@@ -23,7 +31,12 @@ namespace Company_.Controllers
 
       return View(await numberOfEmployyes.ToListAsync());
     }
-
+    /// <summary>
+    /// Отображает информацию о выбранном отделе.
+    /// </summary>
+    /// <param name="departmentId">Идентификатор отдела.</param>
+    /// <param name="departmentName">Название отдела.</param>
+    /// <returns>View с информацией о выбранном отделе.</returns>
     public IActionResult Details(int? departmentId = 0, string? departmentName = null)
     {
       if (departmentName == null && departmentId == null)
@@ -67,7 +80,13 @@ namespace Company_.Controllers
           return NotFound();
       }
     }
-
+    /// <summary>
+    /// Получает список сотрудников для указанного отдела.
+    /// </summary>
+    /// <param name="id">Идентификатор отдела.</param>
+    /// <param name="departments">Список отделов.</param>
+    /// <param name="empl">Список сотрудников.</param>
+    /// <returns>Список сотрудников для указанного отдела.</returns>
     private List<EmployeeModel> GetEmployees(int? id, List<DepartmentModel> departments, List<EmployeeModel> empl)
     {
       var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();

@@ -1,9 +1,9 @@
-using Company_.Data;
-using Company_.Filters;
-using Company_.IServices;
-using Company_.Middlewares;
-using Company_.Models;
-using Company_.Services;
+using Company.Data;
+using Company.Filters;
+using Company.IServices;
+using Company.Middlewares;
+using Company.Models;
+using Company.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -51,14 +51,18 @@ builder.Services.AddControllersWithViews(options =>
   options.Filters.Add<CheckUserExistFilter>();
 });
 builder.Services.AddMvc();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+  options.Configuration = "localhost";
+  options.InstanceName = "local";
+});
 
 var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
 builder.Services.AddSingleton(smtpSettings);
 builder.Services.AddTransient<IEmailSender, MailKitEmailSenderService>();
-
 builder.Services.AddSingleton<INotificationService, ChangeRoleNotificationService>();
-
 builder.Services.AddScoped<AdminAccountService>();
+
 
 var app = builder.Build();
 
@@ -78,6 +82,7 @@ if (!app.Environment.IsDevelopment())
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

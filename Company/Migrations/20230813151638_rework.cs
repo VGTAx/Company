@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Company_.Migrations
+namespace Company.Migrations
 {
     /// <inheritdoc />
     public partial class rework : Migration

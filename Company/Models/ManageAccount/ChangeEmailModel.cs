@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Company_.Models.ManageAccount
+namespace Company.Models.ManageAccount
 {
   [NotMapped]
   public class ChangeEmailModel

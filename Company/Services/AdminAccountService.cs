@@ -1,9 +1,9 @@
-﻿using Company_.Models;
+﻿using Company.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Company_.Services
+namespace Company.Services
 {
   public class AdminAccountService
   {

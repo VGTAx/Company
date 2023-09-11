@@ -1,30 +1,22 @@
-﻿using Company_.Models;
-using Company_.Models.Department;
-using Company_.Models.Employee;
+﻿using Company.Models;
+using Company.Models.Department;
+using Company.Models.Employee;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Security.Claims;
 
-namespace Company_.Data
+namespace Company.Data
 {
   public class CompanyContext : IdentityDbContext<ApplicationUserModel>
   {
     public DbSet<EmployeeModel> Employees { get; set; }
     public DbSet<DepartmentModel> Departments { get; set; }
-    public DbSet<IdentityRole> IdentityRoles { get; set; }    
+    public DbSet<IdentityRole> IdentityRoles { get; set; }
 
     public CompanyContext(DbContextOptions<CompanyContext> options)
-        : base(options)
-    {
-      
-    }
+        : base(options)   { }
 
     public CompanyContext() { }
-
-
-
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -104,12 +96,6 @@ namespace Company_.Data
            new DepartmentModel(11, "Отдел контроля качества", 2),
            new DepartmentModel(12, "Отдел закупок", 2)
           );
-
-
-
     }
   }
-
- 
-
 }

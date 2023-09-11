@@ -1,11 +1,11 @@
-﻿using Company_.Models;
+﻿using Company.Models;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System;
 
-namespace Company_.Services
+namespace Company.Services
 {
     public class MailKitEmailSenderService : IEmailSender
     {

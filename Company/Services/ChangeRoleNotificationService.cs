@@ -1,6 +1,6 @@
-﻿using Company_.IServices;
+﻿using Company.IServices;
 
-namespace Company_.Services
+namespace Company.Services
 {
   public class ChangeRoleNotificationService : INotificationService
   {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Company_.Models.Account
+namespace Company.Models.Account
 {
   public class ResetPasswordModel
   {

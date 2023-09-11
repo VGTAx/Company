@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Departments</title>
+    <title>@ViewData["Title"] - Company</title>
     
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />   
@@ -15,7 +15,7 @@
           <div class="container-fluid">
             <div class="grid-container-nav">
               <a class="" asp-area="" asp-controller="Department" asp-action="Index"><img src="/images/logo.jpg" width="100" length="100" alt="logo"/></a>
-              <a class="nav-link" asp-area="" asp-controller="Department" asp-action="Index">Структура компании</a>  
+              <a class="nav-link text-dark " asp-area="" asp-controller="Department" asp-action="Index">Структура компании</a>  
               <partial name="_ManagerToolsPartial"></partial>
             </div>
             <div>           
@@ -30,14 +30,13 @@
         </main>
       </div>
 
-      <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - Departments - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+      <footer class="border-top footer text-muted ">
+        <div class="container containerFooter">
+            &copy; 2023 - Company
         </div>
       </footer>  
       <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-      <script src="~/js/site.js" asp-append-version="true"></script>
-      @*<script src="~/js/btnSendForm.js" asp-append-version="true"></script>*@
+      <script src="~/js/site.js" asp-append-version="true"></script>       
       @await RenderSectionAsync("Scripts", required: false)
     </div>
     

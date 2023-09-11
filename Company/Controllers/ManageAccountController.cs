@@ -1,5 +1,5 @@
-﻿using Company_.Models;
-using Company_.Models.ManageAccount;
+﻿using Company.Models;
+using Company.Models.ManageAccount;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,16 +9,23 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace Company_.Controllers
+namespace Company.Controllers
 {
-
+  /// <summary>
+  /// Контроллер для управления учетной записью.
+  /// </summary>
   [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class ManageAccountController : Controller
   {
     private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly IEmailSender _emailSender;
-
+    /// <summary>
+    /// Cоздание экземпляра контроллера для управления учетной записью.
+    /// </summary>
+    /// <param name="userManager">Менеджер пользователей.</param>
+    /// <param name="signInManager">Менеджер аутентификации.</param>
+    /// <param name="emailSender">Сервис отправки электронной почты.</param>
     public ManageAccountController(
         UserManager<ApplicationUserModel> userManager,
         SignInManager<ApplicationUserModel> signInManager,
@@ -28,12 +35,18 @@ namespace Company_.Controllers
       _signInManager = signInManager;
       _emailSender = emailSender;
     }
-
+    /// <summary>
+    /// Метод возвращает список функций для управления аккаунтом в виде частичного представления.
+    /// </summary>
+    /// <returns>Partial View, содержащее список функций для управления аккаунтом.</returns>
     public IActionResult _ManageAccountNav()
     {
       return View();
     }
-
+    /// <summary>
+    /// Метод отображает страницу профиля пользователя.
+    /// </summary>
+    /// <returns>Partial View с профилем пользователя.</returns>
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
@@ -52,7 +65,11 @@ namespace Company_.Controllers
       ViewData["ActiveLink"] = "profile";
       return PartialView(model);
     }
-
+    /// <summary>
+    /// Обновление профиля пользователя на основе данных из модели.
+    /// </summary>
+    /// <param name="model">Модель с данными профиля пользователя.</param>
+    /// <returns>Partial View с информацией о статусе обновления профиля.</returns>
     [HttpPost]
     public async Task<IActionResult> Profile([Bind("Email,Name, Phone")] ProfileModel model)
     {
@@ -102,7 +119,10 @@ namespace Company_.Controllers
         return PartialView(model);
       }
     }
-
+    /// <summary>
+    /// Метод отображает страницу с формой изменения электронной почты пользователя.
+    /// </summary>
+    /// <returns>Partial View с формой изменения электронной почты.</returns>
     [HttpGet]
     public async Task<IActionResult> ChangeEmail()
     {
@@ -124,7 +144,11 @@ namespace Company_.Controllers
 
       return PartialView(model);
     }
-
+    /// <summary>
+    /// Обработка POST-запроса при изменении электронной почты пользователя.
+    /// </summary>
+    /// <param name="model">Модель данных с новой электронной почтой и флагом подтверждения электронной почты.</param>
+    /// <returns>Partial View с результатом операции изменения электронной почты пользователя.</returns>
     [HttpPost]
     public async Task<IActionResult> ChangeEmail([Bind("NewEmail, IsEmailConfirmed")] ChangeEmailModel model)
     {
@@ -154,10 +178,10 @@ namespace Company_.Controllers
         var callbackUrl = Url.Action(
             action: "ChangeEmailConfirmation",
             controller: "ManageAccount",
-            values: new { userId = userId, email = model.NewEmail, code = code },
+            values: new { userId, email = model.NewEmail, code },
             protocol: Request.Scheme);
 
-        var message = $"Добрый день. Подтвердите изменение эл.почты <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>нажмите сюда</a>";
+        var message = $"Добрый день. Подтвердите изменение эл.почты <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>нажмите сюда</a>";
         await _emailSender.SendEmailAsync(model.NewEmail!, "Подтверждение изменения электронной почты", message);
 
         ViewData["StatusMessage"] = "Пожалуйста, проверьте электронную почту, чтобы подтвердить изменения";
@@ -166,7 +190,13 @@ namespace Company_.Controllers
       ModelState.AddModelError("NewEmail", "Электронная почта уже используется");
       return PartialView(model);
     }
-
+    /// <summary>
+    /// Обработка GET-запроса подтверждения изменения электронной почты пользователя.
+    /// </summary>
+    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="email">Новая электронная почта пользователя.</param>
+    /// <param name="code">Код подтверждения изменения электронной почты.</param>
+    /// <returns>View с результатом операции подтверждения изменения электронной почты пользователя.</returns>
     public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string code)
     {
       if (userId == null || code == null || email == null)
@@ -194,7 +224,10 @@ namespace Company_.Controllers
       await _signInManager.RefreshSignInAsync(user);
       return View("_StatusMessage");
     }
-
+    /// <summary>
+    /// Метод отображает страницу с формой изменения пароля пользователя (GET-запрос).
+    /// </summary>
+    /// <returns>View страницы изменения пароля.</returns>
     [HttpGet]
     public async Task<IActionResult> ChangePassword()
     {
@@ -204,9 +237,13 @@ namespace Company_.Controllers
         return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
       }
 
-      return PartialView();
+      return PartialView();      
     }
-
+    /// <summary>
+    /// Изменение пароля пользователя на основе данных из формы (POST-запрос).
+    /// </summary>
+    /// <param name="model">Модель данных для изменения пароля.</param>
+    /// <returns>Partial View с результатом выполнения операции.</returns>
     [HttpPost]
     public async Task<IActionResult> ChangePassword([Bind("OldPassword, NewPassword, ConfirmPassword")] ChangePasswordModel model)
     {
@@ -236,24 +273,37 @@ namespace Company_.Controllers
       ViewData["StatusMessage"] = "Пароль был изменен!";
       return PartialView("_StatusMessage");
     }
-
+    /// <summary>
+    /// Метод отображает страницу с персональными данными пользователя (GET-запрос).
+    /// </summary>
+    /// <returns>View с персональными данными пользователя.</returns>
     [HttpGet]
     public IActionResult PersonalData()
     {
       return PartialView();
     }
+    /// <summary>
+    /// Метод отображает страницу для удаления персональных данных пользователя (GET-запрос).
+    /// </summary>
+    /// <returns>View для удаления персональных данных пользователя.</returns>
     [HttpGet]
     public async Task<IActionResult> DeletePersonalData()
     {
       var user = await _userManager.GetUserAsync(User);
       var model = new DeletePersonalDataModel
       {
-        RequirePassword = await _userManager.HasPasswordAsync(user),
+        RequirePassword = await _userManager.HasPasswordAsync(user!),
         Password = "",
       };
 
       return PartialView(model);
     }
+    /// <summary>
+    /// Метод выполняет удаление персональных данных пользователя (POST-запрос).
+    /// </summary>
+    /// <param name="model">Модель, содержащая информацию для удаления персональных данных.</param>
+    /// <returns>Результат операции удаления персональных данных.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
     [HttpPost]
     public async Task<IActionResult> DeletePersonalData([Bind("RequirePassword, Password")] DeletePersonalDataModel model)
     {

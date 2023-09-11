@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Company_.Models.ManageAccount
+namespace Company.Models.ManageAccount
 {
   public class DeletePersonalDataModel
   {

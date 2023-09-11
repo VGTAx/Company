@@ -14,12 +14,6 @@ html {
 /*.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {*/
   /*box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;*/
 /*}*/
-
-
-
-
-
-
 @keyframes fadeIn {
       to {        
         opacity: 1;        
@@ -34,7 +28,6 @@ html {
 .nested-list {
     padding-left: 20px;   
 }
-
 
 .grid-container-nav {
     display: grid;
@@ -63,7 +56,6 @@ body {
     flex-grow: 1;
 }
 
-
 form {
     display: inline-block;
     margin-left: 5px;    
@@ -77,6 +69,7 @@ button {
 li {
     margin: 5px 5px
 }
+
 .form-control:focus, 
 .form-select:focus {
     color: #212529;
@@ -85,13 +78,6 @@ li {
     outline: 0;
     box-shadow: 0 0 0 0.1rem #86b7fe;
 }
-
-/*.departmentContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}*/
 
 .departmentImg {
     width: 548px;
@@ -113,6 +99,30 @@ li {
    border-radius: 5px;   
    box-shadow: 0px 0px 5px 1px gray;
 }
+
 .userInfoContainer:hover {
+box-shadow: 0px 0px 5px 1px black;
+}
+
+.toolsPartial {
+   display: flex;   
+}
+
+.toolsPartial:hover {
    box-shadow: 0px 0px 5px 1px black;
+}
+
+.controlPanel {
+   display: flex;
+   align-items: center;
+}
+
+.fixed-size-btn {   
+   min-width: 8em; 
+   min-height: 2.5em;
+   font-size: 16px; 
+}
+
+.containerFooter {
+   height: 3em;
 }

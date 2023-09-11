@@ -1,4 +1,4 @@
-﻿namespace Company_.IServices
+﻿namespace Company.IServices
 {
   public interface INotificationService
   {

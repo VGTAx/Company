@@ -1,7 +1,7 @@
-﻿using Company_.Data;
-using Company_.IServices;
-using Company_.Models;
-using Company_.Models.Admin;
+﻿using Company.Data;
+using Company.IServices;
+using Company.Models;
+using Company.Models.Admin;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,8 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Claims;
 
-namespace Company_.Controllers
+namespace Company.Controllers
 {
+  /// <summary>
+  /// Контроллер, предоставляющий функциональность администратора.
+  /// Для доступа к контроллеру и его действиям требуется аутентификация через куки и соответствие политике "AdminPolicy".
+  /// </summary>
   [Authorize(Policy = "AdminPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class AdminController : Controller
   {
@@ -21,6 +25,14 @@ namespace Company_.Controllers
     private readonly CompanyContext _context;
     private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр контроллера AdminController с использованием переданных зависимостей.
+    /// </summary>
+    /// <param name="userManager">Менеджер пользователей.</param>
+    /// <param name="roleManager">Менеджер ролей.</param>
+    /// <param name="signInManager">Менеджер входа в систему.</param>
+    /// <param name="changeRole">Сервис уведомлений о смене роли.</param>
+    /// <param name="context">Контекст базы данных компании.</param>
     public AdminController(UserManager<ApplicationUserModel> userManager,
       RoleManager<IdentityRole> roleManager,
       SignInManager<ApplicationUserModel> signInManager,
@@ -33,11 +45,19 @@ namespace Company_.Controllers
       _changeRole = changeRole;
       _context = context;
     }
-
+    /// <summary>
+    /// Отображает главную страницу администратора.
+    /// </summary>
+    /// <returns>View главной страницы администратора.</returns>
     public async Task<IActionResult> Index()
     {
       return View();
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<IActionResult> AccessSettings(string? id)
     {
@@ -61,7 +81,11 @@ namespace Company_.Controllers
 
       return PartialView(user);
     }
-
+    /// <summary>
+    /// Отображает страницу настройки доступа для пользователя с указанным идентификатором.
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя.</param>
+    /// <returns>Partial View страницы настройки доступа.</returns>
     [HttpPost]
     public async Task<IActionResult> AccessSettings([FromBody] UserInfoModel model)
     {
@@ -113,9 +137,12 @@ namespace Company_.Controllers
       return PartialView("UserList", userList);
 
     }
-
+    /// <summary>
+    /// Отображает Partial View списка пользователей.
+    /// </summary>
+    /// <returns>Partial View списка пользователей.</returns>
     [HttpGet]
-    public async Task<IActionResult> UserList()
+    public IActionResult UserList()
     {
       var users = _userManager.Users.ToList();
       return PartialView(users);

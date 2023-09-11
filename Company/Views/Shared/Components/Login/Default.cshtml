@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Company_.Data
+@using Company.Data
 @using System.Security.Claims;
 @model ApplicationUserModel
 @inject SignInManager<ApplicationUserModel> SignInManager
@@ -11,35 +11,23 @@
 }
 
 <ul class="navbar-nav">
-  @if (SignInManager.IsSignedIn(User) && claimRole == "Admin")
-  {
-    <li class="nav-item">
-       <a class="nav-link text-dark" id="AdminPanel" asp-action="Index" asp-controller="Admin">AdminPanel</a>
-    </li>
-  }
-</ul>
-
-<ul class="navbar-nav">
-    @if (SignInManager.IsSignedIn(User))
+    @if (SignInManager.IsSignedIn(User) && Model != null)
     {  
         <li class="nav-item">         
-            <a class="nav-link text-dark" id="NameAccount" asp-action="_ManageAccountNav" asp-controller="ManageAccount" title="Manage">Привет, @Model.Name</a>
+            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" id="NameAccount" asp-action="_ManageAccountNav" asp-controller="ManageAccount" title="Manage">Профиль</a>
         </li>
-        <li class="nav-item">
-            <form class="form-inline" asp-action="Logout" asp-controller="Account" method="post" >
-                <button class="nav-link btn btn-link text-dark"type="submit">Выйти</button>
-            </form>
+        <li class="nav-item">              
+            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="Logout" asp-controller="Account">Выйти</a>
         </li> 
     }         
     else
     {
          <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Регистрация</a>
+            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-controller="Account" asp-action="Registration">Регистрация</a>
          </li>
          <li class="nav-item">
-             <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Вход</a>
+             <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-controller="Account" asp-action="Login">Вход</a>
          </li>
     }   
 </ul>
 
-<script src="/js/updateDataProfile.js"></script>

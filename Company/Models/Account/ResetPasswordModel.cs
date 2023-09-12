@@ -4,6 +4,7 @@ namespace Company.Models.Account
 {
   public class ResetPasswordModel
   {
+    [Required(ErrorMessage = "Введите электронную почту")]
     [Required]
     public string? Email { get; set; }
 

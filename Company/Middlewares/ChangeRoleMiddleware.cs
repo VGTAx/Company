@@ -6,15 +6,28 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Company.Middlewares
 {
+  /// <summary>
+  /// Middleware Class для изменения ролей пользователя.
+  /// </summary>
   public class ChangeRoleMiddleware
   {
     private readonly RequestDelegate _next;
-
+    /// <summary>
+    /// Создает объект класса ChangeRoleMiddleware.
+    /// </summary>
+    /// <param name="next">Следующий делегат запроса.</param>
     public ChangeRoleMiddleware(RequestDelegate next)
     {
       _next = next;
     }
-    //метод, который обрабатывает запрос
+    /// <summary>
+    /// Middleware для обработки изменения ролей пользователя.
+    /// </summary>
+    /// <param name="context">Контекст HTTP-запроса.</param>
+    /// <param name="_userManager">Менеджер пользователей.</param>
+    /// <param name="_changeRole">Сервис уведомлений о смене роли.</param>
+    /// <param name="_signInManager">Менеджер аутентификации.</param>
+    /// <returns>Асинхронную задачу, представляющую выполнение следующего обработчика запроса.</returns>
     public async Task InvokeAsync(HttpContext context,
       UserManager<ApplicationUserModel> _userManager,
       INotificationService _changeRole,
@@ -39,9 +52,16 @@ namespace Company.Middlewares
       }
     }
   }
-
+  /// <summary>
+  /// Статический класс для добавления ChangeRoleMiddleware в конвейер обработки запросов.
+  /// </summary
   public static class ChangeRoleMiddlewareExtensions
   {
+    /// <summary>
+    /// Добавляет ChangeRoleMiddleware в конвейер обработки запросов.
+    /// </summary>
+    /// <param name="builder">Builder ASP.NET.</param>
+    /// <returns>Builder ASP.NET с добавленным ChangeRoleMiddleware.</returns>
     public static IApplicationBuilder UseChangeRoleMiddleware(
         this IApplicationBuilder builder)
     {

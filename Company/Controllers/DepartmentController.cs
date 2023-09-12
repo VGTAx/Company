@@ -13,7 +13,7 @@ namespace Company.Controllers
   {
     private readonly CompanyContext _context;
     /// <summary>
-    /// Инициализирует новый экземпляр контроллера для управления отделами с использованием указанного контекста компании.
+    /// Создает экземпляр класса <see cref="DepartmentController"/>.
     /// </summary>
     /// <param name="context">Контекст компании для доступа к данным отделов.</param>
     public DepartmentController(CompanyContext context)

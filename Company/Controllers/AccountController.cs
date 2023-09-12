@@ -229,7 +229,7 @@ namespace Company.Controllers
     /// В противном случае, возвращает страницу восстановления пароля с сообщением об ошибке.
     /// </returns>
     [HttpPost]
-    public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgorPasswordModel model)
+    public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgotPasswordModel model)
     {
       if (ModelState.IsValid)
       {

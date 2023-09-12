@@ -9,17 +9,31 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Company.Filters
 {
+  /// <summary>
+  /// Фильтр проверяет существование пользователя.
+  /// </summary>
+  /// <remarks>
+  /// Данный фильтр использует UserManager для проверки существования пользователя и MemoryCache для кэширования результатов.
+  /// </remarks>
   public class CheckUserExistFilter : IAsyncAuthorizationFilter
   {
     private readonly UserManager<ApplicationUserModel>? _userManager;
     private readonly IMemoryCache? _cache;
-
+    /// <summary>
+    /// Создает экземпляр класса <see cref="CheckUserExistFilter"/>.
+    /// </summary>
+    /// <param name="userManager">Менеджер пользователей для управления пользователями.</param>
+    /// <param name="cache">Кэш в памяти для временного хранения данных.</param>
     public CheckUserExistFilter(UserManager<ApplicationUserModel> userManager, IMemoryCache cache)
     {
       _userManager = userManager;
       _cache = cache;
     }
-
+    /// <summary>
+    /// Выполняет асинхронную проверку авторизации на основе контекста фильтра.
+    /// </summary>
+    /// <param name="context">Контекст фильтра авторизации.</param>
+    /// <returns>Объект Task представляющий асинхронную операцию проверки авторизации.</returns>
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
       var userName = context.HttpContext.User.Identity!.Name;

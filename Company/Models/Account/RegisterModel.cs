@@ -2,26 +2,38 @@
 
 namespace Company.Models.Account
 {
+  /// <summary>
+  /// Модель для регистрации нового пользователя.
+  /// </summary>
   public class RegisterModel
   {
-    [Required]
+    /// <summary>
+    /// Электронная почта пользователя.
+    /// </summary>
+    [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
-    [Display(Name = "Email")]
+    [Display(Name = "Электроннная почта")]
     public string? Email { get; set; }
-
-    [Required]
-    [Display(Name = "FullName")]
+    /// <summary>
+    /// Имя пользователя.
+    /// </summary>
+    [Required(ErrorMessage = "Введите имя пользователя")]
+    [Display(Name = "Имя")]
     public string? Name { get; set; }
-
-    [Required]
-    [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+    /// <summary>
+    /// Пароль учетной записи пользователя.
+    /// </summary>
+    [Required(ErrorMessage = "Введите пароль")]
+    [StringLength(100, ErrorMessage = "{0} должен содержать от {2} до {1} символов.", MinimumLength = 6)]
     [DataType(DataType.Password)]
-    [Display(Name = "Password")]
+    [Display(Name = "Пароль")]
     public string? Password { get; set; }
-
+    /// <summary>
+    /// Подтверждение пароля учетной записи пользователя.
+    /// </summary>
     [DataType(DataType.Password)]
-    [Display(Name = "Confirm password")]
-    [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+    [Display(Name = "Подтверждение пароля")]
+    [Compare("Password", ErrorMessage = "Введенные пароли не совпадают")]
     public string? ConfirmPassword { get; set; }
   }
 }

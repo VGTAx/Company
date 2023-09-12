@@ -26,7 +26,7 @@ namespace Company.Controllers
     private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
 
     /// <summary>
-    /// Инициализирует новый экземпляр контроллера AdminController с использованием переданных зависимостей.
+    /// Создает экземпляр класса <see cref="AdminController"/>.
     /// </summary>
     /// <param name="userManager">Менеджер пользователей.</param>
     /// <param name="roleManager">Менеджер ролей.</param>

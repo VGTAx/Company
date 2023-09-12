@@ -21,7 +21,7 @@ namespace Company.Controllers
     private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly IEmailSender _emailSender;
     /// <summary>
-    /// Cоздание экземпляра контроллера для управления учетной записью.
+    /// Создает экземпляр класса <see cref="ManageAccountController"/>.
     /// </summary>
     /// <param name="userManager">Менеджер пользователей.</param>
     /// <param name="signInManager">Менеджер аутентификации.</param>

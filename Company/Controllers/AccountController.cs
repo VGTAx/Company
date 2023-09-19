@@ -25,7 +25,7 @@ namespace Company.Controllers
     private readonly IEmailSender _emailSender;
     private readonly RoleManager<IdentityRole> _roleManager;
     /// <summary>
-    /// Конструктор контроллера управления учетными записями пользователей.
+    /// Создает экземпляр класса <see cref="AccountController"/>.
     /// </summary>
     /// <param name="userManager">Менеджер пользователей для работы с учетными записями.</param>
     /// <param name="userStore">Хранилище пользователей.</param>

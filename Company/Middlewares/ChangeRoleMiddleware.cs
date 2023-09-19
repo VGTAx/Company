@@ -13,7 +13,7 @@ namespace Company.Middlewares
   {
     private readonly RequestDelegate _next;
     /// <summary>
-    /// Создает объект класса ChangeRoleMiddleware.
+    /// Создает экземпляр класса <see cref="ChangeRoleMiddleware"/>.
     /// </summary>
     /// <param name="next">Следующий делегат запроса.</param>
     public ChangeRoleMiddleware(RequestDelegate next)

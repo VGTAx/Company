@@ -8,8 +8,8 @@
 <div class="departmentContainer">
     <p>
         Отдел обслуживания клиентов является ключевым элементом взаимодействия компании с ее клиентами. Он объединяет в себе два важных подотдела
-        - <a asp-action="Details" asp-route-departmentName="Отдел продаж">отдел продаж</a> и 
-        <a asp-action="Details" asp-route-departmentName="Отдел логистики">отдел логистики</a>, чтобы обеспечить полный цикл обслуживания клиентов.
+        - @Html.ActionLink("Отдел продаж", "Details", "Department", new{@departmentName="Отдел продаж"}) и 
+        @Html.ActionLink("Отдел логистики", "Details", "Department", new{@departmentName="Отдел логистики"}), чтобы обеспечить полный цикл обслуживания клиентов.
         
     </p>
     <img class="departmentImg" src="/images/DepartmentImg/customerService.jpg" alt="customer department"/>
@@ -17,3 +17,4 @@
         Общая цель: Обеспечение высокого уровня обслуживания клиентов и удовлетворение их потребностей.
     </p>
 </div>
+        

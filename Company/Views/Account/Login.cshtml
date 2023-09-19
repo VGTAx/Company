@@ -3,7 +3,7 @@
 <h1></h1>
 <div class="row">
     <div class="col-md-4">
-        <section >
+        <section>
             <form id="account" method="post" asp-action="Login" asp-controller="Account">
                 <h2>Вход в учетную запись</h2>      
                 <hr />
@@ -24,10 +24,10 @@
                         Запомнить меня
                     </label>
                     <p>
-                        <a asp-action="ForgotPassword" asp-controller="Account" method>Забыли пароль?</a>
+                       @Html.ActionLink("Забыли пароль?", "ForgotPassword", "Account")                      
                     </p>
                      <p>
-                        <a asp-action="Registration" asp-controller="Account" method>Регистрация</a>
+                       @Html.ActionLink("Регистрация", "Registration", "Account")
                     </p>
                 </div>
                 

@@ -20,8 +20,8 @@ namespace Company.Controllers
   {
     private readonly UserManager<ApplicationUserModel>? _userManager;
     private readonly RoleManager<IdentityRole>? _roleManager;
-    private readonly SignInManager<ApplicationUserModel> _signInManager;
-    private readonly INotificationService _changeRole;
+    private readonly SignInManager<ApplicationUserModel>? _signInManager;
+    private readonly INotificationService? _changeRole;
     private readonly CompanyContext _context;
     private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
 
@@ -68,12 +68,12 @@ namespace Company.Controllers
       }
       var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
 
-      ViewData["userRoles"] = userPrincipal.Claims
+      ViewBag.UserRoles = userPrincipal.Claims
         .Where(c => c.Type == ClaimTypes.Role)
         .Select(c => c.Value)
         .ToList();
 
-      ViewData["roles"] = _roleManager.Roles
+      ViewBag.Roles = _roleManager.Roles
         .Where(r => !exceptRoles.Contains(r.Name))
         .Select(r => r.Name)
         .ToList();
@@ -107,31 +107,31 @@ namespace Company.Controllers
 
       if (!model.SelectedRoles.Contains("User"))
       {
-        ViewData["StatusMessage"] = "Ошибка! Роль User не может быть удалена!"!;
-        return PartialView("_StatusMessage", ViewData["StatusMessage"]);
+        ViewBag.StatusMessage = "Ошибка! Роль User не может быть удалена!"!;
+        return PartialView("_StatusMessage", ViewBag.StatusMessage);
       }
 
       foreach (var role in rolesToAdd)
       {
         var claimRole = new Claim(ClaimTypes.Role, role);
         await _userManager.AddClaimAsync(user, claimRole);
-        ViewData["StatusMessage"] = "Данные изменены!"!;
+        ViewBag.StatusMessage = "Данные изменены!"!;
       }
 
       foreach (var role in rolesToRemove)
       {
         var claimRole = new Claim(ClaimTypes.Role, role);
         await _userManager.RemoveClaimAsync(user, claimRole);
-        ViewData["StatusMessage"] = "Данные изменены!"!;
+        ViewBag.StatusMessage = "Данные изменены!"!;
       }
 
-      if (ViewData["StatusMessage"]?.ToString() == "Данные изменены!"!)
+      if (ViewBag.StatusMessage?.ToString() == "Данные изменены!"!)
       {
         user.SecurityStamp = Guid.NewGuid().ToString();
         await _userManager.UpdateAsync(user);
 
         _changeRole.SendNotification(user.Id);
-        return PartialView("_StatusMessage", ViewData["StatusMessage"]);
+        return PartialView("_StatusMessage", ViewBag.StatusMessage);
       }
       var userList = _context.Users.ToList();
       return PartialView("UserList", userList);

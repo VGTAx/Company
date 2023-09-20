@@ -8,9 +8,9 @@
 <div class="departmentContainer">
     <p>
         Отдел логистики, включающий
-        @Html.ActionLink("складское подразделение", "Details", "Department", new{@departmentName="Склад"}) и 
-        @Html.ActionLink("отдел доставки", "Details", "Department", new{@departmentName="Отдел доставки"}), играет ключевую роль 
-        в эффективном управлении поставками и распределении продукции, производимой нашей компанией, а так же 
+        <a asp-action="Details" asp-action="Department" asp-route-departmentName="Склад">складское подразделение</a> и
+        <a asp-action="Details" asp-action="Department" asp-route-departmentName="Отдел доставки">отдел доставки</a>, 
+        играет ключевую роль в эффективном управлении поставками и распределении продукции, производимой нашей компанией, а так же 
         материалов и информации внутри организации.
     </p>
     <p>

@@ -39,7 +39,8 @@ namespace Company.Controllers
           {
             Value = item.ID.ToString(),
             Text = item.DepartmentName
-          }).AsEnumerable();
+          })
+          .AsEnumerable();
 
       if (departmentId != null)
       {
@@ -52,7 +53,7 @@ namespace Company.Controllers
             });
       }
 
-      ViewData["Departments"] = departments;
+      ViewBag.Departments = departments;
       return View();
     }
     /// <summary>
@@ -81,7 +82,7 @@ namespace Company.Controllers
             Text = item.DepartmentName
           }).AsEnumerable();
 
-      ViewData["Departments"] = departments;
+      ViewBag.Departments = departments;
 
       return View("Create");
     }
@@ -116,7 +117,7 @@ namespace Company.Controllers
             Text = item.DepartmentName
           });
 
-      ViewData["Departments"] = departments;
+      ViewBag.Departments = departments;
 
       return View("Edit", employee);
     }
@@ -169,9 +170,10 @@ namespace Company.Controllers
           {
             Value = item.ID.ToString(),
             Text = item.DepartmentName
-          }).AsEnumerable();
+          })
+          .AsEnumerable();
 
-      ViewData["Departments"] = departments;
+      ViewBag.Departments = departments;
 
       return View();
     }

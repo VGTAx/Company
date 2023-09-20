@@ -89,12 +89,18 @@ namespace Company.Controllers
     /// <returns>Список сотрудников для указанного отдела.</returns>
     private List<EmployeeModel> GetEmployees(int? id, List<DepartmentModel> departments, List<EmployeeModel> empl)
     {
-      var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();
+      var subdepartments = departments
+                               .Where(d => d.ParentDepartmentID == id)
+                               .ToList();
       var employees = new List<EmployeeModel>();
 
       if (subdepartments.Count != 0)
       {
-        employees = empl.Where(e => subdepartments.Select(s => s.ID).Contains(e.ID)).ToList();
+        employees = empl
+                      .Where(e => subdepartments
+                        .Select(s => s.ID)
+                        .Contains(e.ID))
+                      .ToList();
       }
       employees = empl.Where(e => e.DepartmentID == id).ToList();
 

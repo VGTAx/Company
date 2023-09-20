@@ -12,9 +12,9 @@
         Производственный отдел является ключевым подразделением компании, ответственным за планирование, координацию и 
         контроль всех производственных операций. Этот отдел играет важную роль в обеспечении эффективности и качества 
         процесса производства. Данный отдел состоит из
-        @Html.ActionLink("инженерного отдела", "Details", "Department", new{@departmentName="Инженерный отдел"}),
-        @Html.ActionLink("отдела контроля качества", "Details", "Department", new{@departmentName="Отдел контроля качества"}) и
-        @Html.ActionLink("отдела закупок", "Details", "Department", new{@departmentName="Отдел закупок"}).
+        <a asp-action="Details" asp-action="Department" asp-route-departmentName="Инженерый отдел">инженерного отдела</a>,
+        <a asp-action="Details" asp-action="Department" asp-route-departmentName="Отдел контроля качества">отдела контроля качества</a> и
+        <a asp-action="Details" asp-action="Department" asp-route-departmentName="Отдел закупок">отдела закупок</a>.
     </p>
     <p>
         Цель: Обеспечить эффективное производство продукции или предоставление услуг, 

@@ -9,9 +9,9 @@
     <p>
         Отдел продаж является ключевым компонентом успешной работы компании, ответственным за привлечение новых 
         клиентов, увеличение объема продаж и установление долгосрочных отношений с клиентами.
-        Отдел продаж включает в себя отдел 
-        @Html.ActionLink("отдел розничных продаж", "Details", "Department", new{@departmentName="Отдел розничных продаж"}) 
-        @Html.ActionLink("отдел оптовых продаж", "Details", "Department", new{@departmentName="Отдел оптовых продаж"}).         
+        Отдел продаж включает в себя отдел
+        <a asp-action="Details" asp-action="Department" asp-route-departmentName="Отдел розничных продаж">отдел розничных продаж</a> и
+        <a asp-action="Details" asp-action="Department" asp-route-departmentName="Отдел оптовых продаж">отдел оптовых продаж</a>.         
     </p>
     <img class="departmentImg" src="/images/DepartmentImg/sales.jpg" alt="sales department"/>
     <p>

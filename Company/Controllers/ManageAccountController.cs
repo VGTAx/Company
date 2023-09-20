@@ -62,7 +62,7 @@ namespace Company.Controllers
         Name = user.Name,
         Phone = user.PhoneNumber,
       };
-      ViewData["ActiveLink"] = "profile";
+      ViewBag.ActiveLink = "profile";
       return PartialView(model);
     }
     /// <summary>
@@ -80,7 +80,7 @@ namespace Company.Controllers
       }
       if (!ModelState.IsValid)
       {
-        ViewData["StatusMessage"] = "Ошибка при обновлении профиля";
+       ViewBag.StatusMessage = "Ошибка при обновлении профиля";
         return PartialView(model);
       }
 
@@ -91,10 +91,10 @@ namespace Company.Controllers
         var setPhoneNumberResult = await _userManager.SetPhoneNumberAsync(user, model.Phone);
         if (!setPhoneNumberResult.Succeeded)
         {
-          ViewData["StatusMessage"] = "Ошибка при обновлении профиля";
+         ViewBag.StatusMessage = "Ошибка при обновлении профиля";
           return PartialView(model);
         }
-        ViewData["StatusMessage"] = "Профиль изменен"!;
+       ViewBag.StatusMessage = "Профиль изменен"!;
       }
 
       if (user.Name != model.Name)
@@ -103,16 +103,16 @@ namespace Company.Controllers
         var upadateNameResult = await _userManager.UpdateAsync(user);
         if (!upadateNameResult.Succeeded)
         {
-          ViewData["StatusMessage"] = "Ошибка при обновлении профиля";
+          ViewBag.StatusMessage = "Ошибка при обновлении профиля";
           return PartialView(model);
         }
-        ViewData["StatusMessage"] = "Профиль изменен"!;
+       ViewBag.StatusMessage = "Профиль изменен"!;
       }
 
       if (ViewData["StatusMessage"]!.ToString() == "Профиль изменен"!)
       {
         await _signInManager.RefreshSignInAsync(user);
-        return PartialView("_StatusMessage", ViewData["StatusMessage"]);
+        return PartialView("_StatusMessage",ViewBag.StatusMessage);
       }
       else
       {
@@ -155,7 +155,7 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if (user == null)
       {
-        ViewData["StatusMessage"] = "Ошибка, пользователь не найден!";
+        ViewBag.StatusMessage = "Ошибка, пользователь не найден!";
         return PartialView("_StatusMessage");
       }
 
@@ -184,7 +184,7 @@ namespace Company.Controllers
         var message = $"Добрый день. Подтвердите изменение эл.почты <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>нажмите сюда</a>";
         await _emailSender.SendEmailAsync(model.NewEmail!, "Подтверждение изменения электронной почты", message);
 
-        ViewData["StatusMessage"] = "Пожалуйста, проверьте электронную почту, чтобы подтвердить изменения";
+        ViewBag.StatusMessage = "Пожалуйста, проверьте электронную почту, чтобы подтвердить изменения";
         return PartialView("_StatusMessage");
       }
       ModelState.AddModelError("NewEmail", "Электронная почта уже используется");
@@ -201,7 +201,7 @@ namespace Company.Controllers
     {
       if (userId == null || code == null || email == null)
       {
-        ViewData["StatusMessage"] = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
+        ViewBag.StatusMessage = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
         return PartialView("_StatusMessage");
       }
 
@@ -215,12 +215,12 @@ namespace Company.Controllers
       var resultChangeEmail = await _userManager.ChangeEmailAsync(user, email, code);
       if (!resultChangeEmail.Succeeded)
       {
-        ViewData["StatusMessage"] = "Ошибка при подтверждении электронной почты";
+        ViewBag.StatusMessage = "Ошибка при подтверждении электронной почты";
         return PartialView("_StatusMessage");
       }
       await _userManager.SetUserNameAsync(user, email);
 
-      ViewData["StatusMessage"] = "Электронная почта изменена";
+      ViewBag.StatusMessage = "Электронная почта изменена";
       await _signInManager.RefreshSignInAsync(user);
       return View("_StatusMessage");
     }
@@ -255,7 +255,7 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if (user == null)
       {
-        ViewData["StatusMessage"] = $"Ошибка! Пользователь не найден.";
+        ViewBag.StatusMessage = $"Ошибка! Пользователь не найден.";
         return PartialView("_StatusMessage");
       }
 
@@ -270,7 +270,7 @@ namespace Company.Controllers
       }
       await _signInManager.RefreshSignInAsync(user);
 
-      ViewData["StatusMessage"] = "Пароль был изменен!";
+      ViewBag.StatusMessage = "Пароль был изменен!";
       return PartialView("_StatusMessage");
     }
     /// <summary>

@@ -371,3 +371,6 @@ FodyWeavers.xsd
 /Company/Services/RedisListenerService.cs
 /Company/Services/RedisPublisherService.cs
 /Company/Models/RedisSettingsModel.cs
+/Company/wwwroot/lib/jquery
+/Company/wwwroot/lib/jquery-validation
+/Company/wwwroot/lib/jquery-validation-unobtrusive

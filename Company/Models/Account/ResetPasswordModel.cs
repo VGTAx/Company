@@ -16,7 +16,8 @@ namespace Company.Models.Account
     /// Новый пароль пользователя.
     /// </summary>
     [Required(ErrorMessage = "Введите пароль")]
-    [StringLength(100, ErrorMessage = "{0} должен содержать от {2} до {1} символов.", MinimumLength = 6)]
+    [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{6,}$", ErrorMessage = "Пароль должен содержать как минимум одну цифру, " +
+    @"одну прописную букву, одну заглавную букву и один специальный символ, и быть длиной не менее 6 символов.")]
     [Display(Name = "Новый пароль")]
     [DataType(DataType.Password)]
     public string? Password { get; set; }

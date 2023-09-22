@@ -14,8 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<CompanyContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("MySqlConnection")!,
-    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))));
+var connectionString = builder.Configuration["Company:MySqlConnection"];
+
+builder.Services.AddDbContext<CompanyContext>(
+  options => options.UseMySql(connectionString!, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddDefaultIdentity<ApplicationUserModel>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
@@ -57,12 +59,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
   options.InstanceName = "local";
 });
 
-var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+var smtpSettings = builder.Configuration.GetSection("Company:SmtpSettings").Get<SmtpSettings>();
 builder.Services.AddSingleton(smtpSettings);
 builder.Services.AddTransient<IEmailSender, MailKitEmailSenderService>();
 builder.Services.AddSingleton<INotificationService, ChangeRoleNotificationService>();
 builder.Services.AddScoped<AdminAccountService>();
-
 
 var app = builder.Build();
 
@@ -82,17 +83,12 @@ if (!app.Environment.IsDevelopment())
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
 }
-
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
-
-
 app.UseChangeRoleMiddleware();
 app.MapControllerRoute(
   name: "confirmationRegister",

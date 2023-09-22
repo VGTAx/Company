@@ -10,14 +10,14 @@ namespace Company.Models.Account
     /// <summary>
     /// Адрес электронной почты пользователя.
     /// </summary>
-    [Required]
+    [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
     public string? Email { get; set; }
 
     /// <summary>
     /// Пароль пользователя.
     /// </summary>
-    [Required]
+    [Required(ErrorMessage = "Введите пароль")]
     [DataType(DataType.Password)]
     public string? Password { get; set; }
 

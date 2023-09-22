@@ -1,15 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Company.Models.Account
 {
   /// <summary>
   /// Модель для регистрации нового пользователя.
   /// </summary>
-  public class RegisterModel
+  public class RegistrationModel
   {
     /// <summary>
     /// Электронная почта пользователя.
     /// </summary>
+    [Remote(action: "CheckExistEmail", controller: "Account", ErrorMessage = "Test")]
     [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
     [Display(Name = "Электроннная почта")]
@@ -23,9 +25,10 @@ namespace Company.Models.Account
     /// <summary>
     /// Пароль учетной записи пользователя.
     /// </summary>
-    [Required(ErrorMessage = "Введите пароль")]
-    [StringLength(100, ErrorMessage = "{0} должен содержать от {2} до {1} символов.", MinimumLength = 6)]
+    [Required(ErrorMessage = "Введите пароль")]    
     [DataType(DataType.Password)]
+    [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{6,}$", ErrorMessage = "Пароль должен содержать как минимум одну цифру, " +
+    @"одну прописную букву, одну заглавную букву и один специальный символ, и быть длиной не менее 6 символов.")]
     [Display(Name = "Пароль")]
     public string? Password { get; set; }
     /// <summary>

@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.ViewComponents
-{
-  [ViewComponent]
-  public class LoginViewComponent : ViewComponent
+{  
+  public class LoginPanel : ViewComponent
   {
     private readonly UserManager<ApplicationUserModel>? _userManger;
 
-    public LoginViewComponent(UserManager<ApplicationUserModel> userManager)
+    public LoginPanel(UserManager<ApplicationUserModel> userManager)
     {
       _userManger = userManager;
     }
@@ -17,7 +16,7 @@ namespace Company.ViewComponents
     public IViewComponentResult Invoke()
     {
       var user = _userManger.GetUserAsync((System.Security.Claims.ClaimsPrincipal)User).GetAwaiter().GetResult();
-
+      
       return View(user);
     }
   }

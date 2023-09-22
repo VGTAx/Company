@@ -1,4 +1,5 @@
-﻿using Company.Models;
+﻿using Company.Data;
+using Company.Models;
 using Company.Models.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -21,7 +22,7 @@ namespace Company.Controllers
     private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly IUserStore<ApplicationUserModel> _userStore;
     private readonly IUserEmailStore<ApplicationUserModel> _emailStore;
-    private readonly ILogger<RegisterModel> _logger;
+    private readonly ILogger<RegistrationModel> _logger;
     private readonly IEmailSender _emailSender;
     private readonly RoleManager<IdentityRole> _roleManager;
     /// <summary>
@@ -32,14 +33,15 @@ namespace Company.Controllers
     /// <param name="signInManager">Менеджер аутентификации и входа в систему.</param>
     /// <param name="logger">Логгер для записи событий и ошибок.</param>
     /// <param name="emailSender">Сервис отправки электронных писем.</param>
-    /// <param name="roleManager">Менеджер ролей для работы с ролями пользователей.</param>
+    /// <param name="roleManager">Менеджер ролей для работы с ролями пользователей.</param>    
     public AccountController(
         UserManager<ApplicationUserModel> userManager,
         IUserStore<ApplicationUserModel> userStore,
         SignInManager<ApplicationUserModel> signInManager,
-        ILogger<RegisterModel> logger,
+        ILogger<RegistrationModel> logger,
         IEmailSender emailSender,
-        RoleManager<IdentityRole> roleManger)
+        RoleManager<IdentityRole> roleManger,
+        CompanyContext context)
     {
       _userManager = userManager;
       _userStore = userStore;
@@ -64,10 +66,19 @@ namespace Company.Controllers
     /// <param name="model">Модель регистрации, содержащая данные пользователя.</param>
     /// <returns>Редирект на страницу подтверждения при успешной регистрации или страницу регистрации с ошибками.</returns>
     [HttpPost]
-    public async Task<IActionResult> Registration([Bind("Email, Name, Password, ConfirmPassword")] RegisterModel model)
+    public async Task<IActionResult> Registration([Bind("Email, Name, Password, ConfirmPassword")] RegistrationModel model)
     {
       if (ModelState.IsValid)
       {
+        var checkExistEmail = _userManager.FindByEmailAsync(model.Email);
+        if (checkExistEmail != null) 
+        {
+          ModelState.AddModelError("Email", $"Электронная почта уже используется");
+          ModelState.ClearValidationState("Email");
+          ModelState.AddModelError("Email", $"Электронная почта уже используется_2");
+          return View();
+        }
+         
         var user = new ApplicationUserModel
         {
           UserName = model.Email,
@@ -341,6 +352,6 @@ namespace Company.Controllers
         throw new NotSupportedException("The default UI requires a user store with email support.");
       }
       return (IUserEmailStore<ApplicationUserModel>)_userStore;
-    }
+    }        
   }
 }

@@ -10,7 +10,7 @@ namespace Company.Models.Account
     /// <summary>
     /// Адрес электронной почты пользователя, для которого запрашивается сброс пароля.
     /// </summary>
-    [Required]
+    [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
     public string? Email { get; set; }
   }

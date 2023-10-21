@@ -1,31 +1,32 @@
 # Company
-Company - это веб-приложение, которое является системой управления пользователями и отделами компании. В приложении реализована иерархическая структура отделов. Например, "Отдел логистики" с подотделами "Склад" и "Отдел доставки" . Такая иерархическая структура позволяет логически организовать отделы и управлять ими, а также связывать пользователей с соответствующими отделами.<br>
 
-Приложение разработано на платформе **ASP.NET** с использованием языка программирования **C#**.<br>
-Для хранения данных приложение использует **СУБД MySQL**, что обеспечивает надежность и эффективность при работе с большим объемом данных.
-Для работы с базой данной используется ORM - **Entity Framework**. <br>
-Клиентская часть приложения разработана с использованием языков и технологий веб-разработки, таких как **CSS**, **HTML** и **JavaScript**. <br>
+Company is a web application that is a system for managing users and company departments. The application implements a hierarchical departmental structure. For example, “Logistics Department” with subdepartments “Warehouse” and “Delivery Department”. This hierarchical structure allows departments to be logically organized and managed, as well as linking users to the appropriate departments.<br>
 
-**Приложение обеспечивает следующий функционал:**
+The application is developed on the **ASP.NET** platform using the **C#** programming language.<br>
+The application uses **MySQL** DBMS to store data, which ensures reliability and efficiency when working with large amounts of data.
+To work with this database, ORM is used - **Entity Framework**. <br>
+The client side of the application is developed using web development languages and technologies such as **CSS**, **HTML** and **JavaScript**. <br>
+
+**The application provides the following functionality:**
 <ol>
-  <li>Регистрация пользователей с подтверждением по электронной почте.</li>
-  <li>Изменение учетных данных пользователей.</li>  
-  <li>Разграничение доступа к функциям в зависимости от роли пользователя.</li>  
-  <li>Возможность просмотра, добавления, редактирования и удаления данных о сотрудниках.</li>
+   <li>User registration with email confirmation.</li>
+   <li>Changing user credentials.</li>
+   <li>Delimitation of access to functions depending on the user role.</li>
+   <li>Ability to view, add, edit and delete employee data.</li>
 </ol>
 
-**Инструкци по установке:**
+**Installation Instructions:**
 <ol>
-  <li>Клонируйте репозиторий: git clone <a href="https://github.com/VGTAx/Company.git"><b>https://github.com/VGTAx/Company.git</b></a></li> 
-  <li>Измените файл с настройками appsettings.json:
-    <ul>
-      <li>Обновите строку подключения к базе данных в файле указав учетные данные вашей базы данных MySQL</li>
-      <li>Обновите данные для подключения к SMTP-серверу вашей почтовой службы</li>
-    </ul>
-  </li>
- 
-  <li>Откройте файл решения (Company.sln) в Visual Studio.</li>
-  <li>Постройте решение для восстановления пакетов NuGet и компиляции проекта.</li>
-  <li>Выполните миграцию для создания БД и заполнения начальными данными. Для этого в Visual Studio откройте <b>Package Manager Console</b> и введите команду <b>Update-Database</b></li>
-  <li>Запустите приложение, используя IIS Express или разверните его на веб-сервере по вашему выбору.</li>
+   <li>Clone the repository</li>
+   <li>Go to the project directory</li>
+   <li>Make sure you have the .NET SDK installed. If not, install it from the official .NET site: https://dotnet.microsoft.com/download/dotnet</li>
+   <li>Change the appsettings.json settings file:
+     <ul>
+       <li>Update the database connection string in the file with your MySQL database credentials</li>
+       <li>Update your connection details to your email service's SMTP server</li>
+     </ul>
+   </li>
+  <li>Restore the project dependencies using the command: <b><i>dotnet restore</i></b></li>
+   <li>Migrate to create the database and fill it with initial data: <b><i>dotnet ef database update</i></b></li>
+   <li>Run the App using the command: <b><i>dotnet run</i></b></li>
 </ol>

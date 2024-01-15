@@ -14,7 +14,7 @@ namespace Company.Models.Employee
     /// <summary>
     /// Имя сотрудника.
     /// </summary>
-    [Required(ErrorMessage = "Введите имя")]    
+    [Required(ErrorMessage = "Введите имя")]
     public string? Name { get; set; }
     /// <summary>
     /// Фамилия сотрудника.

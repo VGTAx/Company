@@ -374,3 +374,4 @@ FodyWeavers.xsd
 /Company/wwwroot/lib/jquery
 /Company/wwwroot/lib/jquery-validation
 /Company/wwwroot/lib/jquery-validation-unobtrusive
+/Company/.editorconfig

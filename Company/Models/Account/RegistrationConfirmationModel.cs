@@ -1,6 +1,6 @@
 ﻿namespace Company.Models.Account
 {
-  
+
   public class RegistrationConfirmationModel
   {
     /// <summary>

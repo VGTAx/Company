@@ -16,7 +16,7 @@
     /// <summary>
     /// Идентификатор родительского отдела.
     /// </summary>
-    public int? ParentDepartmentID { get; set; }  
+    public int? ParentDepartmentID { get; set; }
 
     /// <summary>
     /// Создает экземпляр класса <see cref="DepartmentModel"/>.

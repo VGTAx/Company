@@ -33,7 +33,7 @@ namespace Company.Middlewares
       INotificationService _changeRole,
       SignInManager<ApplicationUserModel> _signInManager)
     {
-      if (context.User.Identity.Name == null)
+      if(context.User.Identity.Name == null)
       {
         await _next.Invoke(context);
       }
@@ -41,7 +41,7 @@ namespace Company.Middlewares
       {
         var user = _userManager.FindByNameAsync(context.User.Identity.Name).Result;
 
-        if (user != null && _changeRole.HasNotification(user.Id))
+        if(user != null && _changeRole.HasNotification(user.Id))
         {
           await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
           var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user);

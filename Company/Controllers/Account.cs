@@ -1,5 +1,4 @@
-﻿using Company.Data;
-using Company.Models;
+﻿using Company.Models;
 using Company.Models.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -16,17 +15,17 @@ namespace Company.Controllers
   /// <summary>
   /// Контроллер для управления учетными записями пользователей.
   /// </summary>
-  public class AccountController : Controller
+  public class Account : Controller
   {
     private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly IUserStore<ApplicationUserModel> _userStore;
     private readonly IUserEmailStore<ApplicationUserModel> _emailStore;
-    private readonly ILogger<RegistrationModel> _logger;
     private readonly IEmailSender _emailSender;
     private readonly RoleManager<IdentityRole> _roleManager;
+
     /// <summary>
-    /// Создает экземпляр класса <see cref="AccountController"/>.
+    /// Создает экземпляр класса <see cref="Account"/>.
     /// </summary>
     /// <param name="userManager">Менеджер пользователей для работы с учетными записями.</param>
     /// <param name="userStore">Хранилище пользователей.</param>
@@ -34,23 +33,22 @@ namespace Company.Controllers
     /// <param name="logger">Логгер для записи событий и ошибок.</param>
     /// <param name="emailSender">Сервис отправки электронных писем.</param>
     /// <param name="roleManager">Менеджер ролей для работы с ролями пользователей.</param>    
-    public AccountController(
+    public Account(
         UserManager<ApplicationUserModel> userManager,
         IUserStore<ApplicationUserModel> userStore,
         SignInManager<ApplicationUserModel> signInManager,
-        ILogger<RegistrationModel> logger,
         IEmailSender emailSender,
-        RoleManager<IdentityRole> roleManger,
-        CompanyContext context)
+        RoleManager<IdentityRole> roleManger
+        )
     {
       _userManager = userManager;
       _userStore = userStore;
-      _emailStore = GetEmailStore()!;
+      _emailStore = (IUserEmailStore<ApplicationUserModel>)_userStore;
       _signInManager = signInManager;
-      _logger = logger;
       _emailSender = emailSender;
       _roleManager = roleManger;
     }
+
     /// <summary>
     /// Отображает страницу регистрации для пользователей.
     /// </summary>
@@ -60,82 +58,67 @@ namespace Company.Controllers
     {
       return View();
     }
+
     /// <summary>
     /// Обрабатывает POST-запрос для регистрации пользователя.
     /// </summary>
     /// <param name="model">Модель регистрации, содержащая данные пользователя.</param>
     /// <returns>Редирект на страницу подтверждения при успешной регистрации или страницу регистрации с ошибками.</returns>
     [HttpPost]
-    public async Task<IActionResult> Registration([Bind("Email, Name, Password, ConfirmPassword")] RegistrationModel model)
+    public async Task<IActionResult> Registration([FromForm] RegistrationModel model)
     {
-      if (ModelState.IsValid)
+      if(!ModelState.IsValid)
       {
-        var checkExistEmail = _userManager.FindByEmailAsync(model.Email);
-        if (checkExistEmail != null) 
-        {
-          ModelState.AddModelError("Email", $"Электронная почта уже используется");
-          ModelState.ClearValidationState("Email");
-          ModelState.AddModelError("Email", $"Электронная почта уже используется_2");
-          return View();
-        }
-         
-        var user = new ApplicationUserModel
-        {
-          UserName = model.Email,
-          Email = model.Email,
-          Name = model.Name,
-        };
-
-        await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
-        await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
-
-        var result = await _userManager.CreateAsync(user, model.Password!);
-
-        if (result.Succeeded)
-        {
-          _logger.LogInformation("User created a new account with password.");
-
-          var claim = new Claim("Name", model.Name, ClaimValueTypes.String);
-          await _userManager.AddClaimAsync(user, claim);
-          var role = await _roleManager.FindByNameAsync("User");
-          var roleClaim = new Claim(ClaimTypes.Role, role.Name);
-
-          await _userManager.AddClaimAsync(user, roleClaim);
-          var userId = await _userManager.GetUserIdAsync(user);
-          var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-          code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-          var callBackUrl = Url.Action(
-              action: "RegistrationConfirmation",
-              controller: "Account",
-              values: new { userId = userId, code = code, statusConfirmation = "true" },
-              protocol: Request.Scheme);
-
-          await _userManager.AddToRoleAsync(user, "user");
-
-
-          await _emailSender.SendEmailAsync(model.Email, "Подтверждение регистрации",
-              $"Спасибо за регистрацию. Пожалуйста, перейдите по ссылке , чтобы подтвердить ваш адрес электронной почты: <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}' id='confrimationLink'>нажмите сюда</a>." +
-              $"\n\nЕсли вы получили это письмо случайно - удалите это письмо.");
-
-          if (_userManager.Options.SignIn.RequireConfirmedAccount)
-          {
-            return RedirectToAction("RegistrationConfirmation", "Account");
-          }
-          else
-          {
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return LocalRedirect("/");
-          }
-        }
-
-        foreach (var error in result.Errors)
-        {
-          ModelState.AddModelError(string.Empty, error.Description);
-        }
+        return View();
       }
+
+      var checkExistEmail = await _userManager.FindByEmailAsync(model.Email!);
+
+      if(checkExistEmail != null)
+      {
+        ModelState.AddModelError(nameof(model.Email), $"Электронная почта уже используется");
+        return View();
+      }
+
+      var user = new ApplicationUserModel
+      {
+        UserName = model.Email,
+        Email = model.Email,
+        Name = model.Name,
+      };
+
+      await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
+      await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
+      var resultOfCreatingUser = await _userManager.CreateAsync(user, model.Password!);
+
+      if(resultOfCreatingUser.Succeeded)
+      {
+        var role = await _roleManager.FindByNameAsync("User") ?? throw new ArgumentException("Role \"User\" not found");
+        var roleClaim = new Claim(ClaimTypes.Role, role.Name!);
+        await _userManager.AddClaimAsync(user, roleClaim);
+
+        var userId = await _userManager.GetUserIdAsync(user);
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+        var callBackUrl = Url.Action(
+            action: "RegistrationConfirmation",
+            controller: "Account",
+            values: new { userId, code, statusConfirmation = "true" },
+            protocol: Request.Scheme);
+
+        await _userManager.AddToRoleAsync(user, "User");
+
+        await _emailSender.SendEmailAsync(model.Email!, "Подтверждение регистрации",
+            $"Спасибо за регистрацию. Пожалуйста, перейдите по ссылке , чтобы подтвердить ваш адрес электронной почты: <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}' id='confrimationLink'>нажмите сюда</a>." +
+            $"\n\nЕсли вы получили это письмо случайно - удалите это письмо.");
+
+        return RedirectToAction(nameof(RegistrationConfirmation), nameof(Account));
+      }
+
       return View();
     }
+
     /// <summary>
     /// Обрабатывает подтверждение регистрации пользователя по электронной почте.
     /// </summary>
@@ -144,18 +127,18 @@ namespace Company.Controllers
     /// <returns>
     /// Возвращает страницу с сообщением об успешном завершении регистрации или сообщение об ошибке.
     /// </returns>
-    public async Task<IActionResult> RegistrationConfirmation(string userId, string code)
+    public async Task<IActionResult> RegistrationConfirmation([FromQuery] string userId, [FromQuery] string code)
     {
-      if (userId == null || code == null)
+      if(userId == null || code == null)
       {
         ViewBag.StatusMessage = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
         return View();
       }
 
       var user = await _userManager.FindByIdAsync(userId);
-      if (user == null)
+      if(user == null)
       {
-        return NotFound($"Unable to load user with ID '{userId}'.");
+        return View("_StatusMessage", "Ошибка. Пользователь не найден или истек срок годности кода подтверждения");
       }
 
       code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
@@ -165,6 +148,7 @@ namespace Company.Controllers
 
       return View();
     }
+
     /// <summary>
     /// Отображает страницу входа для пользователей.
     /// </summary>
@@ -174,6 +158,7 @@ namespace Company.Controllers
     {
       return View();
     }
+
     /// <summary>
     /// Обрабатывает POST-запрос для аутентификации пользователя.
     /// </summary>
@@ -183,45 +168,45 @@ namespace Company.Controllers
     /// В противном случае, возвращает страницу входа с сообщением об ошибке.
     /// </returns>
     [HttpPost]
-    public async Task<IActionResult> Login([Bind("Email, Password, RememberMe")] LoginModel model)
+    public async Task<IActionResult> Login([FromForm] LoginModel model)
     {
-      if (ModelState.IsValid)
+      if(!ModelState.IsValid)
       {
-        var result = await _signInManager.PasswordSignInAsync(model.Email!, model.Password!, model.RememberMe, lockoutOnFailure: false);
-
-        if (result.Succeeded)
-        {
-          var user = await _userManager.FindByEmailAsync(model.Email);
-          // Создание ClaimsPrincipal на основе пользователя
-          var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
-
-          // Установка аутентификационных куки
-          await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
-
-          _logger.LogInformation("User logged in.");
-          return RedirectToAction("Index", "Department");
-        }
-        else
-        {
-          ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-          return View();
-        }
+        return View();
       }
 
-      return View();
+      var result = await _signInManager.PasswordSignInAsync(model.Email!, model.Password!, model.RememberMe, lockoutOnFailure: false);
+
+      if(result.Succeeded)
+      {
+        var user = await _userManager.FindByEmailAsync(model.Email!);
+        // Создание ClaimsPrincipal на основе пользователя
+        var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user!);
+        // Установка аутентификационных куки
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
+
+        return RedirectToAction(nameof(Department.Index), nameof(Department));
+      }
+      else
+      {
+        ModelState.AddModelError(string.Empty, "Неверный логин или пароль");
+        return View();
+      }
     }
+
     /// <summary>
     /// Выполняет выход пользователя из системы.
     /// </summary>
     /// <returns>
     /// Разлогинивает пользователя и перенаправляет на главную страницу.
     /// </returns>
+    [HttpPost]
     public async Task<IActionResult> Logout()
     {
       await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-      _logger.LogInformation("User logged out.");
-      return RedirectToAction("Index", "Department");
+      return RedirectToAction(nameof(Department.Index), nameof(Department));
     }
+
     /// <summary>
     /// Отображает страницу для восстановления пароля.
     /// </summary>
@@ -231,6 +216,7 @@ namespace Company.Controllers
     {
       return View();
     }
+
     /// <summary>
     /// Обрабатывает POST-запрос для восстановления пароля пользователя.
     /// </summary>
@@ -240,32 +226,33 @@ namespace Company.Controllers
     /// В противном случае, возвращает страницу восстановления пароля с сообщением об ошибке.
     /// </returns>
     [HttpPost]
-    public async Task<IActionResult> ForgotPassword([Bind("Email")] ForgotPasswordModel model)
+    public async Task<IActionResult> ForgotPassword([FromForm] ForgotPasswordModel model)
     {
-      if (ModelState.IsValid)
+      if(!ModelState.IsValid)
       {
-        var user = await _userManager.FindByEmailAsync(model.Email!);
-        if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-        {
-          ModelState.AddModelError(string.Empty, "Пользователя с такой электронной почтой не существует.");
-          return View();
-        }
-
-        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        var callBackUrl = Url.Action(
-            action: "ResetPassword",
-            controller: "Account",
-            values: new { code = code, Email = model.Email },
-            protocol: Request.Scheme);
-        await _emailSender.SendEmailAsync(model.Email!, "Восстановление пароля",
-            $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a >.");
-
-        return RedirectToAction("ForgotPasswordConfirmation", "Account");
+        return View();
       }
 
-      return View();
+      var user = await _userManager.FindByEmailAsync(model.Email!);
+      if(user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+      {
+        ModelState.AddModelError(nameof(model.Email), "Пользователя с такой электронной почтой не существует.");
+        return View();
+      }
+
+      var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+      code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+      var callBackUrl = Url.Action(
+          action: "ResetPassword",
+          controller: "Account",
+          values: new { code, model.Email },
+          protocol: Request.Scheme);
+      await _emailSender.SendEmailAsync(model.Email!, "Восстановление пароля",
+          $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a >.");
+
+      return RedirectToAction(nameof(ForgotPasswordConfirmation), nameof(Account));
     }
+
     /// <summary>
     /// Отображает страницу подтверждения восстановления пароля.
     /// </summary>
@@ -275,6 +262,7 @@ namespace Company.Controllers
     {
       return View();
     }
+
     /// <summary>
     /// Отображает страницу сброса пароля.
     /// </summary>
@@ -284,15 +272,16 @@ namespace Company.Controllers
     /// Возвращает страницу сброса пароля или ошибку BadRequest.
     /// </returns>
     [HttpGet]
-    public IActionResult ResetPassword(string code = null, string email = null)
+    public IActionResult ResetPassword(string? code = null, string? email = null)
     {
-      if (code == null || email == null)
+      if(code == null || email == null)
       {
         return BadRequest("A code must be supplied for password reset.");
       }
 
       return View();
     }
+
     /// <summary>
     /// Обрабатывает POST-запрос для сброса пароля пользователя.
     /// </summary>
@@ -302,32 +291,35 @@ namespace Company.Controllers
     /// В противном случае, возвращает страницу с сообщениями об ошибках.
     /// </returns>
     [HttpPost]
-    public async Task<IActionResult> ResetPassword([Bind("Email, Password, ConfirmPassword, Code")] ResetPasswordModel model)
+    public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordModel model)
     {
-      if (!ModelState.IsValid)
+      if(!ModelState.IsValid)
       {
         return View();
       }
 
-      var user = await _userManager.FindByEmailAsync(model.Email);
-      if (user == null)
+      var user = await _userManager.FindByEmailAsync(model.Email!);
+      if(user == null)
       {
-        return RedirectToAction("ResetPasswordConfirmation", "Account");
-      }
-      model.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code));
-      var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-      if (result.Succeeded)
-      {
-        return RedirectToAction("ResetPasswordConfirmation", "Account");
+        return View("_StatusMessage", "Ошибка во время сброса пароля. Попробуйте ещё раз.");
       }
 
-      foreach (var error in result.Errors)
+      model.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code!));
+      var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password!);
+
+      if(result.Succeeded)
+      {
+        return RedirectToAction(nameof(ResetPasswordConfirmation), nameof(Account));
+      }
+
+      foreach(var error in result.Errors)
       {
         ModelState.AddModelError(string.Empty, error.Description);
       }
 
       return View();
     }
+
     /// <summary>
     /// Отображает страницу подтверждения сброса пароля.
     /// </summary>
@@ -336,22 +328,5 @@ namespace Company.Controllers
     {
       return View();
     }
-    /// <summary>
-    /// Получает интерфейс хранилища электронной почты для пользователей.
-    /// </summary>
-    /// <returns>
-    /// Интерфейс хранилища электронной почты для пользователей.
-    /// </returns>
-    /// <exception cref="NotSupportedException">
-    /// Выбрасывается, если хранилище пользователей не поддерживает адреса электронной почты.
-    /// </exception>
-    private IUserEmailStore<ApplicationUserModel>? GetEmailStore()
-    {
-      if (!_userManager.SupportsUserEmail)
-      {
-        throw new NotSupportedException("The default UI requires a user store with email support.");
-      }
-      return (IUserEmailStore<ApplicationUserModel>)_userStore;
-    }        
   }
 }

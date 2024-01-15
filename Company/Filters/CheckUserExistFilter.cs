@@ -38,14 +38,14 @@ namespace Company.Filters
     {
       var userName = context.HttpContext.User.Identity!.Name;
 
-      if (!string.IsNullOrEmpty(userName))
+      if(!string.IsNullOrEmpty(userName))
       {
         // Проверяем, было ли уже выполнено перенаправление
         var alreadyRedirected = _cache.TryGetValue($"{userName}_AlreadyRedirected", out bool cachedAlreadyRedirected) && cachedAlreadyRedirected;
         var user = await _userManager.FindByNameAsync(userName);
-        if (!alreadyRedirected && user == null)
+        if(!alreadyRedirected && user == null)
         {
-          if (!_cache.TryGetValue($"{userName}_SecurityStamp", out string? cachedSecurityStamp))
+          if(!_cache.TryGetValue($"{userName}_SecurityStamp", out string? cachedSecurityStamp))
           {
             // Если значение отсутствует в кэше, получение его из базы данных                    
             cachedSecurityStamp = user?.SecurityStamp ?? string.Empty;

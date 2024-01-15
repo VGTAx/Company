@@ -9,14 +9,14 @@ namespace Company.Controllers
   /// <summary>
   /// Контроллер для управления отделами.
   /// </summary>
-  public class DepartmentController : Controller
+  public class Department : Controller
   {
     private readonly CompanyContext _context;
     /// <summary>
-    /// Создает экземпляр класса <see cref="DepartmentController"/>.
+    /// Создает экземпляр класса <see cref="Department"/>.
     /// </summary>
     /// <param name="context">Контекст компании для доступа к данным отделов.</param>
-    public DepartmentController(CompanyContext context)
+    public Department(CompanyContext context)
     {
       _context = context;
     }
@@ -39,18 +39,18 @@ namespace Company.Controllers
     /// <returns>View с информацией о выбранном отделе.</returns>
     public IActionResult Details(int? departmentId = 0, string? departmentName = null)
     {
-      if (departmentName == null && departmentId == null)
+      if(departmentName == null && departmentId == null)
       {
         return NotFound();
       }
-      else if (departmentId == 0 && !String.IsNullOrEmpty(departmentName))
+      else if(departmentId == 0 && !String.IsNullOrEmpty(departmentName))
       {
         departmentId = _context.Departments.FirstOrDefault(d => d.DepartmentName == departmentName)!.ID;
       }
 
       var department = _context.Departments.FirstOrDefault(d => d.ID == departmentId);
 
-      switch (departmentId)
+      switch(departmentId)
       {
         case 1:
           return View("CustomerService", department);
@@ -94,7 +94,7 @@ namespace Company.Controllers
                                .ToList();
       var employees = new List<EmployeeModel>();
 
-      if (subdepartments.Count != 0)
+      if(subdepartments.Count != 0)
       {
         employees = empl
                       .Where(e => subdepartments
@@ -104,9 +104,9 @@ namespace Company.Controllers
       }
       employees = empl.Where(e => e.DepartmentID == id).ToList();
 
-      if (subdepartments.Any())
+      if(subdepartments.Any())
       {
-        foreach (var dep in subdepartments)
+        foreach(var dep in subdepartments)
         {
           var children = GetEmployees(dep.ID, departments, empl);
           employees.AddRange(children);

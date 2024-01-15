@@ -31,7 +31,7 @@ namespace Company.TagHelpers
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
       output.TagName = "a";
-      output.Attributes.SetAttribute("href", "mailto:"+Adress);
+      output.Attributes.SetAttribute("href", "mailto:" + Adress);
       output.Attributes.SetAttribute("class", Class);
       output.Attributes.SetAttribute("id", Id);
       output.Content.SetContent(Value);

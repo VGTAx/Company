@@ -24,7 +24,7 @@ namespace Company.Models.Account
     /// <summary>
     /// Флаг, указывающий, должна ли система запоминать пользователя.
     /// </summary>
-    [Display(Name = "Remember me?")]
+    [Display(Name = "Запомнить меня")]
     public bool RememberMe { get; set; }
   }
 }

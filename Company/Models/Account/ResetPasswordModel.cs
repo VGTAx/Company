@@ -10,7 +10,8 @@ namespace Company.Models.Account
     /// <summary>
     /// Электронная почта пользователя.
     /// </summary>
-    [Required(ErrorMessage = "Введите электронную почту")]    
+    [Required(ErrorMessage = "Введите электронную почту")]
+    [EmailAddress]
     public string? Email { get; set; }
     /// <summary>
     /// Новый пароль пользователя.

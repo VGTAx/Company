@@ -62,7 +62,7 @@ namespace Company.Controllers
     public async Task<IActionResult> AccessSettings(string? id)
     {
       var user = await _userManager?.FindByIdAsync(id!)!;
-      if (user == null)
+      if(user == null)
       {
         return BadRequest("User not found");
       }
@@ -91,7 +91,7 @@ namespace Company.Controllers
     {
       var user = await _userManager?.FindByIdAsync(model.Id);
 
-      if (user == null)
+      if(user == null)
       {
         return BadRequest("User not found");
       }
@@ -105,27 +105,27 @@ namespace Company.Controllers
       var rolesToAdd = model.SelectedRoles.Except(userRoles);
       var rolesToRemove = userRoles.Except(model.SelectedRoles);
 
-      if (!model.SelectedRoles.Contains("User"))
+      if(!model.SelectedRoles.Contains("User"))
       {
         ViewBag.StatusMessage = "Ошибка! Роль User не может быть удалена!"!;
         return PartialView("_StatusMessage", ViewBag.StatusMessage);
       }
 
-      foreach (var role in rolesToAdd)
+      foreach(var role in rolesToAdd)
       {
         var claimRole = new Claim(ClaimTypes.Role, role);
         await _userManager.AddClaimAsync(user, claimRole);
         ViewBag.StatusMessage = "Данные изменены!"!;
       }
 
-      foreach (var role in rolesToRemove)
+      foreach(var role in rolesToRemove)
       {
         var claimRole = new Claim(ClaimTypes.Role, role);
         await _userManager.RemoveClaimAsync(user, claimRole);
         ViewBag.StatusMessage = "Данные изменены!"!;
       }
 
-      if (ViewBag.StatusMessage?.ToString() == "Данные изменены!"!)
+      if(ViewBag.StatusMessage?.ToString() == "Данные изменены!"!)
       {
         user.SecurityStamp = Guid.NewGuid().ToString();
         await _userManager.UpdateAsync(user);

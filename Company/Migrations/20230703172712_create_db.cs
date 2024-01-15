@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -8,227 +7,227 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Company.Migrations
 {
+  /// <inheritdoc />
+  public partial class create_db : Migration
+  {
     /// <inheritdoc />
-    public partial class create_db : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.AlterDatabase()
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-               name: "Employees",
-               columns: table => new
-               {
-                   ID = table.Column<int>(type: "int", nullable: false)
-                       .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                   FullName = table.Column<string>(type: "longtext", nullable: false)
-                       .Annotation("MySql:CharSet", "utf8mb4"),
-                   Surname = table.Column<string>(type: "longtext", nullable: false)
-                       .Annotation("MySql:CharSet", "utf8mb4"),
-                   Age = table.Column<string>(type: "longtext", nullable: false)
-                       .Annotation("MySql:CharSet", "utf8mb4"),
-                   Number = table.Column<string>(type: "longtext", nullable: false)
-                       .Annotation("MySql:CharSet", "utf8mb4"),
-                   DepartmentID = table.Column<int>(type: "int", nullable: false)
-               },
-               constraints: table =>
-               {
-                   table.PrimaryKey("PK_Employees", x => x.ID);
-               })
-               .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+         name: "Employees",
+         columns: table => new
+         {
+           ID = table.Column<int>(type: "int", nullable: false)
+                 .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+           FullName = table.Column<string>(type: "longtext", nullable: false)
+                 .Annotation("MySql:CharSet", "utf8mb4"),
+           Surname = table.Column<string>(type: "longtext", nullable: false)
+                 .Annotation("MySql:CharSet", "utf8mb4"),
+           Age = table.Column<string>(type: "longtext", nullable: false)
+                 .Annotation("MySql:CharSet", "utf8mb4"),
+           Number = table.Column<string>(type: "longtext", nullable: false)
+                 .Annotation("MySql:CharSet", "utf8mb4"),
+           DepartmentID = table.Column<int>(type: "int", nullable: false)
+         },
+         constraints: table =>
+         {
+           table.PrimaryKey("PK_Employees", x => x.ID);
+         })
+         .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Departments",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    DepartmentName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ParentDepartmentID = table.Column<int>(type: "int", nullable: true),
-                    DepartmentImageLink = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Departments", x => x.ID);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "Departments",
+          columns: table => new
+          {
+            ID = table.Column<int>(type: "int", nullable: false)
+                  .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            DepartmentName = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ParentDepartmentID = table.Column<int>(type: "int", nullable: true),
+            DepartmentImageLink = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_Departments", x => x.ID);
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-           
 
-            migrationBuilder.CreateTable(
-                name: "IdentityRole<string>",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Discriminator = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IdentityRole<string>", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "IdentityUser<string>",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedUserName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedEmail = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    SecurityStamp = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false),
-                    Discriminator = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IdentityUser<string>", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "IdentityRole<string>",
+          columns: table => new
+          {
+            Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            Name = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            NormalizedName = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            Discriminator = table.Column<string>(type: "longtext", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_IdentityRole<string>", x => x.Id);
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "NumberOfEmployees",
-                columns: table => new
-                {
-                    DepartmentID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    EmployeeCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NumberOfEmployees", x => x.DepartmentID);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "IdentityUser<string>",
+          columns: table => new
+          {
+            Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            UserName = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            NormalizedUserName = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            Email = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            NormalizedEmail = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+            PasswordHash = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            SecurityStamp = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+            TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+            LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+            LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
+            AccessFailedCount = table.Column<int>(type: "int", nullable: false),
+            Discriminator = table.Column<string>(type: "longtext", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            Name = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_IdentityUser<string>", x => x.Id);
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "RoleClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "NumberOfEmployees",
+          columns: table => new
+          {
+            DepartmentID = table.Column<int>(type: "int", nullable: false)
+                  .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            EmployeeCount = table.Column<int>(type: "int", nullable: false)
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_NumberOfEmployees", x => x.DepartmentID);
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "UserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserClaims", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "RoleClaims",
+          columns: table => new
+          {
+            Id = table.Column<int>(type: "int", nullable: false)
+                  .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            RoleId = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_RoleClaims", x => x.Id);
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "UserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "UserClaims",
+          columns: table => new
+          {
+            Id = table.Column<int>(type: "int", nullable: false)
+                  .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            UserId = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_UserClaims", x => x.Id);
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "UserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "UserLogins",
+          columns: table => new
+          {
+            LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            UserId = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "UserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Value = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+      migrationBuilder.CreateTable(
+          name: "UserRoles",
+          columns: table => new
+          {
+            UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.InsertData(
-                table: "Departments",
-                columns: new[] { "ID", "DepartmentImageLink", "DepartmentName", "ParentDepartmentID" },
-                values: new object[,]
-                {
+      migrationBuilder.CreateTable(
+          name: "UserTokens",
+          columns: table => new
+          {
+            UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            Name = table.Column<string>(type: "varchar(255)", nullable: false)
+                  .Annotation("MySql:CharSet", "utf8mb4"),
+            Value = table.Column<string>(type: "longtext", nullable: true)
+                  .Annotation("MySql:CharSet", "utf8mb4")
+          },
+          constraints: table =>
+          {
+            table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+          })
+          .Annotation("MySql:CharSet", "utf8mb4");
+
+      migrationBuilder.InsertData(
+          table: "Departments",
+          columns: new[] { "ID", "DepartmentImageLink", "DepartmentName", "ParentDepartmentID" },
+          values: new object[,]
+          {
                     { 1, "/images/DepartmentImg/customer service department.jpg", "Отдел по обслуживанию клиентов", null },
                     { 2, "/images/DepartmentImg/production department.jpg", "Производственный отдел", null },
                     { 3, "/images/DepartmentImg/bookkeeping.jpg", "Бухгалтерия", null },
@@ -241,13 +240,13 @@ namespace Company.Migrations
                     { 10, "/images/DepartmentImg/engineering department.jpg", "Инженерный отдел", 2 },
                     { 11, "/images/DepartmentImg/quality control department.jpg", "Отдел контроля качества", 2 },
                     { 12, "/images/DepartmentImg/purchasing department.jpg", "Отдел закупок", 2 }
-                });
+          });
 
-            migrationBuilder.InsertData(
-                table: "Employees",
-                columns: new[] { "ID", "Age", "DepartmentID", "FullName", "Number", "Surname" },
-                values: new object[,]
-                {
+      migrationBuilder.InsertData(
+          table: "Employees",
+          columns: new[] { "ID", "Age", "DepartmentID", "FullName", "Number", "Surname" },
+          values: new object[,]
+          {
                     { 1, "28", 3, "Алексей", "+79123456789", "Иванов" },
                     { 2, "32", 3, "Екатерина", "+79123456780", "Смирнова" },
                     { 3, "21", 5, "Дмитрий", "+79123456781", "Козлов" },
@@ -268,19 +267,19 @@ namespace Company.Migrations
                     { 18, "34", 11, "Татьяна", "+79123456770", "Андреева" },
                     { 19, "42", 11, "Павел", "+79123456769", "Макаров" },
                     { 20, "22", 12, "Алиса", "+79123456768", "Николаева" }
-                });
+          });
 
-            migrationBuilder.InsertData(
-                table: "IdentityRole<string>",
-                columns: new[] { "Id", "ConcurrencyStamp", "Discriminator", "Name", "NormalizedName" },
-                values: new object[,]
-                {
+      migrationBuilder.InsertData(
+          table: "IdentityRole<string>",
+          columns: new[] { "Id", "ConcurrencyStamp", "Discriminator", "Name", "NormalizedName" },
+          values: new object[,]
+          {
                     { "1", "ce97d922-c244-4fe4-a235-935a9f5b552a", "IdentityRole", "Admin", "ADMIN" },
                     { "2", "65dd32a3-73db-4315-a7ed-734a8507e406", "IdentityRole", "User", "USER" },
                     { "3", "92d4474a-4382-4bfc-95e1-070c242a4844", "IdentityRole", "Manager", "MANAGER" }
-                });
+          });
 
-            migrationBuilder.Sql(@"INSERT IGNORE INTO numberofemployees(DepartmentID, EmployeeCount)
+      migrationBuilder.Sql(@"INSERT IGNORE INTO numberofemployees(DepartmentID, EmployeeCount)
                    WITH table_1 
                        AS (
                            WITH RECURSIVE cte
@@ -299,8 +298,8 @@ namespace Company.Migrations
                        )
                    SELECT * FROM Table_1;");
 
-            migrationBuilder.Sql(
-                @"CREATE procedure UpdNumberOfEmployee()
+      migrationBuilder.Sql(
+          @"CREATE procedure UpdNumberOfEmployee()
                          BEGIN
                           UPDATE numberofemployees
                           INNER JOIN (
@@ -322,67 +321,67 @@ namespace Company.Migrations
             WHERE numberofemployees.DepartmentID = Result.DepartmentID 
             	AND numberofemployees.EmployeeCount <> Result.Employees;
                          END"
-                );
-            migrationBuilder.Sql(
-                @"CREATE TRIGGER UpdNumberOfEmployee_Insert 
+          );
+      migrationBuilder.Sql(
+          @"CREATE TRIGGER UpdNumberOfEmployee_Insert 
                          AFTER INSERT ON employees
                          FOR EACH ROW
                          BEGIN
                           CALL UpdNumberOfEmployee();
                          END"
-                );
+          );
 
-            migrationBuilder.Sql(
-               @"CREATE TRIGGER UpdNumberOfEmployee_Delete
+      migrationBuilder.Sql(
+         @"CREATE TRIGGER UpdNumberOfEmployee_Delete
                          AFTER DELETE ON employees
                          FOR EACH ROW
                          BEGIN
                           CALL UpdNumberOfEmployee();
                          END"
-               );
+         );
 
-            migrationBuilder.Sql(
-               @"CREATE TRIGGER UpdNumberOfEmployee_Update
+      migrationBuilder.Sql(
+         @"CREATE TRIGGER UpdNumberOfEmployee_Update
                          AFTER UPDATE ON employees
                          FOR EACH ROW
                          BEGIN
                           CALL UpdNumberOfEmployee();
                          END"
-               );
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "Departments");
-
-            migrationBuilder.DropTable(
-                name: "Employees");
-
-            migrationBuilder.DropTable(
-                name: "IdentityRole<string>");
-
-            migrationBuilder.DropTable(
-                name: "IdentityUser<string>");
-
-            migrationBuilder.DropTable(
-                name: "NumberOfEmployees");
-
-            migrationBuilder.DropTable(
-                name: "RoleClaims");
-
-            migrationBuilder.DropTable(
-                name: "UserClaims");
-
-            migrationBuilder.DropTable(
-                name: "UserLogins");
-
-            migrationBuilder.DropTable(
-                name: "UserRoles");
-
-            migrationBuilder.DropTable(
-                name: "UserTokens");
-        }
+         );
     }
+
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+      migrationBuilder.DropTable(
+          name: "Departments");
+
+      migrationBuilder.DropTable(
+          name: "Employees");
+
+      migrationBuilder.DropTable(
+          name: "IdentityRole<string>");
+
+      migrationBuilder.DropTable(
+          name: "IdentityUser<string>");
+
+      migrationBuilder.DropTable(
+          name: "NumberOfEmployees");
+
+      migrationBuilder.DropTable(
+          name: "RoleClaims");
+
+      migrationBuilder.DropTable(
+          name: "UserClaims");
+
+      migrationBuilder.DropTable(
+          name: "UserLogins");
+
+      migrationBuilder.DropTable(
+          name: "UserRoles");
+
+      migrationBuilder.DropTable(
+          name: "UserTokens");
+    }
+  }
 }

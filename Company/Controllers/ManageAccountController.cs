@@ -51,7 +51,7 @@ namespace Company.Controllers
     public async Task<IActionResult> Profile()
     {
       var user = await _userManager.GetUserAsync(User);
-      if (user == null)
+      if(user == null)
       {
         return NotFound($"Ошибка, невозможно получить данные. Авторизуйтесь повторно");
       }
@@ -74,45 +74,45 @@ namespace Company.Controllers
     public async Task<IActionResult> Profile([Bind("Email,Name, Phone")] ProfileModel model)
     {
       var user = await _userManager.GetUserAsync(User);
-      if (user == null)
+      if(user == null)
       {
         return RedirectToAction("Index", "Department");
       }
-      if (!ModelState.IsValid)
+      if(!ModelState.IsValid)
       {
-       ViewBag.StatusMessage = "Ошибка при обновлении профиля";
+        ViewBag.StatusMessage = "Ошибка при обновлении профиля";
         return PartialView(model);
       }
 
       var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-      if (model.Phone != phoneNumber)
+      if(model.Phone != phoneNumber)
       {
         var setPhoneNumberResult = await _userManager.SetPhoneNumberAsync(user, model.Phone);
-        if (!setPhoneNumberResult.Succeeded)
-        {
-         ViewBag.StatusMessage = "Ошибка при обновлении профиля";
-          return PartialView(model);
-        }
-       ViewBag.StatusMessage = "Профиль изменен"!;
-      }
-
-      if (user.Name != model.Name)
-      {
-        user.Name = model.Name;
-        var upadateNameResult = await _userManager.UpdateAsync(user);
-        if (!upadateNameResult.Succeeded)
+        if(!setPhoneNumberResult.Succeeded)
         {
           ViewBag.StatusMessage = "Ошибка при обновлении профиля";
           return PartialView(model);
         }
-       ViewBag.StatusMessage = "Профиль изменен"!;
+        ViewBag.StatusMessage = "Профиль изменен"!;
       }
 
-      if (ViewData["StatusMessage"]!.ToString() == "Профиль изменен"!)
+      if(user.Name != model.Name)
+      {
+        user.Name = model.Name;
+        var upadateNameResult = await _userManager.UpdateAsync(user);
+        if(!upadateNameResult.Succeeded)
+        {
+          ViewBag.StatusMessage = "Ошибка при обновлении профиля";
+          return PartialView(model);
+        }
+        ViewBag.StatusMessage = "Профиль изменен"!;
+      }
+
+      if(ViewData["StatusMessage"]!.ToString() == "Профиль изменен"!)
       {
         await _signInManager.RefreshSignInAsync(user);
-        return PartialView("_StatusMessage",ViewBag.StatusMessage);
+        return PartialView("_StatusMessage", ViewBag.StatusMessage);
       }
       else
       {
@@ -128,7 +128,7 @@ namespace Company.Controllers
     {
       var user = await _userManager.GetUserAsync(User);
 
-      if (user == null)
+      if(user == null)
       {
         return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
       }
@@ -153,7 +153,7 @@ namespace Company.Controllers
     public async Task<IActionResult> ChangeEmail([Bind("NewEmail, IsEmailConfirmed")] ChangeEmailModel model)
     {
       var user = await _userManager.GetUserAsync(User);
-      if (user == null)
+      if(user == null)
       {
         ViewBag.StatusMessage = "Ошибка, пользователь не найден!";
         return PartialView("_StatusMessage");
@@ -161,7 +161,7 @@ namespace Company.Controllers
 
       model.Email = await _userManager.GetEmailAsync(user);
 
-      if (!ModelState.IsValid || String.IsNullOrEmpty(model.NewEmail))
+      if(!ModelState.IsValid || String.IsNullOrEmpty(model.NewEmail))
       {
         ModelState.AddModelError("NewEmail", "Введите новую электронную почту");
         return PartialView(model);
@@ -170,7 +170,7 @@ namespace Company.Controllers
       var userId = await _userManager.GetUserIdAsync(user);
       var checkAvailableEmail = await _userManager.FindByEmailAsync(model.NewEmail);
 
-      if (model.NewEmail != model.Email && checkAvailableEmail is null)
+      if(model.NewEmail != model.Email && checkAvailableEmail is null)
       {
         var code = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail!);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -199,21 +199,21 @@ namespace Company.Controllers
     /// <returns>View с результатом операции подтверждения изменения электронной почты пользователя.</returns>
     public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string code)
     {
-      if (userId == null || code == null || email == null)
+      if(userId == null || code == null || email == null)
       {
         ViewBag.StatusMessage = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
         return PartialView("_StatusMessage");
       }
 
       var user = await _userManager.FindByIdAsync(userId);
-      if (user == null)
+      if(user == null)
       {
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
       }
 
       code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
       var resultChangeEmail = await _userManager.ChangeEmailAsync(user, email, code);
-      if (!resultChangeEmail.Succeeded)
+      if(!resultChangeEmail.Succeeded)
       {
         ViewBag.StatusMessage = "Ошибка при подтверждении электронной почты";
         return PartialView("_StatusMessage");
@@ -232,12 +232,12 @@ namespace Company.Controllers
     public async Task<IActionResult> ChangePassword()
     {
       var user = await _userManager.GetUserAsync(User);
-      if (user == null)
+      if(user == null)
       {
         return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
       }
 
-      return PartialView();      
+      return PartialView();
     }
     /// <summary>
     /// Изменение пароля пользователя на основе данных из формы (POST-запрос).
@@ -247,22 +247,22 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> ChangePassword([Bind("OldPassword, NewPassword, ConfirmPassword")] ChangePasswordModel model)
     {
-      if (!ModelState.IsValid)
+      if(!ModelState.IsValid)
       {
         return PartialView();
       }
 
       var user = await _userManager.GetUserAsync(User);
-      if (user == null)
+      if(user == null)
       {
         ViewBag.StatusMessage = $"Ошибка! Пользователь не найден.";
         return PartialView("_StatusMessage");
       }
 
       var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-      if (!changePasswordResult.Succeeded)
+      if(!changePasswordResult.Succeeded)
       {
-        foreach (var error in changePasswordResult.Errors)
+        foreach(var error in changePasswordResult.Errors)
         {
           ModelState.AddModelError(string.Empty, error.Description);
         }
@@ -310,19 +310,19 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
 
       model.RequirePassword = await _userManager.HasPasswordAsync(user!);
-      if (String.IsNullOrEmpty(model.Password))
+      if(String.IsNullOrEmpty(model.Password))
       {
         ModelState.AddModelError("Password", "Введите пароль");
         return BadRequest(ModelState);
       }
-      if (model.RequirePassword && !await _userManager.CheckPasswordAsync(user!, model.Password))
+      if(model.RequirePassword && !await _userManager.CheckPasswordAsync(user!, model.Password))
       {
         ModelState.AddModelError("Password", "Неверный пароль");
         return BadRequest(ModelState);
       }
 
       var result = await _userManager.DeleteAsync(user!);
-      if (!result.Succeeded)
+      if(!result.Succeeded)
       {
         throw new InvalidOperationException("Неизвестная ошибка при удалении пользователя");
       }

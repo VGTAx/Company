@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Data
-{  
+{
   public class CompanyContext : IdentityDbContext<ApplicationUserModel>
-  {    
+  {
     public DbSet<EmployeeModel> Employees { get; set; }
     public DbSet<DepartmentModel> Departments { get; set; }
     public DbSet<IdentityRole> IdentityRoles { get; set; }
-    
+
     public CompanyContext(DbContextOptions<CompanyContext> options)
-        : base(options)   { }
+        : base(options) { }
 
     public CompanyContext() { }
 

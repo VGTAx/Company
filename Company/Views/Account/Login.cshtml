@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-md-4">
         <section>
-            <form id="account" method="post" asp-action="Login" asp-controller="Account">
+            <form id="account" method="post" asp-controller="@typeof(AccountController).ControllerName()" asp-action="@nameof(AccountController.Login)">
                 <h2>Вход в учетную запись</h2>      
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>

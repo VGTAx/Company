@@ -3,15 +3,13 @@
 @if (!String.IsNullOrEmpty(Model))
 {
     var statusMessageClass = Model.StartsWith("Ошибка") ? "danger" : "success";
-    <div class="alert alert-@statusMessageClass alert-dismissible statusMessage" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-@statusMessageClass alert-dismissible statusMessage fw-bold" role="alert">
         @Model
     </div>
 }
 else {
     var statusMessageClass = @ViewBag.StatusMessage.ToString().StartsWith("Ошибка") ? "danger" : "success";
-    <div class="alert alert-@statusMessageClass alert-dismissible statusMessage" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-@statusMessageClass alert-dismissible statusMessage fw-bold" role="alert">
         @ViewBag.StatusMessage
     </div>
 }

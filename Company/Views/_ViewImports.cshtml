@@ -1,5 +1,13 @@
-﻿@using Company
+﻿@using Company.Data
+@using Company.Controllers
 @using Company.Models
+@using Company.Models.Account
+@using Company.Models.Department
+@using Company.Models.Employee
+@using Company.Models.ManageAccount
 @using Company.ViewComponents
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUserModel> SignInManager
+@inject UserManager<ApplicationUserModel> UserManager
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Company

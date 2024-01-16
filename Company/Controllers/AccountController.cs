@@ -15,7 +15,7 @@ namespace Company.Controllers
   /// <summary>
   /// Контроллер для управления учетными записями пользователей.
   /// </summary>
-  public class Account : Controller
+  public class AccountController : Controller
   {
     private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly UserManager<ApplicationUserModel> _userManager;
@@ -25,7 +25,7 @@ namespace Company.Controllers
     private readonly RoleManager<IdentityRole> _roleManager;
 
     /// <summary>
-    /// Создает экземпляр класса <see cref="Account"/>.
+    /// Создает экземпляр класса <see cref="AccountController"/>.
     /// </summary>
     /// <param name="userManager">Менеджер пользователей для работы с учетными записями.</param>
     /// <param name="userStore">Хранилище пользователей.</param>
@@ -33,7 +33,7 @@ namespace Company.Controllers
     /// <param name="logger">Логгер для записи событий и ошибок.</param>
     /// <param name="emailSender">Сервис отправки электронных писем.</param>
     /// <param name="roleManager">Менеджер ролей для работы с ролями пользователей.</param>    
-    public Account(
+    public AccountController(
         UserManager<ApplicationUserModel> userManager,
         IUserStore<ApplicationUserModel> userStore,
         SignInManager<ApplicationUserModel> signInManager,
@@ -102,9 +102,9 @@ namespace Company.Controllers
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
         var callBackUrl = Url.Action(
-            action: "RegistrationConfirmation",
-            controller: "Account",
-            values: new { userId, code, statusConfirmation = "true" },
+            action: nameof(RegistrationConfirmation),
+            controller: typeof(AccountController).ControllerName(),
+            values: new { userId, code, statusConfirmation = true },
             protocol: Request.Scheme);
 
         await _userManager.AddToRoleAsync(user, "User");
@@ -113,7 +113,8 @@ namespace Company.Controllers
             $"Спасибо за регистрацию. Пожалуйста, перейдите по ссылке , чтобы подтвердить ваш адрес электронной почты: <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}' id='confrimationLink'>нажмите сюда</a>." +
             $"\n\nЕсли вы получили это письмо случайно - удалите это письмо.");
 
-        return RedirectToAction(nameof(RegistrationConfirmation), nameof(Account));
+        ViewBag.StatusMessage = $"Спасибо за регистрацию. На ваш электронный адрес выслано письмо с подвтерждением регистрации.";
+        return View("_StatusMessage");
       }
 
       return View();
@@ -131,8 +132,7 @@ namespace Company.Controllers
     {
       if(userId == null || code == null)
       {
-        ViewBag.StatusMessage = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
-        return View();
+        return View("_StatusMessage", "Ошибка! Что-то пошло не так..");
       }
 
       var user = await _userManager.FindByIdAsync(userId);
@@ -146,7 +146,7 @@ namespace Company.Controllers
       var result = await _userManager.ConfirmEmailAsync(user, code);
       ViewBag.StatusMessage = result.Succeeded ? "Регистрация завершена." : "Ошибка при подтверждении эл.почты";
 
-      return View();
+      return View("_StatusMessage");
     }
 
     /// <summary>
@@ -185,7 +185,7 @@ namespace Company.Controllers
         // Установка аутентификационных куки
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
 
-        return RedirectToAction(nameof(Department.Index), nameof(Department));
+        return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
       }
       else
       {
@@ -199,12 +199,11 @@ namespace Company.Controllers
     /// </summary>
     /// <returns>
     /// Разлогинивает пользователя и перенаправляет на главную страницу.
-    /// </returns>
-    [HttpPost]
+    /// </returns>    
     public async Task<IActionResult> Logout()
     {
       await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-      return RedirectToAction(nameof(Department.Index), nameof(Department));
+      return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
     }
 
     /// <summary>
@@ -243,24 +242,14 @@ namespace Company.Controllers
       var code = await _userManager.GeneratePasswordResetTokenAsync(user);
       code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
       var callBackUrl = Url.Action(
-          action: "ResetPassword",
-          controller: "Account",
+          action: nameof(ResetPassword),
+          controller: typeof(AccountController).ControllerName(),
           values: new { code, model.Email },
           protocol: Request.Scheme);
       await _emailSender.SendEmailAsync(model.Email!, "Восстановление пароля",
-          $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a >.");
+          $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a>.");
 
-      return RedirectToAction(nameof(ForgotPasswordConfirmation), nameof(Account));
-    }
-
-    /// <summary>
-    /// Отображает страницу подтверждения восстановления пароля.
-    /// </summary>
-    /// <returns>ViewResult с представлением страницы подтверждения восстановления пароля.</returns>
-    [HttpGet]
-    public IActionResult ForgotPasswordConfirmation()
-    {
-      return View();
+      return View("_StatusMessage", "Проверьте вашу электронную почту, чтобы восстановить пароль.");
     }
 
     /// <summary>
@@ -276,7 +265,7 @@ namespace Company.Controllers
     {
       if(code == null || email == null)
       {
-        return BadRequest("A code must be supplied for password reset.");
+        return View("_StatusMessage", "Ошибка! Неверный код подтверждения.");
       }
 
       return View();
@@ -309,7 +298,7 @@ namespace Company.Controllers
 
       if(result.Succeeded)
       {
-        return RedirectToAction(nameof(ResetPasswordConfirmation), nameof(Account));
+        return View("_StatusMessage", $"Пароль изменен.");
       }
 
       foreach(var error in result.Errors)
@@ -317,15 +306,6 @@ namespace Company.Controllers
         ModelState.AddModelError(string.Empty, error.Description);
       }
 
-      return View();
-    }
-
-    /// <summary>
-    /// Отображает страницу подтверждения сброса пароля.
-    /// </summary>
-    /// <returns>ViewResult с представлением страницы подтверждения сброса пароля.</returns>
-    public IActionResult ResetPasswordConfirmation()
-    {
       return View();
     }
   }

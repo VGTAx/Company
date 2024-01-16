@@ -9,14 +9,14 @@ namespace Company.Controllers
   /// <summary>
   /// Контроллер для управления отделами.
   /// </summary>
-  public class Department : Controller
+  public class DepartmentController : Controller
   {
     private readonly CompanyContext _context;
     /// <summary>
-    /// Создает экземпляр класса <see cref="Department"/>.
+    /// Создает экземпляр класса <see cref="DepartmentController"/>.
     /// </summary>
     /// <param name="context">Контекст компании для доступа к данным отделов.</param>
-    public Department(CompanyContext context)
+    public DepartmentController(CompanyContext context)
     {
       _context = context;
     }

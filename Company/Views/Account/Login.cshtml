@@ -5,16 +5,16 @@
     <div class="col-md-4">
         <section>
             <form id="account" method="post" asp-controller="@typeof(AccountController).ControllerName()" asp-action="@nameof(AccountController.Login)">
-                <h2>Вход в учетную запись</h2>      
+                <h2>Вход в учетную запись</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <input asp-for="Email" class="form-control" autocomplete="Email" placeholder="email"/>
                     <label asp-for="Email" class="form-label">Эл.почта</label>
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="password" />
                     <label asp-for="Password" class="form-label">Пароль</label>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
@@ -24,17 +24,17 @@
                         Запомнить меня
                     </label>
                     <p>
-                       @Html.ActionLink("Забыли пароль?", "ForgotPassword", "Account")                      
+                        @Html.ActionLink("Забыли пароль?", "ForgotPassword", "Account")
                     </p>
-                     <p>
-                       @Html.ActionLink("Регистрация", "Registration", "Account")
+                    <p>
+                        @Html.ActionLink("Регистрация", "Registration", "Account")
                     </p>
                 </div>
-                
+
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Войти</button>
-                </div>               
+                </div>
             </form>
         </section>
-    </div>   
+    </div>
 </div>

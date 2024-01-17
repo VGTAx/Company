@@ -17,17 +17,20 @@
             event.preventDefault();
 
             let partialView = form.dataset.form;
-            let url = "/Admin/" + partialView;
-            let userId = document.querySelector("#userId").getAttribute("value");
-
+            let url = "/Admin/" + partialView;            
+            
             const selectedRoles = [];
             document.querySelectorAll('input[type="checkbox"][name="selectedRoles"]:checked')
                .forEach(function (checkbox) {
                   selectedRoles.push(checkbox.value);
-            });
+               });
+
+            let users = {
+               Id: document.querySelector("#userId").getAttribute("value"),
+            };       
             const dataToSend = {
-               id: userId,
-               selectedRoles: selectedRoles
+               user: users,
+               selectedRoles: selectedRoles,               
             }
             fetch(url, {
                method: 'POST',
@@ -45,6 +48,13 @@
                         getUser();
                      })
                }
+               if (response.status == 400) {
+                  return response.json()
+                     .then(data => {
+                        getPartialViewErrors(data, partialView, userId);
+                     })
+               }
+
             }).catch(error => {
                console.error(error);
             });
@@ -77,6 +87,37 @@
          window.location.href = "/Account/Login";
       })
    }
+
+   //Обработка ошибок Для PartialView DeletePersonData
+   function getPartialViewErrors(data, partialView, id) {
+      if (data) {
+         for (let key in data) {
+            if (data.hasOwnProperty(key)) {
+
+               let textError = data[key].join(", ");
+               let url = "/Admin/" + partialView + "/" + id;
+               fetch(url, {
+                  method: "GET"
+               }).then(response => {
+                  if (!response.ok) {
+                     throw new Error("Ошибка авторизации, пройдите авторизацию");
+                  }
+                  return response.text()
+               }).then(html => {
+                  const tempDiv = document.querySelector('#partialContainer');
+                  tempDiv.innerHTML = html;
+                  //document.querySelector("#Span" + `${key}`).textContent = textError;
+                  document.querySelector("#access").textContent = textError;
+                  // При обновлении partialView вешаем обработчик на отправку формы
+                  attachButtonFormHandler();
+               }).catch(error => {
+                  console.error(error);
+                  window.location.href = "/Account/Login";
+               })
+            }
+         }
+      }
+   }    
 
    function getUser() {
       let users = document.querySelectorAll(".user-info");

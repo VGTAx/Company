@@ -1,68 +1,68 @@
-﻿@model ApplicationUserModel
+﻿@model AccessSettingsPoco
+
 
 <div class="userInfoContainer">
-	<h5>Информация о пользователе:</h5>
-	 <hr />
-	<div class="">
-		<dl class="row">
-			<dt class = "col-sm-2">
-				 @Html.DisplayName("ID")
-			</dt>
-			<dd class = "col-sm-10" id="userId" value="@Model.Id">
-				 @Html.DisplayFor(model => model.Id)
-			</dd>
-			<dt class = "col-sm-2">
-						@Html.DisplayName("Username")
-			</dt>
-			<dd class = "col-sm-10">
-				 @Html.DisplayFor(model => model.UserName)
-			</dd>
-			<dt class = "col-sm-2">
-				 @Html.DisplayName("Email")
-			</dt>
-			<dd class = "col-sm-10">
-				 @Html.DisplayFor(model => model.Email)
-			</dd>
-			<dt class = "col-sm-2">
-				 @Html.DisplayName("Name")
-			</dt>
-			<dd class = "col-sm-10">
-				 @Html.DisplayFor(model => model.Name)
-			</dd>
-			</dl>
-	</div>		
-	@if (!ViewBag.UserRoles.Contains("Admin"))
-	{
-		<form id="roles-form" method="post" data-form="AccessSettings">
-	  <div class="dropdown">
-	 		<button id="dropdown-btn" class="btn btn-outline-secondary dropdown-toggle btn-sm fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">Выберите роли</button>
-			<ul class="dropdown-menu">
-				 @foreach(var role in ViewBag.Roles)
-				 {					 
-					 <li class="dropdown-item">
-							<input type="checkbox" name="selectedRoles" value="@role" @(ViewBag.UserRoles.Contains(role) ? "checked" : "")  @(role == "User" ? "disabled": "") /> 
-							<label><b>@role</b></label>
-					 </li>												 
-				 }
-			</ul>	
-			<input type="hidden" id="selectedRolesInput" name="selectedRoles" value="" />					
-			<button class="btn btn-outline-primary btn-sm fw-bold" type="submit" >Сохранить</button> 			
-	 </div>
-	 </form>
-	}
-	
+    <h5>Информация о пользователе:</h5>
+    <hr />
+    <div class="">
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayName("ID")
+            </dt>
+            <dd class="col-sm-10" id="userId" value="@Model.User.Id">
+                @Html.DisplayFor(model => model.User!.Id)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayName("Username")
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.User!.UserName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayName("Email")
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.User!.Email)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayName("Name")
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.User!.Name)
+            </dd>
+        </dl>
+    </div>
+    @if (!Model.UserRoles!.Contains("Admin"))
+    {        
+        <form id="roles-form" method="post" data-form="AccessSettings">
+            <span id="access" class="text-danger fw-bold mx-1" role="alert" ></span>
+            <div class="dropdown">                   
+                <button id="dropdown-btn" class="btn btn-outline-secondary dropdown-toggle btn-sm fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">Выберите роли</button>
+                <ul class="dropdown-menu">
+                    @foreach (var role in Model.Roles!)
+                    {
+                        <li class="dropdown-item">
+                            <input type="checkbox" name="selectedRoles" value="@role" @(Model.UserRoles.Contains(role) ? "checked" : "") @(role == "User" ? "disabled" : "" ) />
+                            <span><b>@role</b></span>
+                        </li>
+                    }
+                </ul>     
+                <button class="btn btn-outline-primary btn-sm fw-bold" type="submit">Сохранить</button>
+            </div>
+        </form>
+    }
 </div>
 
 <div class="m-2">
-	 <h4>Описание ролей:</h4>
-	 <ul>
-		 <li>
-			 <p>Manager -  имеет доступ к списку сотрудников компании. Может добавлять, изменять и удалять сотрудника</p>
-		 </li>
-		 <li>
-			 <p>User - имеет доступ к списку сотрудников без возможности изменения данных</p>
-		 </li>
-	 </ul>
+    <h4>Описание ролей:</h4>
+    <ul>
+        <li>
+            <p>Manager -  имеет доступ к списку сотрудников компании. Может добавлять, изменять и удалять данные сотрудника</p>
+        </li>
+        <li>
+            <p>User - имеет доступ к списку сотрудников без возможности изменения данных</p>
+        </li>
+    </ul>
 </div>
 
 <script src="~/js/getRolesForm.js"> </script>

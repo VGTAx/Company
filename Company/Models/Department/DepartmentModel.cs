@@ -1,4 +1,6 @@
-﻿namespace Company.Models.Department
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Company.Models.Department
 {
   /// <summary>
   /// Модель информации об отделе.
@@ -12,6 +14,7 @@
     /// <summary>
     /// Название отдела.
     /// </summary>
+    [Display(Name = "Отдел")]
     public string? DepartmentName { get; set; }
     /// <summary>
     /// Идентификатор родительского отдела.

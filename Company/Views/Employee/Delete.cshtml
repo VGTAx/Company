@@ -12,31 +12,31 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayName("Имя")
+            @Html.DisplayName(nameof(Model.Name))
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayName("Фамилия")
+            @Html.DisplayName(nameof(Model.Surname))
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Surname)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayName("Возраст")
+            @Html.DisplayName(nameof(Model.Age))
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Age)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayName("Номер телефона")
+            @Html.DisplayName(nameof(Model.Number))
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Number)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayName("Отдел")
+            @Html.DisplayName(nameof(Model.DepartmentID))
         </dt>
         <dd class = "col-sm-10">
             <p>@ViewBag.Department</p>
@@ -44,8 +44,8 @@
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="ID" />
+        <input asp-for="ID" />
         <input type="submit" value="Удалить" class="btn btn-outline-danger btn-sm fw-bold" /> 
-        <a asp-action="Details" asp-controller="Employee" class="btn btn-outline-secondary btn-sm fw-bold">Назад</a>
+        <a asp-action="@nameof(EmployeeController.Details)" asp-controller="@typeof(EmployeeController).ControllerName()" class="btn btn-outline-secondary btn-sm fw-bold">Назад</a>
     </form>
 </div>

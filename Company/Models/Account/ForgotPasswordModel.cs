@@ -12,6 +12,7 @@ namespace Company.Models.Account
     /// </summary>
     [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
+    [Display(Name = "Эл.почта")]
     public string? Email { get; set; }
   }
 }

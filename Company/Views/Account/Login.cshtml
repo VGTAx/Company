@@ -9,20 +9,18 @@
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Email" class="form-control" autocomplete="Email" placeholder="email"/>
-                    <label asp-for="Email" class="form-label">Эл.почта</label>
+                    <input asp-for="Email" class="form-control" autocomplete="Email" placeholder="email" />
+                    <label asp-for="Email" class="form-label"></label>
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
                     <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="password" />
-                    <label asp-for="Password" class="form-label">Пароль</label>
+                    <label asp-for="Password" class="form-label"></label>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <div class="checkbox mb-3">
-                    <label asp-for="RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="RememberMe" />
-                        Запомнить меня
-                    </label>
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-label"></label>
                     <p>
                         @Html.ActionLink("Забыли пароль?", "ForgotPassword", "Account")
                     </p>
@@ -30,7 +28,6 @@
                         @Html.ActionLink("Регистрация", "Registration", "Account")
                     </p>
                 </div>
-
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Войти</button>
                 </div>

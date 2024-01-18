@@ -15,6 +15,7 @@ namespace Company.Models.Department
     /// <summary>
     /// Количество сотрудников в отделе.
     /// </summary>
+    [Display(Name = "Количество сотрудников")]
     public int EmployeeCount { get; set; }
   }
 }

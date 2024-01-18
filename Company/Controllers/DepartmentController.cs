@@ -20,66 +20,57 @@ namespace Company.Controllers
     {
       _context = context;
     }
+
     /// <summary>
     /// Отображает список отделов и информацию о количестве сотрудников в каждом отделе.
     /// </summary>
     /// <returns>View с данными об отделах и количестве сотрудников.</returns>
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
-      var numberOfEmployyes = from e in _context.Departments
-                              select new DepartmentModel(e.ID, e.DepartmentName, e.ParentDepartmentID);
+      var numberOfEmployyes = await _context.Departments.ToListAsync();
 
-      return View(await numberOfEmployyes.ToListAsync());
+      return View(numberOfEmployyes);
     }
+
     /// <summary>
     /// Отображает информацию о выбранном отделе.
     /// </summary>
     /// <param name="departmentId">Идентификатор отдела.</param>
     /// <param name="departmentName">Название отдела.</param>
     /// <returns>View с информацией о выбранном отделе.</returns>
-    public IActionResult Details(int? departmentId = 0, string? departmentName = null)
+    [HttpGet]
+    public async Task<IActionResult> Details(int? departmentId = 0, string? departmentName = "")
     {
-      if(departmentName == null && departmentId == null)
+      if(String.IsNullOrEmpty(departmentName) && departmentId == null)
       {
-        return NotFound();
+        return View("_StatusMessage", "Ошибка! Отдел не найден.");
       }
       else if(departmentId == 0 && !String.IsNullOrEmpty(departmentName))
       {
-        departmentId = _context.Departments.FirstOrDefault(d => d.DepartmentName == departmentName)!.ID;
+        var tempDepartment = await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == departmentName);
+        departmentId = tempDepartment!.ID;
       }
-
       var department = _context.Departments.FirstOrDefault(d => d.ID == departmentId);
 
-      switch(departmentId)
+      return departmentId switch
       {
-        case 1:
-          return View("CustomerService", department);
-        case 2:
-          return View("Production", department);
-        case 3:
-          return View("Bookkeeping", department);
-        case 4:
-          return View("Sales", department);
-        case 5:
-          return View("WholeSales", department);
-        case 6:
-          return View("RetailSales", department);
-        case 7:
-          return View("Logistic", department);
-        case 8:
-          return View("Stock", department);
-        case 9:
-          return View("Delivery", department);
-        case 10:
-          return View("Engineering", department);
-        case 11:
-          return View("QualityControl", department);
-        case 12:
-          return View("Purchasing", department);
-        default:
-          return NotFound();
-      }
+        1 => View("CustomerService", department),
+        2 => View("Production", department),
+        3 => View("Bookkeeping", department),
+        4 => View("Sales", department),
+        5 => View("WholeSales", department),
+        6 => View("RetailSales", department),
+        7 => View("Logistic", department),
+        8 => View("Stock", department),
+        9 => View("Delivery", department),
+        10 => View("Engineering", department),
+        11 => View("QualityControl", department),
+        12 => View("Purchasing", department),
+        _ => NotFound(),
+      };
     }
+
     /// <summary>
     /// Получает список сотрудников для указанного отдела.
     /// </summary>
@@ -96,13 +87,14 @@ namespace Company.Controllers
 
       if(subdepartments.Count != 0)
       {
-        employees = empl
-                      .Where(e => subdepartments
-                        .Select(s => s.ID)
-                        .Contains(e.ID))
-                      .ToList();
+        employees = empl.Where(e => subdepartments.Select(s => s.ID)
+                            .Contains(e.ID))
+                        .ToList();
       }
-      employees = empl.Where(e => e.DepartmentID == id).ToList();
+      else
+      {
+        employees = empl.Where(e => e.DepartmentID == id).ToList();
+      }
 
       if(subdepartments.Any())
       {

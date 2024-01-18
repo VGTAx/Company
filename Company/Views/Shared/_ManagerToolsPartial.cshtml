@@ -1,32 +1,26 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Company.Data
-@using System.Security.Claims;
-@inject SignInManager<ApplicationUserModel> SignInManager
-
- 
-@{
-  var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
-  var displayed = false;
+﻿@{
+    var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+    var displayed = false;
 }
 
 @foreach (var role in roles)
 {
-  @switch (role)
-  {
-     case "Admin":
-         <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
-         <a class="nav-link text-dark" id="AdminPanel" asp-action="Index" asp-controller="Admin">Панель управления</a>
-         displayed = true;
-         break;     
-     case "Manager":
-     case "User":
-        <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
-        displayed = true;
-        break;
-     default:
-        break;
-  }
+    @switch (role)
+    {
+        case "Admin":
+            <a class="nav-link text-dark" asp-controller="@typeof(EmployeeController).ControllerName()" asp-action="@nameof(EmployeeController.Details)">Список сотрудников</a>
+            <a class="nav-link text-dark" id="AdminPanel" asp-controller="@typeof(AdminController).ControllerName()" asp-action="@nameof(AdminController.Index)">Панель управления</a>
+            displayed = true;
+            break;
+        case "Manager":
+        case "User":
+            <a class="nav-link text-dark" asp-controller="@typeof(EmployeeController).ControllerName()" asp-action="@nameof(EmployeeController.Details)">Список сотрудников</a>
+            displayed = true;
+            break;
+        default:
+            break;
+    }
 
-  if (displayed) 
-   break;
-}    
+    if (displayed)
+        break;
+}

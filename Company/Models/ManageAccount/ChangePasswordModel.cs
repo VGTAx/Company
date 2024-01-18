@@ -14,6 +14,7 @@ namespace Company.Models.ManageAccount
     [DataType(DataType.Password)]
     [Display(Name = "Старый пароль")]
     public string? OldPassword { get; set; }
+
     /// <summary>
     /// Новый пароль пользователя.
     /// </summary>
@@ -22,6 +23,7 @@ namespace Company.Models.ManageAccount
     [DataType(DataType.Password)]
     [Display(Name = "Новый пароль")]
     public string? NewPassword { get; set; }
+
     /// <summary>
     /// Подтверждение пароля пользователя.
     /// </summary>

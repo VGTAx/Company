@@ -1,32 +1,22 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Company.Data
-@using System.Security.Claims;
-@model ApplicationUserModel
-@inject SignInManager<ApplicationUserModel> SignInManager
-@inject UserManager<ApplicationUserModel> UserManager
-
-@{
-  var user = UserManager.GetUserAsync(User);
-  var claimRole = User.FindFirst(ClaimTypes.Role)?.Value;
-}
+﻿@model ApplicationUserModel
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User) && Model != null)
     {  
         <li class="nav-item">         
-            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" id="NameAccount" asp-action="_ManageAccountNav" asp-controller="ManageAccount" title="Manage">Профиль</a>
+            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-action="@nameof(ManageAccountController.Index)" asp-controller="@typeof(ManageAccountController).ControllerName()" title="Manage">Профиль</a>
         </li>
         <li class="nav-item">              
-            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="Logout" asp-controller="Account">Выйти</a>
+            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="@nameof(AccountController.Logout)" asp-controller="@typeof(AccountController).ControllerName()">Выйти</a>
         </li> 
     }         
     else
     {
          <li class="nav-item">
-            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-controller="Account" asp-action="Registration">Регистрация</a>
+            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-action="@nameof(AccountController.Registration)" asp-controller="@typeof(AccountController).ControllerName()">Регистрация</a>
          </li>
          <li class="nav-item">
-             <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-controller="Account" asp-action="Login">Вход</a>
+            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="@nameof(AccountController.Login)" asp-controller="@typeof(AccountController).ControllerName()">Вход</a>
          </li>
     }   
 </ul>

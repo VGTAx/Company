@@ -13,21 +13,26 @@
         if (subdepartments.Any())
         {
             <ul class="nested-list">
-             @foreach(var department in subdepartments)
+                @foreach (var department in subdepartments)
                 {
-                   <li class="hierarchy-item"><a class="nav-link" asp-route-departmentId="@department.ID" asp-action="Details"  asp-controller="Department">@department.DepartmentName</a></li>
-                   await RenderSubDepartment(department.ID, departments);
+                    <li class="hierarchy-item">
+                        <a class="nav-link" asp-route-departmentId="@department.ID" asp-action="@nameof(DepartmentController.Details)" asp-controller="@typeof(DepartmentController).ControllerName()">@department.DepartmentName</a>
+                    </li>
+                    await RenderSubDepartment(department.ID, departments);
                 }
             </ul>
-        }        
+        }
     }
 }
 
-<ul id="hierarchy" class="hierarchy"> 
+<ul id="hierarchy" class="hierarchy">
     @foreach (var department in Model.Where(d => d.ParentDepartmentID == null))
-    {        
-        <li class="hierarchy-item"><a class="nav-link" asp-route-departmentId="@department.ID" asp-action="Details"  asp-controller="Department">@department.DepartmentName</a></li>        
-        await RenderSubDepartment(department.ID, Model); 
+    {
+        <li class="hierarchy-item">
+            <a class="nav-link" asp-route-departmentId="@department.ID" asp-action="@nameof(DepartmentController.Details)" asp-controller="@typeof(DepartmentController).ControllerName()">@department.DepartmentName</a>
+        </li>
+        await RenderSubDepartment(department.ID, Model);
     }
 </ul>
+
 <script src="~/js/displayDepartment.js"></script>

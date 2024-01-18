@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Company.Models.Account
 {
@@ -8,11 +9,20 @@ namespace Company.Models.Account
   public class ResetPasswordModel
   {
     /// <summary>
+    /// Код для сброса пароля.
+    /// </summary>
+    [Required]
+    [HiddenInput]
+    public string? Code { get; set; }
+
+    /// <summary>
     /// Электронная почта пользователя.
     /// </summary>
-    [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
+    [Required]
+    [HiddenInput]
     public string? Email { get; set; }
+
     /// <summary>
     /// Новый пароль пользователя.
     /// </summary>
@@ -22,18 +32,14 @@ namespace Company.Models.Account
     [Display(Name = "Новый пароль")]
     [DataType(DataType.Password)]
     public string? Password { get; set; }
+
     /// <summary>
     /// Подтверждение нового пароля пользователя.
     /// </summary>
+    [Required(ErrorMessage = "Подтвердите пароль")]
     [DataType(DataType.Password)]
     [Display(Name = "Подтверждение пароля")]
     [Compare("Password", ErrorMessage = "Введенные пароли не совпадают")]
     public string? ConfirmPassword { get; set; }
-
-    /// <summary>
-    /// Код для сброса пароля.
-    /// </summary>
-    [Required]
-    public string? Code { get; set; }
   }
 }

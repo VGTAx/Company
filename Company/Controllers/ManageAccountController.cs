@@ -20,6 +20,7 @@ namespace Company.Controllers
     private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly IEmailSender _emailSender;
+
     /// <summary>
     /// Создает экземпляр класса <see cref="ManageAccountController"/>.
     /// </summary>
@@ -35,14 +36,16 @@ namespace Company.Controllers
       _signInManager = signInManager;
       _emailSender = emailSender;
     }
+
     /// <summary>
     /// Метод возвращает список функций для управления аккаунтом в виде частичного представления.
     /// </summary>
     /// <returns>Partial View, содержащее список функций для управления аккаунтом.</returns>
-    public IActionResult _ManageAccountNav()
+    public IActionResult Index()
     {
       return View();
     }
+
     /// <summary>
     /// Метод отображает страницу профиля пользователя.
     /// </summary>
@@ -53,7 +56,7 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
-        return NotFound($"Ошибка, невозможно получить данные. Авторизуйтесь повторно");
+        return View("_StatusMessage", "Ошибка! Пользователь не найден.");
       }
 
       var model = new ProfileModel
@@ -65,22 +68,22 @@ namespace Company.Controllers
       ViewBag.ActiveLink = "profile";
       return PartialView(model);
     }
+
     /// <summary>
     /// Обновление профиля пользователя на основе данных из модели.
     /// </summary>
     /// <param name="model">Модель с данными профиля пользователя.</param>
     /// <returns>Partial View с информацией о статусе обновления профиля.</returns>
     [HttpPost]
-    public async Task<IActionResult> Profile([Bind("Email,Name, Phone")] ProfileModel model)
+    public async Task<IActionResult> Profile([FromForm] ProfileModel model)
     {
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
-        return RedirectToAction("Index", "Department");
+        return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
       }
       if(!ModelState.IsValid)
       {
-        ViewBag.StatusMessage = "Ошибка при обновлении профиля";
         return PartialView(model);
       }
 
@@ -91,7 +94,6 @@ namespace Company.Controllers
         var setPhoneNumberResult = await _userManager.SetPhoneNumberAsync(user, model.Phone);
         if(!setPhoneNumberResult.Succeeded)
         {
-          ViewBag.StatusMessage = "Ошибка при обновлении профиля";
           return PartialView(model);
         }
         ViewBag.StatusMessage = "Профиль изменен"!;
@@ -103,13 +105,12 @@ namespace Company.Controllers
         var upadateNameResult = await _userManager.UpdateAsync(user);
         if(!upadateNameResult.Succeeded)
         {
-          ViewBag.StatusMessage = "Ошибка при обновлении профиля";
           return PartialView(model);
         }
         ViewBag.StatusMessage = "Профиль изменен"!;
       }
 
-      if(ViewData["StatusMessage"]!.ToString() == "Профиль изменен"!)
+      if(ViewBag.StatusMessage == "Профиль изменен"!)
       {
         await _signInManager.RefreshSignInAsync(user);
         return PartialView("_StatusMessage", ViewBag.StatusMessage);
@@ -130,7 +131,7 @@ namespace Company.Controllers
 
       if(user == null)
       {
-        return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
       }
 
       var email = await _userManager.GetEmailAsync(user);
@@ -155,8 +156,7 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
-        ViewBag.StatusMessage = "Ошибка, пользователь не найден!";
-        return PartialView("_StatusMessage");
+        return PartialView("_StatusMessage", "Ошибка, пользователь не найден!");
       }
 
       model.Email = await _userManager.GetEmailAsync(user);
@@ -176,20 +176,20 @@ namespace Company.Controllers
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
         var callbackUrl = Url.Action(
-            action: "ChangeEmailConfirmation",
-            controller: "ManageAccount",
+            action: nameof(ChangeEmailConfirmation),
+            controller: typeof(ManageAccountController).ControllerName(),
             values: new { userId, email = model.NewEmail, code },
             protocol: Request.Scheme);
 
         var message = $"Добрый день. Подтвердите изменение эл.почты <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>нажмите сюда</a>";
         await _emailSender.SendEmailAsync(model.NewEmail!, "Подтверждение изменения электронной почты", message);
 
-        ViewBag.StatusMessage = "Пожалуйста, проверьте электронную почту, чтобы подтвердить изменения";
-        return PartialView("_StatusMessage");
+        return PartialView("_StatusMessage", "Пожалуйста, проверьте электронную почту, чтобы подтвердить изменения");
       }
       ModelState.AddModelError("NewEmail", "Электронная почта уже используется");
       return PartialView(model);
     }
+
     /// <summary>
     /// Обработка GET-запроса подтверждения изменения электронной почты пользователя.
     /// </summary>
@@ -201,8 +201,7 @@ namespace Company.Controllers
     {
       if(userId == null || code == null || email == null)
       {
-        ViewBag.StatusMessage = $"Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.";
-        return PartialView("_StatusMessage");
+        return PartialView("_StatusMessage", "Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.");
       }
 
       var user = await _userManager.FindByIdAsync(userId);
@@ -215,15 +214,15 @@ namespace Company.Controllers
       var resultChangeEmail = await _userManager.ChangeEmailAsync(user, email, code);
       if(!resultChangeEmail.Succeeded)
       {
-        ViewBag.StatusMessage = "Ошибка при подтверждении электронной почты";
-        return PartialView("_StatusMessage");
+        return PartialView("_StatusMessage", "Ошибка при подтверждении электронной почты");
       }
-      await _userManager.SetUserNameAsync(user, email);
 
-      ViewBag.StatusMessage = "Электронная почта изменена";
+      await _userManager.SetUserNameAsync(user, email);
       await _signInManager.RefreshSignInAsync(user);
-      return View("_StatusMessage");
+
+      return View("_StatusMessage", "Электронная почта изменена");
     }
+
     /// <summary>
     /// Метод отображает страницу с формой изменения пароля пользователя (GET-запрос).
     /// </summary>
@@ -234,7 +233,7 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
-        return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
       }
 
       return PartialView();
@@ -245,7 +244,7 @@ namespace Company.Controllers
     /// <param name="model">Модель данных для изменения пароля.</param>
     /// <returns>Partial View с результатом выполнения операции.</returns>
     [HttpPost]
-    public async Task<IActionResult> ChangePassword([Bind("OldPassword, NewPassword, ConfirmPassword")] ChangePasswordModel model)
+    public async Task<IActionResult> ChangePassword([FromForm] ChangePasswordModel model)
     {
       if(!ModelState.IsValid)
       {
@@ -255,11 +254,10 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
-        ViewBag.StatusMessage = $"Ошибка! Пользователь не найден.";
-        return PartialView("_StatusMessage");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
       }
 
-      var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+      var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
       if(!changePasswordResult.Succeeded)
       {
         foreach(var error in changePasswordResult.Errors)
@@ -268,11 +266,12 @@ namespace Company.Controllers
         }
         return PartialView();
       }
+
       await _signInManager.RefreshSignInAsync(user);
 
-      ViewBag.StatusMessage = "Пароль был изменен!";
-      return PartialView("_StatusMessage");
+      return PartialView("_StatusMessage", "Пароль изменен!");
     }
+
     /// <summary>
     /// Метод отображает страницу с персональными данными пользователя (GET-запрос).
     /// </summary>
@@ -282,6 +281,7 @@ namespace Company.Controllers
     {
       return PartialView();
     }
+
     /// <summary>
     /// Метод отображает страницу для удаления персональных данных пользователя (GET-запрос).
     /// </summary>
@@ -298,6 +298,7 @@ namespace Company.Controllers
 
       return PartialView(model);
     }
+
     /// <summary>
     /// Метод выполняет удаление персональных данных пользователя (POST-запрос).
     /// </summary>
@@ -305,7 +306,7 @@ namespace Company.Controllers
     /// <returns>Результат операции удаления персональных данных.</returns>
     /// <exception cref="InvalidOperationException"></exception>
     [HttpPost]
-    public async Task<IActionResult> DeletePersonalData([Bind("RequirePassword, Password")] DeletePersonalDataModel model)
+    public async Task<IActionResult> DeletePersonalData([FromForm] DeletePersonalDataModel model)
     {
       var user = await _userManager.GetUserAsync(User);
 
@@ -324,7 +325,7 @@ namespace Company.Controllers
       var result = await _userManager.DeleteAsync(user!);
       if(!result.Succeeded)
       {
-        throw new InvalidOperationException("Неизвестная ошибка при удалении пользователя");
+        return PartialView("_StatusMessage", "Ошибка при удалении пользователя!");
       }
 
       await _signInManager.SignOutAsync();

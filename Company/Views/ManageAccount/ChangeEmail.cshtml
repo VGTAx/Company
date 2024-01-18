@@ -1,28 +1,28 @@
 ﻿@model ChangeEmailModel
 @{
-  ViewData["Title"] = "Управление электронной почтой";
+    ViewData["Title"] = "Управление электронной почтой";
 }
 
 <h3>@ViewData["Title"]</h3>
 
 <div class="row">
-  <div class="col-md-6">
-    <form id="email-form" data-form="ChangeEmail" method="post"> 
-      <div class="form-floating mb-3 input-group">
-        <input asp-for="Email" class="form-control" placeholder="Please enter your email." disabled />
-          <div class="input-group-append">
-            <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
-          </div>
-        <label asp-for="Email" class="form-label"></label>
-      </div>            
-      <div class="form-floating mb-3">
-        <input asp-for="NewEmail" class="form-control" id="NewEmail" autocomplete="email" placeholder="Please enter new email." />
-        <label asp-for="NewEmail" class="form-label"></label>
-        <span asp-validation-for="NewEmail" class="text-danger"></span>
-      </div>
-      <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn fw-bold btn-success">Изменить эл.почту</button>
-    </form>
-  </div>
+    <div class="col-md-4">
+        <form id="email-form" class="w-100" data-form="ChangeEmail" method="post">
+            <div class="form-floating mb-3 input-group">
+                <input asp-for="Email" class="form-control" placeholder="Please enter your email." disabled />
+                <div class="input-group-append">
+                    <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
+                </div>
+                <label asp-for="Email" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="NewEmail" class="form-control" autocomplete="email" placeholder="Please enter new email." />
+                <label asp-for="NewEmail" class="form-label"></label>
+                <span asp-validation-for="NewEmail" class="text-danger"></span>
+            </div>
+            <button id="change-email-button" type="submit" class="btn fw-bold btn-success">Изменить эл.почту</button>
+        </form>
+    </div>
 </div>
 
 

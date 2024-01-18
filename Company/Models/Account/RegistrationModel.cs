@@ -12,7 +12,7 @@ namespace Company.Models.Account
     /// </summary>
     [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
-    [Display(Name = "Электроннная почта")]
+    [Display(Name = "Эл.почта")]
     public string? Email { get; set; }
 
     /// <summary>
@@ -38,6 +38,7 @@ namespace Company.Models.Account
     [DataType(DataType.Password)]
     [Display(Name = "Подтверждение пароля")]
     [Compare("Password", ErrorMessage = "Введенные пароли не совпадают")]
+    [Required(ErrorMessage = "Подтвердите пароль")]
     public string? ConfirmPassword { get; set; }
   }
 }

@@ -10,23 +10,23 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Email">Эл.почта</label>
+                <input asp-for="Email" class="form-control" autocomplete="username" placeholder="name@example.com" />
+                <label asp-for="Email"></label>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
              <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control" autocomplete="username" aria-required="true" placeholder="Name" />
-                <label asp-for="Name">Имя</label>
+                <input asp-for="Name" class="form-control" autocomplete="username" placeholder="Name" />
+                <label asp-for="Name"></label>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Password">Пароль</label>
+                <input asp-for="Password" class="form-control" autocomplete="new-password" placeholder="password" />
+                <label asp-for="Password"></label>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="ConfirmPassword">Подтверждение пароля</label>
+                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" placeholder="password" />
+                <label asp-for="ConfirmPassword"></label>
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Зарегистрировать</button>

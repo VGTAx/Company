@@ -14,11 +14,14 @@ namespace Company.Models.ManageAccount
     [EmailAddress]
     [Display(Name = "Эл.почта")]
     public string? Email { get; set; }
+
     /// <summary>
     /// Номер телефона пользователя.
     /// </summary>
     [Display(Name = "Номер телефона")]
+    [Phone(ErrorMessage = "Введен некорректный номер телефона.")]
     public string? Phone { get; set; }
+
     /// <summary>
     /// Имя пользователя
     /// </summary>

@@ -7,7 +7,7 @@
 
 <div class="alert alert-warning" role="alert">
   <p>
-    <strong>Удаление этих данных навсегда удалит вашу учетную запись, без возможности восстановления.</strong>
+    <strong>Удаление этих данных навсегда закроет учетную запись, без возможности восстановления.</strong>
   </p>
 </div>
 
@@ -17,7 +17,7 @@
     @if (Model.RequirePassword)
     {
       <div class="form-floating mb-3">
-        <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
+        <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Please enter your password." />
         <label asp-for="Password" class="form-label"></label>
         <span asp-validation-for="Password" id="SpanPassword" class="text-danger"></span>
       </div>

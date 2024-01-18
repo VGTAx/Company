@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Company</title>
-    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />   
   </head>
@@ -16,7 +15,7 @@
             <div class="grid-container-nav">
               <a class="" asp-area="" asp-controller="@typeof(DepartmentController).ControllerName()" asp-action="@nameof(DepartmentController.Index)"><img src="/images/logo.jpg" width="100" length="100" alt="logo"/></a>
               <a class="nav-link text-dark " asp-area="" asp-controller="@typeof(DepartmentController).ControllerName()" asp-action="@nameof(DepartmentController.Index)">Структура компании</a>
-              <partial name="_ManagerToolsPartial"></partial>
+              <partial name="_ManagerToolsPartial" />
             </div>
             <div>           
               @await Component.InvokeAsync(nameof(LoginPanel))
@@ -29,7 +28,6 @@
           @RenderBody()
         </main>
       </div>
-
       <footer class="border-top footer text-muted ">
         <div class="container containerFooter">
             &copy; @DateTime.Now.Year - Company
@@ -41,6 +39,5 @@
       <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
       @await RenderSectionAsync("Scripts", required: false)
     </div>
-    
   </body>
 </html>

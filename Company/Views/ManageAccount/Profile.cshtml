@@ -1,35 +1,35 @@
 ﻿@model ProfileModel;
 @{
-   ViewData["Title"] = "Профиль";   
+    ViewData["Title"] = "Профиль";
 }
 
 <h3>@ViewData["Title"]</h3>
-<div class="row partial">
-   <div class="col-md-6">
-      <form id="profile-form" data-form="Profile" method="post">
-         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-         <div class="form-floating mb-3">
-            <input asp-for="Email" class="form-control" id="Email" placeholder="Please choose your username." disabled />
-            <label asp-for="Email" class="form-label"></label>
-         </div>
-         <div class="form-floating mb-3">
-               <input asp-for="Name" class="form-control" id="Name" name="Name" placeholder="Please enter your Name."/>
-               <label asp-for="Name" class="form-label"></label>
-               <span asp-validation-for="Name" class="text-danger"></span>
-         </div>
-         <div class="form-floating mb-3">
-               <input asp-for="Phone" class="form-control" name="Phone" placeholder="Please enter your phone number."/>
-               <label asp-for="Phone" class="form-label"></label>
-               <span asp-validation-for="Phone" class="text-danger"></span>
-         </div>
-         <button id="update-profile-button" type="submit" class="btn btn-success fw-bold btnSend" data-btn="Profile">Сохранить</button>
-      </form>
-   </div>
+<div class="row partial w-100">
+    <div class="col-md-4">
+        <form id="profile-form" class="w-100" data-form="Profile" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3 input-group">
+                <input asp-for="Email" class="form-control" placeholder="Please choose your email." disabled />
+                <div class="input-group-append">
+                    <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
+                </div>
+                <label asp-for="Email" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" placeholder="Please enter your Name." />
+                <label asp-for="Name" class="form-label"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Phone" class="form-control" placeholder="Please enter your phone number." />
+                <label asp-for="Phone" class="form-label"></label>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <button id="update-profile-button" type="submit" class="btn btn-success fw-bold btnSend" data-btn="Profile">Сохранить</button>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
-  <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 }
-
-
-

@@ -12,6 +12,7 @@ namespace Company.Models.Account
     /// </summary>
     [Required(ErrorMessage = "Введите электронную почту")]
     [EmailAddress]
+    [Display(Name = "Эл.почта")]
     public string? Email { get; set; }
 
     /// <summary>
@@ -19,12 +20,13 @@ namespace Company.Models.Account
     /// </summary>
     [Required(ErrorMessage = "Введите пароль")]
     [DataType(DataType.Password)]
+    [Display(Name = "Пароль")]
     public string? Password { get; set; }
 
     /// <summary>
     /// Флаг, указывающий, должна ли система запоминать пользователя.
     /// </summary>
-    [Display(Name = "Запомнить меня")]
+    [Display(Name = "Запомнить меня?")]
     public bool RememberMe { get; set; }
   }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Company.Models.Employee
 {
@@ -10,32 +11,43 @@ namespace Company.Models.Employee
     /// <summary>
     /// Идентификатор сотрудника.
     /// </summary>
+    [HiddenInput]
     public int? ID { get; set; }
+
     /// <summary>
     /// Имя сотрудника.
     /// </summary>
     [Required(ErrorMessage = "Введите имя")]
+    [Display(Name = "Имя")]
     public string? Name { get; set; }
+
     /// <summary>
     /// Фамилия сотрудника.
     /// </summary>
     [Required(ErrorMessage = "Введите фамилию")]
+    [Display(Name = "Фамилия")]
     public string? Surname { get; set; }
     /// <summary>
     /// Возраст сотрудника.
     /// </summary>
     [Required(ErrorMessage = "Введите возраст")]
+    [Display(Name = "Возраст")]
     public string? Age { get; set; }
+
     /// <summary>
     /// Номер телефона сотрудника.
     /// </summary>
     [Required(ErrorMessage = "Введите номер телефона")]
+    [Display(Name = "Номер телефона")]
     public string? Number { get; set; }
+
     /// <summary>
     /// Идентификатор отдела сотрудника.
     /// </summary>
     [Required(ErrorMessage = "Введите отдел")]
+    [Display(Name = "Отдел")]
     public int? DepartmentID { get; set; }
+
     /// <summary>
     /// Создает новый экземпляр класса <see cref="EmployeeModel"/>.
     /// </summary>
@@ -46,6 +58,7 @@ namespace Company.Models.Employee
       this.ID = ID;
       this.DepartmentID = DepartmentID;
     }
+
     // <summary>
     /// Создает новый экземпляр класса <see cref="EmployeeModel"/>.
     /// </summary>
@@ -64,6 +77,7 @@ namespace Company.Models.Employee
       Number = number;
       DepartmentID = departmentID;
     }
+
     /// <summary>
     /// Создает новый экземпляр класса <see cref="EmployeeModel"/>.
     /// </summary>

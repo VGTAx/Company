@@ -12,7 +12,9 @@ namespace Company.Models.ManageAccount
     /// </summary>
     [DataType(DataType.Password)]
     [Display(Name = "Пароль")]
+    [Required]
     public string? Password { get; set; }
+
     /// <summary>
     /// Флаг, указывающий, требуется ли ввод пароля для удаления учетной записи.
     /// </summary>

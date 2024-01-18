@@ -16,6 +16,7 @@ namespace Company.Controllers
   public class EmployeeController : Controller
   {
     private readonly CompanyContext _context;
+
     /// <summary>
     /// Создает экземпляр класса <see cref="EmployeeController"/>.
     /// </summary>
@@ -24,6 +25,7 @@ namespace Company.Controllers
     {
       _context = context;
     }
+
     /// <summary>
     /// Метод действия для создания нового сотрудника в указанном отделе.
     /// </summary>
@@ -55,6 +57,7 @@ namespace Company.Controllers
       ViewBag.Departments = departments;
       return View();
     }
+
     /// <summary>
     /// Метод действия для создания нового сотрудника на основе входных данных формы.
     /// </summary>
@@ -64,13 +67,13 @@ namespace Company.Controllers
     /// В противном случае возвращает View "Create" с данными формы и списком доступных отделов.
     /// </returns>
     [HttpPost]
-    public async Task<IActionResult> Create([Bind("ID, Name, Surname, Age, Number, DepartmentID")] EmployeeModel employee)
+    public async Task<IActionResult> Create([FromForm] EmployeeModel employee)
     {
       if(ModelState.IsValid)
       {
-        _context.Employees.Add(employee);
+        await _context.Employees.AddAsync(employee);
         await _context.SaveChangesAsync();
-        return RedirectToAction("Details");
+        return RedirectToAction(nameof(Details));
       }
 
       var departments = _context.Departments
@@ -83,8 +86,9 @@ namespace Company.Controllers
 
       ViewBag.Departments = departments;
 
-      return View("Create");
+      return RedirectToAction(nameof(Details));
     }
+
     /// <summary>
     /// Метод  для редактирования данных сотрудника на основе указанного идентификатора.
     /// </summary>
@@ -98,14 +102,14 @@ namespace Company.Controllers
     {
       if(id == null || _context.Employees == null)
       {
-        return NotFound();
+        return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
       var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
 
       if(employee == null)
       {
-        return NotFound();
+        return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
       var departments = _context.Departments
@@ -118,9 +122,8 @@ namespace Company.Controllers
 
       ViewBag.Departments = departments;
 
-      return View("Edit", employee);
+      return View(nameof(Edit), employee);
     }
-
 
     /// <summary>
     /// Метод для обновления данных сотрудника на основе указанного идентификатора.
@@ -135,11 +138,11 @@ namespace Company.Controllers
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Edit(int? id, [Bind("ID, Name, Surname, Age, Number, DepartmentID")] EmployeeModel employee)
+    public async Task<IActionResult> Edit(int? id, [FromForm] EmployeeModel employee)
     {
       if(id != employee.ID)
       {
-        return NotFound();
+        return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
       if(ModelState.IsValid)
@@ -151,9 +154,9 @@ namespace Company.Controllers
         }
         catch(DbUpdateConcurrencyException)
         {
-          if(!EmployeeExists(employee.ID))
+          if(!await EmployeeExistsAsync(employee.ID))
           {
-            return NotFound();
+            return View("_StatusMessage", "Ошибка!Пользователь не найден.");
           }
           else
           {
@@ -176,6 +179,7 @@ namespace Company.Controllers
 
       return View();
     }
+
     /// <summary>
     /// Удаляет сотрудникам с заданным идентификатором.
     /// </summary>
@@ -186,23 +190,22 @@ namespace Company.Controllers
     {
       if(id == null || _context.Employees == null)
       {
-        return NotFound();
+        return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
       var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
 
       if(employee == null)
       {
-        return NotFound();
+        return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
-      var department = await _context.Departments
-          .FirstOrDefaultAsync(d => d.ID == employee.DepartmentID);
-
+      var department = await _context.Departments.FirstOrDefaultAsync(d => d.ID == employee.DepartmentID);
       ViewBag.Department = department!.DepartmentName;
 
       return View(employee);
     }
+
     /// <summary>
     /// Метод подтверждения удаления сотрудника с заданным идентификатором.
     /// </summary>
@@ -218,7 +221,7 @@ namespace Company.Controllers
         return Problem("Entity set 'DepartmentContext.Employee' is null.");
       }
 
-      var employee = _context.Employees.FirstOrDefault(e => e.ID == id);
+      var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
 
       if(employee != null)
       {
@@ -226,8 +229,9 @@ namespace Company.Controllers
       }
 
       await _context.SaveChangesAsync();
-      return RedirectToAction("Details");
+      return RedirectToAction(nameof(Details));
     }
+
     /// <summary>
     /// Метод действия для просмотра списка сотрудников.
     /// </summary>
@@ -235,15 +239,16 @@ namespace Company.Controllers
     /// Возвращает View Details со списком сотрудников.
     /// </returns>
     [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public IActionResult Details()
+    public async Task<IActionResult> Details()
     {
-      var departments = _context.Departments.ToList();
+      var departments = await _context.Departments.ToListAsync();
       var employee = _context.Employees;
 
       ViewBag.Departments = departments;
 
       return View(employee);
     }
+
     /// <summary>
     /// Метод для получения списка отделов.
     /// </summary>
@@ -253,7 +258,9 @@ namespace Company.Controllers
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     private List<DepartmentModel> GetDepartments(int? id, List<DepartmentModel> departments)
     {
-      var subdepartments = departments.Where(d => d.ParentDepartmentID == id).ToList();
+      var subdepartments = departments
+          .Where(d => d.ParentDepartmentID == id)
+          .ToList();
       var deps = new List<DepartmentModel>();
 
       if(subdepartments.Any())
@@ -273,19 +280,21 @@ namespace Company.Controllers
       }
       else
       {
-        deps.Add(departments.FirstOrDefault(d => d.ID == id)!);
+        deps.Add(departments.Find(d => d.ID == id)!);
       }
       return deps;
     }
+
     /// <summary>
     /// Проверяет существование сотрудника по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
     /// <returns>True, если сотрудник с указанным идентификатором существует, иначе false.</returns>
-    private bool EmployeeExists(int? id)
+    private async Task<bool> EmployeeExistsAsync(int? id)
     {
-      return _context.Employees.Any(e => e.ID == id);
+      return await _context.Employees.AnyAsync(e => e.ID == id);
     }
+
     /// <summary>
     /// Возвращает View.
     /// </summary>

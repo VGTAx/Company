@@ -46,6 +46,6 @@
     <form asp-action="Delete">
         <input asp-for="ID" />
         <input type="submit" value="Удалить" class="btn btn-outline-danger btn-sm fw-bold" /> 
-        <a asp-action="@nameof(EmployeeController.Details)" asp-controller="@typeof(EmployeeController).ControllerName()" class="btn btn-outline-secondary btn-sm fw-bold">Назад</a>
+        <a asp-action="Details" asp-controller="Employee" class="btn btn-outline-secondary btn-sm fw-bold">Назад</a>
     </form>
 </div>

@@ -8,13 +8,13 @@
     @switch (role)
     {
         case "Admin":
-            <a class="nav-link text-dark" asp-controller="@typeof(EmployeeController).ControllerName()" asp-action="@nameof(EmployeeController.Details)">Список сотрудников</a>
-            <a class="nav-link text-dark" id="AdminPanel" asp-controller="@typeof(AdminController).ControllerName()" asp-action="@nameof(AdminController.Index)">Панель управления</a>
+            <a class="nav-link text-dark" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
+            <a class="nav-link text-dark" id="AdminPanel" asp-controller="Admin" asp-action="Index">Панель управления</a>
             displayed = true;
             break;
         case "Manager":
         case "User":
-            <a class="nav-link text-dark" asp-controller="@typeof(EmployeeController).ControllerName()" asp-action="@nameof(EmployeeController.Details)">Список сотрудников</a>
+            <a class="nav-link text-dark" asp-controller="Employee" asp-action="Details">Список сотрудников</a>
             displayed = true;
             break;
         default:

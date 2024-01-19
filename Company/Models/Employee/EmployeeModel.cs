@@ -44,7 +44,7 @@ namespace Company.Models.Employee
     /// <summary>
     /// Идентификатор отдела сотрудника.
     /// </summary>
-    [Required(ErrorMessage = "Введите отдел")]
+    [Required(ErrorMessage = "Выберите отдел")]
     [Display(Name = "Отдел")]
     public int? DepartmentID { get; set; }
 

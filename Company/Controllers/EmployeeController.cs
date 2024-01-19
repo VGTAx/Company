@@ -69,22 +69,13 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> Create([FromForm] EmployeeModel employee)
     {
-      if(ModelState.IsValid)
+      if(!ModelState.IsValid)
       {
-        await _context.Employees.AddAsync(employee);
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Details));
+        return BadRequest(ModelState);
       }
 
-      var departments = _context.Departments
-          .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
-          .Select(item => new SelectListItem
-          {
-            Value = item.ID.ToString(),
-            Text = item.DepartmentName
-          }).AsEnumerable();
-
-      ViewBag.Departments = departments;
+      await _context.Employees.AddAsync(employee);
+      await _context.SaveChangesAsync();
 
       return RedirectToAction(nameof(Details));
     }
@@ -140,6 +131,11 @@ namespace Company.Controllers
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Edit(int? id, [FromForm] EmployeeModel employee)
     {
+      if(!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       if(id != employee.ID)
       {
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");

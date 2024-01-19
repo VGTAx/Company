@@ -14,7 +14,7 @@
      {
         case "Admin":
         case "Manager":
-           <a class="btn btn-outline-primary btn-sm fw-bold" asp-action="@nameof(EmployeeController.Create)" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
+           <a class="btn btn-outline-primary btn-sm fw-bold" asp-action="Create" asp-route-departmentId="@ViewBag.MainDepartment">Добавить сотрудника</a>
            break;
         default:
            break;
@@ -75,8 +75,8 @@
                   {
                      case "Admin":
                      case "Manager":
-                        <a asp-action="@nameof(EmployeeController.Edit)" class="btn btn-outline-secondary btn-sm fw-bold" asp-route-id="@item.ID">Изменить</a><span> | </span>
-                        <a asp-action="@nameof(EmployeeController.Delete)" class="btn btn-outline-danger btn-sm fw-bold" asp-route-id="@item.ID">Удалить</a>
+                        <a asp-action="Edit" class="btn btn-outline-secondary btn-sm fw-bold" asp-route-id="@item.ID">Изменить</a><span> | </span>
+                        <a asp-action="Delete" class="btn btn-outline-danger btn-sm fw-bold" asp-route-id="@item.ID">Удалить</a>
                         break;
                      default:
                         break;

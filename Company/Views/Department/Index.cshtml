@@ -16,7 +16,7 @@
                 @foreach (var department in subdepartments)
                 {
                     <li class="hierarchy-item">
-                        <a class="nav-link" asp-route-departmentId="@department.ID" asp-action="@nameof(DepartmentController.Details)" asp-controller="@typeof(DepartmentController).ControllerName()">@department.DepartmentName</a>
+                        <a class="nav-link" asp-route-departmentId="@department.ID" asp-action="Details" asp-controller="Department">@department.DepartmentName</a>
                     </li>
                     await RenderSubDepartment(department.ID, departments);
                 }
@@ -29,10 +29,10 @@
     @foreach (var department in Model.Where(d => d.ParentDepartmentID == null))
     {
         <li class="hierarchy-item">
-            <a class="nav-link" asp-route-departmentId="@department.ID" asp-action="@nameof(DepartmentController.Details)" asp-controller="@typeof(DepartmentController).ControllerName()">@department.DepartmentName</a>
+            <a class="nav-link" asp-route-departmentId="@department.ID" asp-action="Details" asp-controller="Department">@department.DepartmentName</a>
         </li>
         await RenderSubDepartment(department.ID, Model);
     }
 </ul>
 
-<script src="~/js/displayDepartment.js"></script>
+<script src="~/js/displayDepartment.js" asp-append-version="true"></script>

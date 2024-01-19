@@ -4,19 +4,19 @@
     @if (SignInManager.IsSignedIn(User) && Model != null)
     {  
         <li class="nav-item">         
-            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-action="@nameof(ManageAccountController.Index)" asp-controller="@typeof(ManageAccountController).ControllerName()" title="Manage">Профиль</a>
+            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-action="Index" asp-controller="ManageAccount" title="Manage">Профиль</a>
         </li>
         <li class="nav-item">              
-            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="@nameof(AccountController.Logout)" asp-controller="@typeof(AccountController).ControllerName()">Выйти</a>
+            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="Logout" asp-controller="Account">Выйти</a>
         </li> 
     }         
     else
     {
          <li class="nav-item">
-            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-action="@nameof(AccountController.Registration)" asp-controller="@typeof(AccountController).ControllerName()">Регистрация</a>
+            <a class="btn btn-outline-primary fw-bold btn fixed-size-btn" asp-action="Registration" asp-controller="Account">Регистрация</a>
          </li>
          <li class="nav-item">
-            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="@nameof(AccountController.Login)" asp-controller="@typeof(AccountController).ControllerName()">Вход</a>
+            <a class="btn btn-outline-success fw-bold btn fixed-size-btn" asp-action="Login" asp-controller="Account">Вход</a>
          </li>
     }   
 </ul>

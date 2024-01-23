@@ -3,7 +3,9 @@
 <div class="navContainer">
     <div class="navContainerLink">
         <ul class="nav nav-pills flex-column">
-            <li class="nav-item">@Html.ActionLink("Настройки доступа", "", "", "", new {@class="nav-link admin highLightLink defaultMenuItem", @id="user-list", @data_target="UserList"})</li>
+            <li class="nav-item">
+                <a class="nav-link admin hightLightLink defaultMenuItem active" id="user-list" data-target="/Admin/UserList">Настройки доступа</a>
+            </li>
         </ul>
     </div>
     <div class="container" id="partialContainer"></div>

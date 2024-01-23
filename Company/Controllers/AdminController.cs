@@ -1,6 +1,7 @@
 ﻿using Company.Data;
 using Company.IServices;
 using Company.Models;
+using Company.Models.Admin;
 using Company.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -93,20 +94,20 @@ namespace Company.Controllers
     /// <param name="id">Идентификатор пользователя.</param>
     /// <returns>Partial View страницы настройки доступа.</returns>
     [HttpPost]
-    public async Task<IActionResult> AccessSettings([FromBody] AccessSettingsPoco model)
+    public async Task<IActionResult> AccessSettings([FromForm] UserInfoModel model)
     {
       if(!ModelState.IsValid)
       {
-        return PartialView(ModelState);
+        return BadRequest(ModelState);
       }
 
-      var user = await _userManager!.FindByIdAsync(model.User!.Id!);
+      var user = await _userManager!.FindByIdAsync(model.Id!);
       if(user == null)
       {
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
-      if(!model.SelectedRoles!.Contains("User"))
+      if(!model.SelectedRoles.Contains("User"))
       {
         ModelState.AddModelError(string.Empty, "Роль User не может быть удалена");
         return BadRequest(ModelState);

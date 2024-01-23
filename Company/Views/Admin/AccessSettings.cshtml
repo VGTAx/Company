@@ -33,20 +33,22 @@
         </dl>
     </div>
     @if (!Model.UserRoles!.Contains("Admin"))
-    {        
-        <form id="roles-form" method="post" data-form="AccessSettings">
-            <span id="access" class="text-danger fw-bold mx-1" role="alert" ></span>
+    {
+      
+        <form id="roles-form" asp-action="AccessSettings" asp-controller="Admin">
+            <span id="formMessage" class="text-danger fw-bold mx-1" role="alert"></span>
             <div class="dropdown">                   
                 <button id="dropdown-btn" class="btn btn-outline-secondary dropdown-toggle btn-sm fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">Выберите роли</button>
                 <ul class="dropdown-menu">
                     @foreach (var role in Model.Roles!)
                     {
-                        <li class="dropdown-item">
-                            <input type="checkbox" name="selectedRoles" value="@role" @(Model.UserRoles.Contains(role) ? "checked" : "") @(role == "User" ? "disabled" : "" ) />
-                            <span><b>@role</b></span>
+                        <li class="dropdown-item" @(role == "User" ? "hidden" : "")>
+                            <input type="checkbox" id="@role" name="selectedRoles" value="@role" @(Model.UserRoles.Contains(role) ? "checked" : "")  />
+                            <label for="@role"><b>@role</b></label>
                         </li>
                     }
-                </ul>     
+                </ul>                    
+                <input type="hidden" id="id" name="Id" value="@Model.User.Id">
                 <button class="btn btn-outline-primary btn-sm fw-bold" type="submit">Сохранить</button>
             </div>
         </form>
@@ -58,10 +60,7 @@
     <ul>
         <li>
             <p>Manager -  имеет доступ к списку сотрудников компании. Может добавлять, изменять и удалять данные сотрудника</p>
-        </li>
-        <li>
-            <p>User - имеет доступ к списку сотрудников без возможности изменения данных</p>
-        </li>
+        </li>        
     </ul>
 </div>
 

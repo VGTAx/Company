@@ -10,14 +10,17 @@ namespace Company.Models.ViewModels
     /// <summary>
     /// 
     /// </summary>
+    [HiddenInput]
     public ApplicationUserModel? User { get; set; }
     /// <summary>
     /// 
     /// </summary>
+    [HiddenInput]
     public List<string>? UserRoles { get; set; }
     /// <summary>
     /// 
     /// </summary>
+    [HiddenInput]
     public List<string>? Roles { get; set; }
 
     /// <summary>

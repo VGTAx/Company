@@ -1,146 +1,112 @@
-﻿document.addEventListener('DOMContentLoaded', (event) => {
+﻿document.addEventListener('DOMContentLoaded', () => {
 
    let navLink = document.querySelectorAll(".nav-link.admin");
 
    navLink.forEach(function (link) {
       link.addEventListener("click", (event) => {
          let link = event.target;
-         let partialView = link.dataset.target;
-         getManageAccountPartialView(event, partialView);
+         let url = link.dataset.target;
+         GetManageAccountPartialView(event, url);
       });
    });
-
-   function attachButtonFormHandler() {
-      let form = document.querySelector('[data-form]');
-      if (form) {
-         form.addEventListener('submit', event => {
-            event.preventDefault();
-
-            let partialView = form.dataset.form;
-            let url = "/Admin/" + partialView;            
-            
-            const selectedRoles = [];
-            document.querySelectorAll('input[type="checkbox"][name="selectedRoles"]:checked')
-               .forEach(function (checkbox) {
-                  selectedRoles.push(checkbox.value);
-               });
-
-            let users = {
-               Id: document.querySelector("#userId").getAttribute("value"),
-            };       
-            const dataToSend = {
-               user: users,
-               selectedRoles: selectedRoles,               
-            }
-            fetch(url, {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json'
-               },
-               body: JSON.stringify(dataToSend)
-            }).then(response => {
-               if (response.ok) {
-                  return response.text()
-                     .then(html => {
-                        const tempDiv = document.querySelector('#partialContainer');
-                        tempDiv.innerHTML = html;
-                        attachButtonFormHandler();
-                        getUser();
-                     })
-               }
-               if (response.status == 400) {
-                  return response.json()
-                     .then(data => {
-                        getPartialViewErrors(data, partialView, userId);
-                     })
-               }
-
-            }).catch(error => {
-               console.error(error);
-            });
-         });
-      }
-   }
-
-   //возвращает PartialView на страницу в профиле
-   function getManageAccountPartialView(event, partialView) {
-      event.preventDefault();
-
-      let url = "/Admin/" + partialView;
-      fetch(url, {
-         method: "GET"
-      }).then(response => {
-         if (!response.ok) {
-            throw new Error("Ошибка авторизации, пройдите авторизацию");
-         }
-         return response.text()
-      }).then(html => {
-         const tempDiv = document.getElementById('partialContainer');
-         tempDiv.innerHTML = html;
-         // При обновлении partialView вешаем обработчик на отправку формы
-         attachButtonFormHandler();
-         if (partialView == "UserList") {
-            getUser();
-         }
-      }).catch(error => {
-         console.error(error);
-         window.location.href = "/Account/Login";
-      })
-   }
-
-   //Обработка ошибок Для PartialView DeletePersonData
-   function getPartialViewErrors(data, partialView, id) {
-      if (data) {
-         for (let key in data) {
-            if (data.hasOwnProperty(key)) {
-
-               let textError = data[key].join(", ");
-               let url = "/Admin/" + partialView + "/" + id;
-               fetch(url, {
-                  method: "GET"
-               }).then(response => {
-                  if (!response.ok) {
-                     throw new Error("Ошибка авторизации, пройдите авторизацию");
-                  }
-                  return response.text()
-               }).then(html => {
-                  const tempDiv = document.querySelector('#partialContainer');
-                  tempDiv.innerHTML = html;
-                  //document.querySelector("#Span" + `${key}`).textContent = textError;
-                  document.querySelector("#access").textContent = textError;
-                  // При обновлении partialView вешаем обработчик на отправку формы
-                  attachButtonFormHandler();
-               }).catch(error => {
-                  console.error(error);
-                  window.location.href = "/Account/Login";
-               })
-            }
-         }
-      }
-   }    
-
-   function getUser() {
-      let users = document.querySelectorAll(".user-info");
-      users.forEach(function (btn)  {
-         btn.addEventListener('click', event => {
-            let userId = event.target.getAttribute('id');
-            let url = `/Admin/AccessSettings?id=${userId}`;
-            fetch(url, {
-               method: "GET"
-            }).then(response => {
-               if (response.ok) {
-                  return response.text()
-                     .then(html => {
-                        const tempDiv = document.querySelector('#partialContainer');
-                        tempDiv.innerHTML = html;
-                        attachButtonFormHandler();
-                        getUser();
-                     })
-               }
-            }).catch(error => {
-               console.error(error);
-            });
-         })
-      })
-   }
 })
+
+//возвращает PartialView на страницу в профиле
+function GetManageAccountPartialView(event, partialView) {
+   event.preventDefault();
+
+   let url = partialView;
+   fetch(url, {
+      method: "GET"
+   }).then(response => {
+      if (!response.ok) {
+         throw new Error("Ошибка авторизации, пройдите авторизацию");
+      }
+      return response.text()
+   }).then(html => {
+      const tempDiv = document.querySelector('#partialContainer');
+      tempDiv.innerHTML = html;
+      // При обновлении partialView вешаем обработчик на отправку формы
+      SetSubmitButtonFormHandler();
+      GetUser();
+   }).catch(error => {
+      console.error(error);
+      window.location.href = "/Account/Login";
+   })
+}
+
+function SetSubmitButtonFormHandler() {
+   let form = document.forms[0];
+   if (form) {
+      form.addEventListener('submit', event => {
+         event.preventDefault();
+
+         let url = form.action;
+         let formData = new FormData(form);
+         fetch(url, {
+            method: 'POST',
+            body: formData
+         }).then(response => {
+            if (response.ok) {
+               return response.text()
+                  .then(html => {
+                     const tempDiv = document.querySelector('#partialContainer');
+                     tempDiv.innerHTML = html;
+                     GetUser();
+                  })
+            }
+            if (response.status == 400) {
+               return response.json()
+                  .then(data => {
+                     ShowModelErrors(data);
+                  })
+            }
+         }).catch(error => {
+            console.error(error);
+         });
+      });
+   }
+}
+
+//Отображение ошибок модели и др.
+function ShowModelErrors(modelErrors) {
+   if (modelErrors) {
+
+      let modelErrorMessages = document.querySelectorAll("span");
+      modelErrorMessages.forEach(function (error) {
+         error.textContent = ""
+      });
+
+      let textError = "";
+      for (let key in modelErrors) {
+         if (modelErrors.hasOwnProperty(key)) {
+            textError += modelErrors[key].join(", ");
+         }
+      }
+      document.querySelector(`#formMessage`).textContent = textError;
+   }
+}
+
+function GetUser() {
+   let users = document.querySelectorAll(".user-info");
+   users.forEach(function (btn) {
+      btn.addEventListener('click', event => {
+         let userId = event.target.getAttribute('id');
+         let url = event.target.dataset.target + `/${userId}`;
+         fetch(url, {
+            method: "GET"
+         }).then(response => {
+            if (response.ok) {
+               return response.text()
+                  .then(html => {
+                     const tempDiv = document.querySelector('#partialContainer');
+                     tempDiv.innerHTML = html;
+                     SetSubmitButtonFormHandler()
+                  })
+            }
+         }).catch(error => {
+            console.error(error);
+         });
+      })
+   })
+}

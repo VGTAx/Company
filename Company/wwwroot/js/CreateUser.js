@@ -1,4 +1,6 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+﻿import { CheckFormValueChanges } from './SubmitBtnHandler.js'
+
+document.addEventListener('DOMContentLoaded', () => {
 
    let name = document.querySelector("#Name");
    let surname = document.querySelector("#Surname");
@@ -60,6 +62,8 @@ function EventHandlerCheckLetters(event) {
 function SetSubmitButtonFormHandler() {
    let form = document.forms[0];
    if (form) {
+
+      CheckFormValueChanges();
       form.addEventListener('submit', event => {
          event.preventDefault();
 
@@ -87,7 +91,6 @@ function SetSubmitButtonFormHandler() {
       });
    }
 }
-
 //Обработчик ошибок 
 function ShowModelErrors(modelErrors) {
    if (modelErrors) {

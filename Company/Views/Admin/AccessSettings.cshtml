@@ -38,7 +38,7 @@
         <form id="roles-form" asp-action="AccessSettings" asp-controller="Admin">
             <span id="formMessage" class="text-danger fw-bold mx-1" role="alert"></span>
             <div class="dropdown">                   
-                <button id="dropdown-btn" class="btn btn-outline-secondary dropdown-toggle btn-sm fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">Выберите роли</button>
+                <button id="dropdown-btn" class="btn btn-outline-secondary dropdown-toggle btn-sm fw-bold"  data-bs-toggle="dropdown" aria-expanded="false">Выберите роли</button>
                 <ul class="dropdown-menu">
                     @foreach (var role in Model.Roles!)
                     {
@@ -49,7 +49,7 @@
                     }
                 </ul>                    
                 <input type="hidden" id="id" name="Id" value="@Model.User.Id">
-                <button class="btn btn-outline-primary btn-sm fw-bold" type="submit">Сохранить</button>
+                <button class="btn btn-outline-primary btn-sm fw-bold" id="submitBtn" disabled type="submit">Сохранить</button>
             </div>
         </form>
     }
@@ -63,5 +63,3 @@
         </li>        
     </ul>
 </div>
-
-<script src="~/js/getRolesForm.js" asp-append-version="true"> </script>

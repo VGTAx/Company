@@ -11,7 +11,7 @@ namespace Company.Models.ManageAccount
     /// Старый пароль пользователя.
     /// </summary>
     [Required(ErrorMessage = "Введите старый пароль")]
-    [DataType(DataType.Password)]
+    [DataType(DataType.Password, ErrorMessage = "Неверный пароль")]
     [Display(Name = "Старый пароль")]
     public string? OldPassword { get; set; }
 

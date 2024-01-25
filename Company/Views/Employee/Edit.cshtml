@@ -41,11 +41,11 @@
                 <span asp-validation-for="DepartmentID" id="DepartmentID" class="text-danger"></span>
             </div>
             <div class="form-group my-3">
-                <input type="submit" value="Сохранить" class="btn btn-outline-primary btn-sm fw-bold" />
+                <input type="submit" value="Сохранить" id="submitBtn" class="btn btn-outline-primary btn-sm fw-bold" disabled />
                 <a asp-action="Details" asp-controller="Employee" class="btn btn-outline-secondary btn-sm fw-bold">Назад</a>
             </div>
         </form>
     </div>
 </div>
 
-<script src="~/js/CreateUser.js" asp-append-version="true"></script>
+<script src="~/js/CreateUser.js" type="module" asp-append-version="true"></script>

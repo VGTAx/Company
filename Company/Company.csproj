@@ -8,18 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\js\NavLinkAccount.js" />
+    <Content Remove="wwwroot\js\ManageAccountPanel.js" />
   </ItemGroup>
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\js\CreateUser.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\getRolesForm.js" />
     <_ContentIncludedByDefault Remove="wwwroot\js\HighligthLink.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\NavLinkAccount.js" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\js\NavLinkAccount.js" />
+    <None Include="wwwroot\js\ManageAccountPanel.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,7 +60,7 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Update="wwwroot\js\defaultMenuItem.js">
+    <Content Update="wwwroot\js\DefaultMenuItem.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

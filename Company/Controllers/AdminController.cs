@@ -67,7 +67,7 @@ namespace Company.Controllers
       {
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
-      var userPrincipal = await _signInManager!.CreateUserPrincipalAsync(user);
+      var userPrincipal = _signInManager!.CreateUserPrincipalAsync(user).Result;
 
       var userRoles = userPrincipal.Claims
         .Where(c => c.Type == ClaimTypes.Role)

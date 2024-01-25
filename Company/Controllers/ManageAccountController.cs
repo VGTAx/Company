@@ -77,14 +77,15 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> Profile([FromForm] ProfileModel model)
     {
+      if(!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
         return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
-      }
-      if(!ModelState.IsValid)
-      {
-        return PartialView(model);
       }
 
       var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -151,7 +152,7 @@ namespace Company.Controllers
     /// <param name="model">Модель данных с новой электронной почтой и флагом подтверждения электронной почты.</param>
     /// <returns>Partial View с результатом операции изменения электронной почты пользователя.</returns>
     [HttpPost]
-    public async Task<IActionResult> ChangeEmail([Bind("NewEmail, IsEmailConfirmed")] ChangeEmailModel model)
+    public async Task<IActionResult> ChangeEmail([Bind("NewEmail, Email")] ChangeEmailModel model)
     {
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
@@ -248,7 +249,7 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        return PartialView();
+        return BadRequest(ModelState);
       }
 
       var user = await _userManager.GetUserAsync(User);
@@ -260,10 +261,7 @@ namespace Company.Controllers
       var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
       if(!changePasswordResult.Succeeded)
       {
-        foreach(var error in changePasswordResult.Errors)
-        {
-          ModelState.AddModelError(string.Empty, error.Description);
-        }
+        ModelState.AddModelError(string.Empty, "Неверный старый пароль.");
         return PartialView();
       }
 

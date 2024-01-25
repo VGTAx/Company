@@ -6,7 +6,7 @@
 <h3>@ViewData["Title"]</h3>
 <div class="row partial w-100">
     <div class="col-md-4">
-        <form id="profile-form" class="w-100" data-form="Profile" method="post">
+        <form id="profile-form" class="w-100" asp-action="Profile" asp-controller="ManageAccount" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3 input-group">
                 <input asp-for="Email" class="form-control" placeholder="Please choose your email." disabled />
@@ -25,7 +25,7 @@
                 <label asp-for="Phone" class="form-label"></label>
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="btn btn-success fw-bold btnSend" data-btn="Profile">Сохранить</button>
+            <button id="submitBtn" type="submit" class="btn btn-success fw-bold btnSend" disabled>Сохранить</button>
         </form>
     </div>
 </div>

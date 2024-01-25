@@ -1,21 +1,22 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+﻿import { CheckFormValueChanges } from './SubmitBtnHandler.js';
 
-   let navLink = document.querySelectorAll(".nav-link.admin");
+document.addEventListener("DOMContentLoaded", () => {
+   let navLink = document.querySelectorAll(".nav-link.account");
 
    navLink.forEach(function (link) {
       link.addEventListener("click", (event) => {
          let link = event.target;
-         let url = link.dataset.target;
-         GetManageAccountPartialView(event, url);
+         let partialView = link.href;
+         GetManageAccountPanelSection(event, partialView, SetSubmitButtonFormHandler);
       });
-   });
+   });      
 })
 
-//возвращает PartialView на страницу в профиле
-function GetManageAccountPartialView(event, partialView) {
+//возвращает раздел панели управления аккаунта в виде PartialView 
+function GetManageAccountPanelSection(event, requestUrl, sub) {
    event.preventDefault();
 
-   let url = partialView;
+   let url = requestUrl;
    fetch(url, {
       method: "GET"
    }).then(response => {
@@ -27,86 +28,70 @@ function GetManageAccountPartialView(event, partialView) {
       const tempDiv = document.querySelector('#partialContainer');
       tempDiv.innerHTML = html;
       // При обновлении partialView вешаем обработчик на отправку формы
-      SetSubmitButtonFormHandler();
-      GetUser();
+      sub();
    }).catch(error => {
       console.error(error);
       window.location.href = "/Account/Login";
    })
 }
-
+//Устанавливает обработчик на кнопку отправки формы
 function SetSubmitButtonFormHandler() {
    let form = document.forms[0];
    if (form) {
-      form.addEventListener('submit', event => {
+      CheckFormValueChanges();
+      form.addEventListener('submit', function (event) {
          event.preventDefault();
 
          let url = form.action;
-         let formData = new FormData(form);
+         const formData = new FormData(form);
+
+         if (form.action.includes("Profile") || form.action.includes("ChangeEmail")) {
+            const email = document.querySelector("#Email").value;
+            formData.append("Email", email);
+         }
+
          fetch(url, {
-            method: 'POST',
+            method: "POST",
             body: formData
          }).then(response => {
             if (response.ok) {
                return response.text()
                   .then(html => {
                      const tempDiv = document.querySelector('#partialContainer');
+                     if (form.id == "DeletePersonalData") {
+                        location = "/";
+                     }
                      tempDiv.innerHTML = html;
-                     GetUser();
+                     //После получения PartialView вешаем обработчик на кнопку отправки формы
+                     SetSubmitButtonFormHandler();
                   })
             }
             if (response.status == 400) {
                return response.json()
                   .then(data => {
-                     ShowModelErrors(data);
-                  })
+                     ShowModelErrors(data)
+                  });
             }
          }).catch(error => {
             console.error(error);
+            window.location.href = "/Account/Login";
          });
       });
    }
 }
-
-//Отображение ошибок модели и др.
+//Отображение ошибок формы
 function ShowModelErrors(modelErrors) {
    if (modelErrors) {
-
       let modelErrorMessages = document.querySelectorAll("span");
       modelErrorMessages.forEach(function (error) {
          error.textContent = ""
       });
 
-      let textError = "";
       for (let key in modelErrors) {
          if (modelErrors.hasOwnProperty(key)) {
-            textError += modelErrors[key].join(", ");
+            let textError = modelErrors[key].join(", ");
+            document.querySelector(`span#${key}`).textContent = textError;
          }
       }
-      document.querySelector(`#formMessage`).textContent = textError;
    }
-}
-
-function GetUser() {
-   let users = document.querySelectorAll(".user-info");
-   users.forEach(function (btn) {
-      btn.addEventListener('click', event => {
-         let userId = event.target.getAttribute('id');
-         let url = event.target.dataset.target + `/${userId}`;
-         fetch(url, {
-            method: "GET"
-         }).then(response => {
-            if (response.ok) {
-               return response.text()
-                  .then(html => {
-                     const tempDiv = document.querySelector('#partialContainer');
-                     tempDiv.innerHTML = html;
-                     SetSubmitButtonFormHandler()
-                  })
-            }
-         }).catch(error => {
-            console.error(error);
-         });
-      })
-   })
-}
+} 

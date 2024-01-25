@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form id="email-form" class="w-100" data-form="ChangeEmail" method="post">
+        <form id="email-form" class="w-100" asp-action="ChangeEmail" asp-controller="ManageAccount" method="post">
             <div class="form-floating mb-3 input-group">
                 <input asp-for="Email" class="form-control" placeholder="Please enter your email." disabled />
                 <div class="input-group-append">
@@ -20,7 +20,7 @@
                 <label asp-for="NewEmail" class="form-label"></label>
                 <span asp-validation-for="NewEmail" class="text-danger"></span>
             </div>
-            <button id="change-email-button" type="submit" class="btn fw-bold btn-success">Изменить эл.почту</button>
+            <button id="submitBtn" type="submit" class="btn fw-bold btn-success" disabled>Изменить эл.почту</button>
         </form>
     </div>
 </div>

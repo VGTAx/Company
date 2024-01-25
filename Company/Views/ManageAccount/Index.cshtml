@@ -1,15 +1,15 @@
 ﻿<div class="navContainer">
-  <div class="navContainerLink">
-    <ul class="nav nav-pills flex-column">
-      <li class="nav-item"><a class="nav-link account highLightLink defaultMenuItem" id="profile" href="" data-target="Profile">Профиль</a></li>
-      <li class="nav-item"><a class="nav-link account highLightLink" id="email" href="" data-target="ChangeEmail">Эл.почта</a></li>
-      <li class="nav-item"><a class="nav-link account highLightLink" href="" data-target="ChangePassword">Пароль</a></li>                 
-      <li class="nav-item"><a class="nav-link account highLightLink" id="personal-data" href="" data-target="PersonalData">Персональные данные</a></li>
-    </ul>
-  </div>
-  <div class="container" id="partialContainer"></div>    
+    <div class="navContainerLink">
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item"><a class="nav-link account highLightLink defaultMenuItem" asp-action="Profile" asp-controller="ManageAccount">Профиль</a></li>
+            <li class="nav-item"><a class="nav-link account highLightLink" id="email" asp-action="ChangeEmail" asp-controller="ManageAccount">Эл.почта</a></li>
+            <li class="nav-item"><a class="nav-link account highLightLink" asp-action="ChangePassword" asp-controller="ManageAccount">Пароль</a></li>
+            <li class="nav-item"><a class="nav-link account highLightLink" id="personal-data" asp-action="DeletePersonalData" asp-controller="ManageAccount">Персональные данные</a></li>
+        </ul>
+    </div>
+    <div class="container" id="partialContainer"></div>
 </div>
 
-<script src="~/js/NavLinkAccount.js" asp-append-version="true"></script>
+<script src="~/js/ManageAccountPanel.js" type="module" asp-append-version="true"></script>
 <script src="~/js/HighligthLink.js" asp-append-version="true"></script>
-<script src="~/js/defaultMenuItem.js" asp-append-version="true"></script>
+<script src="~/js/DefaultMenuItem.js" asp-append-version="true"></script>

@@ -1,11 +1,11 @@
-﻿@model List<ApplicationUserModel> 
+﻿@model List<ApplicationUserModel>
 
 @{
-	ViewData["Title"] = "User List";
+    ViewData["Title"] = "User List";
 }
 <h2>Список пользователей</h2>
 <table class="table table-hover table-sm w-75 align-middle">
-	<thead class="table-light">
+    <thead class="table-light">
         <tr>
             <th>
                 @Html.DisplayName("ID")
@@ -16,22 +16,23 @@
             <th></th>
         </tr>
     </thead>
-    <tbody  class="table-group-divider">
-    @foreach(var user in Model)
-    {
-      <tr>
-         <td>
-               @Html.DisplayFor(modelItem => user.Id)
-         </td>
-         <td>
-               @Html.DisplayFor(modelItem => user.Email)
-         </td> 
-         <td>                
-               <button type="submit" id="@user.Id" class="btn btn-outline-info btn-sm user-info fw-bolder" data-target="/Admin/AccessSettings">Информация</button>
-         </td>
-      </tr>
-    }    
+    <tbody class="table-group-divider">
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Email)
+                </td>
+                <td>
+                    <a type="submit" id="@user.Id" class="btn btn-outline-info btn-sm user-info fw-bolder" asp-action="AccessSettings" asp-controller="Admin" >Информация</a>
+                </td>
+            </tr>
+        }
+     </tbody>
 </table>
 
-<script src="~/js/getRolesForm.js" asp-append-version="true"> </script>
+<script src="~/js/AdminControlPanel.js" type="module" asp-append-version="true"> </script>
 <script src="~/js/HighligthLink.js" asp-append-version="true"> </script>

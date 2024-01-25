@@ -1,29 +1,31 @@
 ﻿@model DeletePersonalDataModel
 @{
-   ViewData["Title"] = "Удаление учетной записи";    
+    ViewData["Title"] = "Удаление персональных данных и учетной записи";
 }
 
 <h3>@ViewData["Title"]</h3>
 
-<div class="alert alert-warning" role="alert">
-  <p>
-    <strong>Удаление этих данных навсегда закроет учетную запись, без возможности восстановления.</strong>
-  </p>
+<div class="row">
+    <div class="w-75 alert" role="alert">
+        <p class="alert alert-warning">
+            <strong>Введите пароль, чтобы подтвердить удаление данных и учетной записи.</strong>
+        </p>
+    </div>
 </div>
 
 <div>
-  <form id="DeletePersonalData" data-form="DeletePersonalData" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>        
-    @if (Model.RequirePassword)
-    {
-      <div class="form-floating mb-3">
-        <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Please enter your password." />
-        <label asp-for="Password" class="form-label"></label>
-        <span asp-validation-for="Password" id="SpanPassword" class="text-danger"></span>
-      </div>
-    }
-    <button class="btn fw-bold btn-danger" type="submit">Удалить данные и закрыть учетную запись</button>
-  </form>
+    <form id="DeletePersonalData" asp-action="DeletePersonalData" asp-controller="ManageAccount" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        @if (Model.RequirePassword)
+        {
+            <div class="form-floating mb-3">
+                <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Please enter your password." />
+                <label asp-for="Password" class="form-label"></label>
+                <span asp-validation-for="Password" id="Password" class="text-danger"></span>
+            </div>
+        }
+        <button class="btn fw-bold btn-danger" id="submitBtn" type="submit" disabled>Удалить данные и закрыть учетную запись</button>
+    </form>
 </div>
 
 

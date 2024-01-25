@@ -4,12 +4,12 @@
     <div class="navContainerLink">
         <ul class="nav nav-pills flex-column">
             <li class="nav-item">
-                <a class="nav-link admin hightLightLink defaultMenuItem active" id="user-list" data-target="/Admin/UserList">Настройки доступа</a>
+                <a class="nav-link admin hightLightLink defaultMenuItem active" id="user-list" asp-action="UserList" asp-controller="Admin">Настройки доступа</a>
             </li>
         </ul>
     </div>
     <div class="container" id="partialContainer"></div>
 </div>
-<script src="~/js/getRolesForm.js" asp-append-version="true"></script>
+<script src="~/js/AdminControlPanel.js" type="module" asp-append-version="true"></script>
 <script src="~/js/HighligthLink.js" asp-append-version="true"></script>
-<script src="~/js/defaultMenuItem.js" asp-append-version="true"></script>
+<script src="~/js/DefaultMenuItem.js" asp-append-version="true"></script>

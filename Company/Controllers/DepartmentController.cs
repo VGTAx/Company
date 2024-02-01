@@ -1,4 +1,4 @@
-﻿using Company.Data;
+﻿using Company.Interfaces;
 using Company.Models.Department;
 using Company.Models.Employee;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +11,12 @@ namespace Company.Controllers
   /// </summary>
   public class DepartmentController : Controller
   {
-    private readonly CompanyContext _context;
+    private readonly ICompanyContext _context;
     /// <summary>
     /// Создает экземпляр класса <see cref="DepartmentController"/>.
     /// </summary>
     /// <param name="context">Контекст компании для доступа к данным отделов.</param>
-    public DepartmentController(CompanyContext context)
+    public DepartmentController(ICompanyContext context)
     {
       _context = context;
     }

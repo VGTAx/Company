@@ -20,7 +20,85 @@ namespace Company.Migrations
                 .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Company_.Models.Department.DepartmentModel", b =>
+            modelBuilder.Entity("Company.Models.ApplicationUserModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsFirstLogin")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "aef4d787-6c8a-4f3d-bd2e-9b77f82bdc1a",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "fc6b7631-4cab-4e75-8fd2-2fc698d9a88b",
+                            Email = "putinvodkagta@yandex.by",
+                            EmailConfirmed = true,
+                            IsFirstLogin = true,
+                            LockoutEnabled = true,
+                            Name = "Admin",
+                            NormalizedEmail = "PUTINVODKAGTA@YANDEX.BY",
+                            NormalizedUserName = "PUTINVODKAGTA@YANDEX.BY",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGgizShuh0Axo+xn2WWlQI3O9/K/u32dMIlkgTokJQaL/eDgUPBwHXnYt8+lxHqtgQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "383d473a-c2c6-4c93-8028-1973b93d9e04",
+                            TwoFactorEnabled = false,
+                            UserName = "putinvodkagta@yandex.by"
+                        });
+                });
+
+            modelBuilder.Entity("Company.Models.Department.DepartmentModel", b =>
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
@@ -108,7 +186,7 @@ namespace Company.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Company_.Models.Employee.EmployeeModel", b =>
+            modelBuilder.Entity("Company.Models.Employee.EmployeeModel", b =>
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
@@ -322,16 +400,12 @@ namespace Company.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
@@ -342,11 +416,30 @@ namespace Company.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IdentityRole<string>");
+                    b.ToTable("IdentityRole");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole<string>");
-
-                    b.UseTphMappingStrategy();
+                    b.HasData(
+                        new
+                        {
+                            Id = "1",
+                            ConcurrencyStamp = "7aec4b5f-e9a2-4aba-a203-1612363e7b19",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            ConcurrencyStamp = "2eeac276-5908-4a8f-a777-31b1e789de42",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "3",
+                            ConcurrencyStamp = "c708b786-dc14-4fad-aca4-cd2b579025e2",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -369,66 +462,6 @@ namespace Company.Migrations
                     b.ToTable("RoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser<string>", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IdentityUser<string>");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser<string>");
-
-                    b.UseTphMappingStrategy();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -447,6 +480,22 @@ namespace Company.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserClaims");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 5,
+                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                            ClaimValue = "Admin",
+                            UserId = "aef4d787-6c8a-4f3d-bd2e-9b77f82bdc1a"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                            ClaimValue = "User",
+                            UserId = "aef4d787-6c8a-4f3d-bd2e-9b77f82bdc1a"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -498,46 +547,6 @@ namespace Company.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("UserTokens");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole<string>");
-
-                    b.HasDiscriminator().HasValue("IdentityRole");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1",
-                            ConcurrencyStamp = "e14bb3d5-59f5-4945-94a0-a9bed1e9a40b",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "2",
-                            ConcurrencyStamp = "f26edcc9-bf28-4855-aa0f-481462aac9b8",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "3",
-                            ConcurrencyStamp = "116106a2-7cb1-4dd0-8e86-c86ee9524398",
-                            Name = "Manager",
-                            NormalizedName = "MANAGER"
-                        });
-                });
-
-            modelBuilder.Entity("Company_.Models.ApplicationUserModel", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser<string>");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("longtext");
-
-                    b.HasDiscriminator().HasValue("ApplicationUserModel");
                 });
 #pragma warning restore 612, 618
         }

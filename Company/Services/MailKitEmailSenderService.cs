@@ -1,6 +1,7 @@
 ﻿using Company.Models;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace Company.Services
@@ -9,9 +10,9 @@ namespace Company.Services
   {
     private readonly SmtpSettings _smtpSettings;
 
-    public MailKitEmailSenderService(SmtpSettings smtpSettings)
+    public MailKitEmailSenderService(IOptions<SmtpSettings> smtpSettings)
     {
-      _smtpSettings = smtpSettings;
+      _smtpSettings = smtpSettings.Value;
     }
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
@@ -24,7 +25,6 @@ namespace Company.Services
       {
         Text = htmlMessage
       };
-
 
       using(var client = new SmtpClient())
       {

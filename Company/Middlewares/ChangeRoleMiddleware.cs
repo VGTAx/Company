@@ -58,10 +58,10 @@ namespace Company.Middlewares
   public static class ChangeRoleMiddlewareExtensions
   {
     /// <summary>
-    /// Добавляет ChangeRoleMiddleware в конвейер обработки запросов.
+    /// Добавляет <see cref="ChangeRoleMiddleware"/> в конвейер обработки запросов.
     /// </summary>
     /// <param name="builder">Builder ASP.NET.</param>
-    /// <returns>Builder ASP.NET с добавленным ChangeRoleMiddleware.</returns>
+    /// <returns>Builder ASP.NET с добавленным <see cref="ChangeRoleMiddleware"/>.</returns>
     public static IApplicationBuilder UseChangeRoleMiddleware(
         this IApplicationBuilder builder)
     {

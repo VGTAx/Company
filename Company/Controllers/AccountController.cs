@@ -1,4 +1,5 @@
-﻿using Company.Models;
+﻿using Company.Interfaces;
+using Company.Models;
 using Company.Models.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,6 +24,7 @@ namespace Company.Controllers
     private readonly IUserEmailStore<ApplicationUserModel> _emailStore;
     private readonly IEmailSender _emailSender;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ICompanyContext _context;
 
     /// <summary>
     /// Создает экземпляр класса <see cref="AccountController"/>.
@@ -30,7 +32,6 @@ namespace Company.Controllers
     /// <param name="userManager">Менеджер пользователей для работы с учетными записями.</param>
     /// <param name="userStore">Хранилище пользователей.</param>
     /// <param name="signInManager">Менеджер аутентификации и входа в систему.</param>
-    /// <param name="logger">Логгер для записи событий и ошибок.</param>
     /// <param name="emailSender">Сервис отправки электронных писем.</param>
     /// <param name="roleManager">Менеджер ролей для работы с ролями пользователей.</param>    
     public AccountController(
@@ -38,7 +39,8 @@ namespace Company.Controllers
         IUserStore<ApplicationUserModel> userStore,
         SignInManager<ApplicationUserModel> signInManager,
         IEmailSender emailSender,
-        RoleManager<IdentityRole> roleManger
+        RoleManager<IdentityRole> roleManager,
+        ICompanyContext context
         )
     {
       _userManager = userManager;
@@ -46,7 +48,8 @@ namespace Company.Controllers
       _emailStore = (IUserEmailStore<ApplicationUserModel>)_userStore;
       _signInManager = signInManager;
       _emailSender = emailSender;
-      _roleManager = roleManger;
+      _roleManager = roleManager;
+      _context = context;
     }
 
     /// <summary>
@@ -106,8 +109,6 @@ namespace Company.Controllers
             controller: typeof(AccountController).ControllerName(),
             values: new { userId, code, statusConfirmation = true },
             protocol: Request.Scheme);
-
-        await _userManager.AddToRoleAsync(user, "User");
 
         await _emailSender.SendEmailAsync(model.Email!, "Подтверждение регистрации",
             $"Спасибо за регистрацию. Пожалуйста, перейдите по ссылке , чтобы подтвердить ваш адрес электронной почты: <a href='{HtmlEncoder.Default.Encode(callBackUrl!)}' id='confrimationLink'>нажмите сюда</a>." +
@@ -182,6 +183,14 @@ namespace Company.Controllers
         var user = await _userManager.FindByEmailAsync(model.Email!);
         // Создание ClaimsPrincipal на основе пользователя
         var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user!);
+        // Проверяем явлется ли это первым входом для пользователя с ролью Admin
+        if(user!.IsFirstLogin && userPrincipal.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin"))
+        {
+          //Генерируем токен изменения пароля и перенаправляем на страницу изменения пароля
+          var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+          token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+          return RedirectToAction(nameof(ResetPassword), new { token, user.Email });
+        }
         // Установка аутентификационных куки
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
 
@@ -239,12 +248,12 @@ namespace Company.Controllers
         return View();
       }
 
-      var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-      code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+      var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+      token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
       var callBackUrl = Url.Action(
           action: nameof(ResetPassword),
           controller: typeof(AccountController).ControllerName(),
-          values: new { code, model.Email },
+          values: new { token, model.Email },
           protocol: Request.Scheme);
       await _emailSender.SendEmailAsync(model.Email!, "Восстановление пароля",
           $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a>.");
@@ -255,15 +264,15 @@ namespace Company.Controllers
     /// <summary>
     /// Отображает страницу сброса пароля.
     /// </summary>
-    /// <param name="code">Код сброса пароля.</param>
+    /// <param name="token">Код сброса пароля.</param>
     /// <param name="email">Адрес электронной почты пользователя.</param>
     /// <returns>
     /// Возвращает страницу сброса пароля или ошибку BadRequest.
     /// </returns>
     [HttpGet]
-    public IActionResult ResetPassword(string? code = null, string? email = null)
+    public IActionResult ResetPassword(string? token = null, string? email = null)
     {
-      if(code == null || email == null)
+      if(token == null || email == null)
       {
         return View("_StatusMessage", "Ошибка! Неверный код подтверждения.");
       }
@@ -293,11 +302,20 @@ namespace Company.Controllers
         return View("_StatusMessage", "Ошибка во время сброса пароля. Попробуйте ещё раз.");
       }
 
-      model.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code!));
-      var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password!);
+      model.Token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Token!));
+      var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password!);
 
       if(result.Succeeded)
       {
+        // Создание ClaimsPrincipal на основе пользователя
+        var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user!);
+        // Проверяем явлется ли это первым входом для пользователя с ролью Admin, изменяем статус флага и обновляем значение в БД
+        if(user.IsFirstLogin && userPrincipal.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin"))
+        {
+          user.IsFirstLogin = false;
+          _context.Update(user);
+          await _context.SaveChangesAsync();
+        }
         return View("_StatusMessage", $"Пароль изменен.");
       }
 

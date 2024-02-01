@@ -1,5 +1,6 @@
 using Company.Data;
 using Company.Filters;
+using Company.Interfaces;
 using Company.IServices;
 using Company.Middlewares;
 using Company.Models;
@@ -15,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration["Company:MySqlConnection"];
 
-builder.Services.AddDbContext<CompanyContext>(
+builder.Services.AddDbContext<ICompanyContext, CompanyContext>(
   options => options.UseMySql(connectionString!, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddDefaultIdentity<ApplicationUserModel>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -62,18 +63,8 @@ var smtpSettings = builder.Configuration.GetSection("Company:SmtpSettings").Get<
 builder.Services.AddSingleton(smtpSettings);
 builder.Services.AddTransient<IEmailSender, MailKitEmailSenderService>();
 builder.Services.AddSingleton<INotificationService, ChangeRoleNotificationService>();
-builder.Services.AddScoped<AdminAccountService>();
 
 var app = builder.Build();
-
-using(var serviceScope = app.Services.CreateScope())
-{
-  var services = serviceScope.ServiceProvider;
-
-  var myDependency = services.GetRequiredService<AdminAccountService>();
-
-  await myDependency.CreateAdminAccount();
-}
 
 // Configure the HTTP request pipeline.
 if(!app.Environment.IsDevelopment())

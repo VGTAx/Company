@@ -13,7 +13,7 @@ namespace Company.Models.Account
     /// </summary>
     [Required]
     [HiddenInput]
-    public string? Code { get; set; }
+    public string? Token { get; set; }
 
     /// <summary>
     /// Электронная почта пользователя.

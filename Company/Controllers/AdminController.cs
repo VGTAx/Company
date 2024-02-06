@@ -1,4 +1,5 @@
 ﻿using Company.Data;
+using Company.Interfaces;
 using Company.IServices;
 using Company.Models;
 using Company.Models.Admin;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Security.Claims;
 
 namespace Company.Controllers
 {
@@ -21,8 +21,8 @@ namespace Company.Controllers
   {
     private readonly UserManager<ApplicationUserModel>? _userManager;
     private readonly RoleManager<IdentityRole>? _roleManager;
-    private readonly SignInManager<ApplicationUserModel>? _signInManager;
     private readonly INotificationService? _changeRole;
+    private readonly IUserRoleClaims<ApplicationUserModel> _userRoleClaims;
     private readonly CompanyContext _context;
     private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
 
@@ -34,16 +34,17 @@ namespace Company.Controllers
     /// <param name="signInManager">Менеджер входа в систему.</param>
     /// <param name="changeRole">Сервис уведомлений о смене роли.</param>
     /// <param name="context">Контекст базы данных компании.</param>
-    public AdminController(UserManager<ApplicationUserModel> userManager,
+    public AdminController(
+      UserManager<ApplicationUserModel> userManager,
       RoleManager<IdentityRole> roleManager,
-      SignInManager<ApplicationUserModel> signInManager,
       INotificationService changeRole,
+      IUserRoleClaims<ApplicationUserModel> userRoleClaims,
       CompanyContext context)
     {
       _userManager = userManager;
       _roleManager = roleManager;
-      _signInManager = signInManager;
       _changeRole = changeRole;
+      _userRoleClaims = userRoleClaims;
       _context = context;
     }
     /// <summary>
@@ -67,17 +68,9 @@ namespace Company.Controllers
       {
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
-      var userPrincipal = _signInManager!.CreateUserPrincipalAsync(user).Result;
 
-      var userRoles = userPrincipal.Claims
-        .Where(c => c.Type == ClaimTypes.Role)
-        .Select(c => c.Value)
-        .ToList();
-
-      var roles = _roleManager!.Roles
-        .Where(r => !exceptRoles.Contains(r.Name!))
-        .Select(r => r.Name)
-        .ToList();
+      var userRoles = await _userRoleClaims.GetUserRoleClaimsAsync(user);
+      var roles = await GetRolesAsync();
 
       var model = new AccessSettingsPoco
       {
@@ -113,11 +106,11 @@ namespace Company.Controllers
         return BadRequest(ModelState);
       }
 
-      var userRoles = await GetUserRolesAsync(user);
+      var userRoles = await _userRoleClaims.GetUserRoleClaimsAsync(user);
 
       if(!model.SelectedRoles.SequenceEqual(userRoles)) //сравнение текущих ролей пользователя и выбранных ролей из формы
       {
-        await ChangeRoleAsync(user, userRoles, model.SelectedRoles); //меняем роли
+        await _userRoleClaims.ChangeUserRoleClaimsAsync(user, userRoles, model.SelectedRoles); //меняем роли
 
         user.SecurityStamp = Guid.NewGuid().ToString();
         await _userManager.UpdateAsync(user);
@@ -137,49 +130,20 @@ namespace Company.Controllers
     [HttpGet]
     public async Task<IActionResult> UserList()
     {
-      var users = await _userManager!.Users.ToListAsync();
+      var users = await _context!.Users.ToListAsync();
       return PartialView(users);
     }
 
     /// <summary>
-    /// Меняет список ролей пользователя
+    /// Возвращает список ролей
     /// </summary>
-    /// <param name="user">Пользователь у которого меняется роль</param>
-    /// <param name="userRoles">Текущий список ролей пользователя</param>
-    /// <param name="newUserRoles">Новый список ролей пользователя</param>
-    /// <returns></returns>
-    private async Task ChangeRoleAsync(ApplicationUserModel user, List<string> userRoles, List<string> newUserRoles)
+    /// <returns>Список ролей</returns>
+    private async Task<List<string?>> GetRolesAsync()
     {
-      var rolesToAdd = newUserRoles.Except(userRoles);
-      var rolesToRemove = userRoles.Except(newUserRoles!);
-
-      foreach(var role in rolesToAdd)
-      {
-        var claimRole = new Claim(ClaimTypes.Role, role);
-        await _userManager!.AddClaimAsync(user, claimRole);
-      }
-
-      foreach(var role in rolesToRemove)
-      {
-        var claimRole = new Claim(ClaimTypes.Role, role);
-        await _userManager!.RemoveClaimAsync(user, claimRole);
-      }
-    }
-
-    /// <summary>
-    /// Возвращает список ролей пользователя
-    /// </summary>
-    /// <param name="user">Текущий пользователь</param>
-    /// <returns>Список ролей пользователя</returns>
-    private async Task<List<string>> GetUserRolesAsync(ApplicationUserModel user)
-    {
-      var userClaims = await _userManager!.GetClaimsAsync(user);
-      var userRoles = userClaims
-        .Where(c => c.Type == ClaimTypes.Role)
-        .Select(c => c.Value)
-        .ToList();
-
-      return userRoles;
+      return await _roleManager!.Roles
+        .Where(r => !exceptRoles.Contains(r.Name!))
+        .Select(r => r.Name)
+        .ToListAsync();
     }
   }
 }

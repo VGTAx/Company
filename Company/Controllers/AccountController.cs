@@ -242,7 +242,7 @@ namespace Company.Controllers
     public async Task<IActionResult> Logout()
     {
       await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-      _logger.LogInformation("User has logged out");
+      _logger.LogInformation("Logout method. User has logged out");
       return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
     }
 

@@ -20,7 +20,7 @@ namespace Company.Controllers
     private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly IEmailSender _emailSender;
-
+    private readonly ILogger<ManageAccountController> _logger;
     /// <summary>
     /// Создает экземпляр класса <see cref="ManageAccountController"/>.
     /// </summary>
@@ -30,11 +30,13 @@ namespace Company.Controllers
     public ManageAccountController(
         UserManager<ApplicationUserModel> userManager,
         SignInManager<ApplicationUserModel> signInManager,
+        ILogger<ManageAccountController> logger,
         IEmailSender emailSender)
     {
       _userManager = userManager;
       _signInManager = signInManager;
       _emailSender = emailSender;
+      _logger = logger;
     }
 
     /// <summary>
@@ -56,7 +58,8 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
-        return View("_StatusMessage", "Ошибка! Пользователь не найден.");
+        _logger.LogWarning("User profile is not loaded. User (Principal) is null!");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден.");
       }
 
       var model = new ProfileModel
@@ -79,12 +82,16 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
+        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
+                               .Select(c => c.ErrorMessage);
+        _logger.LogInformation("Update profile has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
         return BadRequest(ModelState);
       }
 
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
+        _logger.LogWarning("Update profile of user has failed. User not found");
         return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
       }
 
@@ -95,25 +102,36 @@ namespace Company.Controllers
         var setPhoneNumberResult = await _userManager.SetPhoneNumberAsync(user, model.Phone);
         if(!setPhoneNumberResult.Succeeded)
         {
+          var setPhoneNumberResultErrors = setPhoneNumberResult.Errors.Select(c => c.Description);
+
+          _logger.LogWarning("Update profile of user {id} has failed. Change phone number is failed." +
+            "Errors: {errors}", user.Id, setPhoneNumberResultErrors);
           return PartialView(model);
         }
+        _logger.LogInformation("Update profile of user {id} has succeeded. Phone number is changed.", user.Id);
         ViewBag.StatusMessage = "Профиль изменен"!;
       }
 
       if(user.Name != model.Name)
       {
         user.Name = model.Name;
-        var upadateNameResult = await _userManager.UpdateAsync(user);
-        if(!upadateNameResult.Succeeded)
+        var updateNameResult = await _userManager.UpdateAsync(user);
+        if(!updateNameResult.Succeeded)
         {
+          var setPhoneNumberResultErrors = updateNameResult.Errors.Select(c => c.Description);
+
+          _logger.LogWarning("Update profile of user {id} has failed. Change name is failed." +
+            "Errors: {errors}", user.Id, setPhoneNumberResultErrors);
           return PartialView(model);
         }
+        _logger.LogInformation("Update profile of user {id} has succeeded. Name is changed.", user.Id);
         ViewBag.StatusMessage = "Профиль изменен"!;
       }
 
       if(ViewBag.StatusMessage == "Профиль изменен"!)
       {
         await _signInManager.RefreshSignInAsync(user);
+        _logger.LogInformation("Update profile of user {id} has succeeded. User re sign in", user.Id);
         return PartialView("_StatusMessage", ViewBag.StatusMessage);
       }
       else
@@ -132,7 +150,8 @@ namespace Company.Controllers
 
       if(user == null)
       {
-        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
+        _logger.LogWarning("Change email menu is not loaded. User (Principal) is null!");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден.");
       }
 
       var email = await _userManager.GetEmailAsync(user);
@@ -143,7 +162,7 @@ namespace Company.Controllers
         Email = email,
         IsEmailConfirmed = isEmailConfirmed,
       };
-
+      _logger.LogInformation("Change email menu is loaded");
       return PartialView(model);
     }
     /// <summary>
@@ -154,39 +173,46 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> ChangeEmail([Bind("NewEmail, Email")] ChangeEmailModel model)
     {
+      if(!ModelState.IsValid)
+      {
+        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
+                               .Select(c => c.ErrorMessage);
+        _logger.LogInformation("Change email has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+        return PartialView();
+      }
+
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
-        return PartialView("_StatusMessage", "Ошибка, пользователь не найден!");
+        _logger.LogWarning("Change email has failed. User (Principal) is null!");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден.");
       }
 
       model.Email = await _userManager.GetEmailAsync(user);
 
-      if(!ModelState.IsValid || String.IsNullOrEmpty(model.NewEmail))
-      {
-        ModelState.AddModelError("NewEmail", "Введите новую электронную почту");
-        return PartialView(model);
-      }
-
       var userId = await _userManager.GetUserIdAsync(user);
-      var checkAvailableEmail = await _userManager.FindByEmailAsync(model.NewEmail);
+      var checkAvailableEmail = await _userManager.FindByEmailAsync(model.NewEmail!);
 
       if(model.NewEmail != model.Email && checkAvailableEmail is null)
       {
-        var code = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail!);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
+        var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail!);
+        token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+        _logger.LogInformation("Change email method. Change email token is generated");
         var callbackUrl = Url.Action(
             action: nameof(ChangeEmailConfirmation),
             controller: typeof(ManageAccountController).ControllerName(),
-            values: new { userId, email = model.NewEmail, code },
+            values: new { userId, email = model.NewEmail, token },
             protocol: Request.Scheme);
 
         var message = $"Добрый день. Подтвердите изменение эл.почты <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>нажмите сюда</a>";
+
         await _emailSender.SendEmailAsync(model.NewEmail!, "Подтверждение изменения электронной почты", message);
 
+        _logger.LogInformation("Change email has succeeded. Email with  change email confirmation has sent.");
         return PartialView("_StatusMessage", "Пожалуйста, проверьте электронную почту, чтобы подтвердить изменения");
       }
+
+      _logger.LogWarning("Change email has failed. Email has already used");
       ModelState.AddModelError("NewEmail", "Электронная почта уже используется");
       return PartialView(model);
     }
@@ -196,30 +222,47 @@ namespace Company.Controllers
     /// </summary>
     /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="email">Новая электронная почта пользователя.</param>
-    /// <param name="code">Код подтверждения изменения электронной почты.</param>
+    /// <param name="token">Код подтверждения изменения электронной почты.</param>
     /// <returns>View с результатом операции подтверждения изменения электронной почты пользователя.</returns>
-    public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string code)
+    public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string token)
     {
-      if(userId == null || code == null || email == null)
+      if(userId == null)
       {
-        return PartialView("_StatusMessage", "Пожалуйста, проверьте электронную почту, чтобы подтвердить свою учетную запись.");
+        _logger.LogWarning("Confirmation new email has failed. User ID is null");
+        return View("_StatusMessage", "Ошибка при подтверждении электронной почты.");
+      }
+      if(token is null)
+      {
+        _logger.LogWarning("Confirmation new email has failed. Verification token is null");
+        return View("_StatusMessage", "Ошибка при подтверждении электронной почты.");
+      }
+      if(email == null)
+      {
+        _logger.LogWarning("Confirmation new email has failed. User email is null");
+        return View("_StatusMessage", "Ошибка при подтверждении электронной почты.");
       }
 
       var user = await _userManager.FindByIdAsync(userId);
       if(user == null)
       {
-        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
+        _logger.LogWarning("Confirmation new email has failed. User {id} not found", userId);
+        return View("_StatusMessage", "Ошибка при подтверждении электронной почты. Пользователь не найден.");
       }
 
-      code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-      var resultChangeEmail = await _userManager.ChangeEmailAsync(user, email, code);
+      token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+      var resultChangeEmail = await _userManager.ChangeEmailAsync(user, email, token);
       if(!resultChangeEmail.Succeeded)
       {
-        return PartialView("_StatusMessage", "Ошибка при подтверждении электронной почты");
+        var resultChangeEmailErrors = resultChangeEmail.Errors.Select(c => c.Description);
+        _logger.LogWarning("Confirmation new email has failed. User {id}. Errors: {errors}", user.Id, resultChangeEmailErrors);
+        return View("_StatusMessage", "Ошибка при подтверждении электронной почты.");
       }
 
       await _userManager.SetUserNameAsync(user, email);
+      _logger.LogInformation("Confirmation new email has succeeded. User {id}.", user.Id);
+
       await _signInManager.RefreshSignInAsync(user);
+      _logger.LogInformation("Confirmation new email. User {id} re sign in.", user.Id);
 
       return View("_StatusMessage", "Электронная почта изменена");
     }
@@ -234,6 +277,7 @@ namespace Company.Controllers
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
+        _logger.LogWarning("ChangePassword menu has not gotten. User (Principal) is null");
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
       }
 
@@ -249,24 +293,33 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
+        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
+                               .Select(c => c.ErrorMessage);
+        _logger.LogInformation("Change password has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
         return BadRequest(ModelState);
       }
 
       var user = await _userManager.GetUserAsync(User);
       if(user == null)
       {
+        _logger.LogWarning("Change password has failed. User (Principal) is null!");
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
       }
 
       var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
       if(!changePasswordResult.Succeeded)
       {
+        var resultChangePasswordErrors = changePasswordResult.Errors.Select(c => c.Description);
+        _logger.LogWarning("Change password has failed. User {id}. Errors: {errors}", user.Id, resultChangePasswordErrors);
+
         ModelState.AddModelError(string.Empty, "Неверный старый пароль.");
         return PartialView();
       }
 
+      _logger.LogInformation("Change password has succeeded. User {id}.", user.Id);
       await _signInManager.RefreshSignInAsync(user);
 
+      _logger.LogInformation("Change password. User {id}. Refresh sign in.", user.Id);
       return PartialView("_StatusMessage", "Пароль изменен!");
     }
 
@@ -288,6 +341,12 @@ namespace Company.Controllers
     public async Task<IActionResult> DeletePersonalData()
     {
       var user = await _userManager.GetUserAsync(User);
+      if(user == null)
+      {
+        _logger.LogWarning("Delete personal data menu has not gotten. User (Principal) is null!");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
+      }
+
       var model = new DeletePersonalDataModel
       {
         RequirePassword = await _userManager.HasPasswordAsync(user!),
@@ -306,28 +365,42 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> DeletePersonalData([FromForm] DeletePersonalDataModel model)
     {
-      var user = await _userManager.GetUserAsync(User);
-
-      model.RequirePassword = await _userManager.HasPasswordAsync(user!);
-      if(String.IsNullOrEmpty(model.Password))
+      if(!ModelState.IsValid)
       {
-        ModelState.AddModelError("Password", "Введите пароль");
+        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
+                               .Select(c => c.ErrorMessage);
+        _logger.LogInformation("Delete personal data has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
         return BadRequest(ModelState);
       }
-      if(model.RequirePassword && !await _userManager.CheckPasswordAsync(user!, model.Password))
+
+      var user = await _userManager.GetUserAsync(User);
+      if(user == null)
       {
+        _logger.LogWarning("Delete personal data has failed. User (Principal) is null!");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден");
+      }
+
+      model.RequirePassword = await _userManager.HasPasswordAsync(user!);
+
+      if(model.RequirePassword && !await _userManager.CheckPasswordAsync(user!, model.Password!))
+      {
+        _logger.LogWarning("Delete personal data has failed. Incorrect password");
         ModelState.AddModelError("Password", "Неверный пароль");
         return BadRequest(ModelState);
       }
 
-      var result = await _userManager.DeleteAsync(user!);
-      if(!result.Succeeded)
+      var resultDeletePersonalData = await _userManager.DeleteAsync(user!);
+      if(!resultDeletePersonalData.Succeeded)
       {
+        var resultDeletePersonalDataErrors = resultDeletePersonalData.Errors.Select(c => c.Description);
+        _logger.LogWarning("Delete personal data has failed. User {id}. Errors: {errors}", user.Id, resultDeletePersonalDataErrors);
         return PartialView("_StatusMessage", "Ошибка при удалении пользователя!");
       }
 
+      _logger.LogInformation("Delete personal data has succeeded. User {id}.", user.Id);
       await _signInManager.SignOutAsync();
 
+      _logger.LogInformation("Delete personal data. User {id}. Sign out.", user.Id);
       return Ok();
     }
   }

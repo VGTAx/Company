@@ -106,7 +106,5 @@ function ShowModelErrors(modelErrors) {
             document.querySelector(`span#${key}`).textContent = textError;
          }
       }
-
-      SetSubmitButtonFormHandler();
    }
 }

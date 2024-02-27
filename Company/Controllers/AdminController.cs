@@ -19,6 +19,7 @@ namespace Company.Controllers
   [Authorize(Policy = "AdminPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class AdminController : Controller
   {
+    private readonly ILogger<AdminController> _logger;
     private readonly UserManager<ApplicationUserModel>? _userManager;
     private readonly RoleManager<IdentityRole>? _roleManager;
     private readonly INotificationService? _changeRole;
@@ -39,13 +40,15 @@ namespace Company.Controllers
       RoleManager<IdentityRole> roleManager,
       INotificationService changeRole,
       IUserRoleClaims<ApplicationUserModel> userRoleClaims,
-      CompanyContext context)
+      CompanyContext context,
+      ILogger<AdminController> logger)
     {
       _userManager = userManager;
       _roleManager = roleManager;
       _changeRole = changeRole;
       _userRoleClaims = userRoleClaims;
       _context = context;
+      _logger = logger;
     }
     /// <summary>
     /// Отображает главную страницу администратора.
@@ -63,9 +66,17 @@ namespace Company.Controllers
     [HttpGet]
     public async Task<IActionResult> AccessSettings(string? id)
     {
-      var user = await _userManager!.FindByIdAsync(id!)!;
+      if(String.IsNullOrEmpty(id))
+      {
+        _logger.LogInformation("Access settings aren't available. Id is null");
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
+      }
+
+      var user = await _userManager!.FindByIdAsync(id);
+
       if(user == null)
       {
+        _logger.LogWarning("Access settings aren't available. User {id} not found", id);
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
@@ -79,6 +90,7 @@ namespace Company.Controllers
         Roles = roles!
       };
 
+      _logger.LogInformation("Access settings for User {id} are gotten", id);
       return PartialView(model);
     }
     /// <summary>
@@ -91,18 +103,26 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
+        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
+                                .Select(c => c.ErrorMessage);
+
+        _logger.LogInformation("Changing access settings is not available. " +
+          "Model isn't valid. Errors: {errors}", modelStateErrors);
         return BadRequest(ModelState);
       }
 
       var user = await _userManager!.FindByIdAsync(model.Id!);
       if(user == null)
       {
+        _logger.LogWarning("Changing access settings is not available. User {id} not found", user.Id);
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
       if(!model.SelectedRoles.Contains("User"))
       {
         ModelState.AddModelError(string.Empty, "Роль User не может быть удалена");
+        _logger.LogWarning("Changing access settings for user {id} is not available. " +
+          "Claims \"User\" can't be deleted", user.Id);
         return BadRequest(ModelState);
       }
 
@@ -110,13 +130,17 @@ namespace Company.Controllers
 
       if(!model.SelectedRoles.SequenceEqual(userRoles)) //сравнение текущих ролей пользователя и выбранных ролей из формы
       {
+        _logger.LogInformation("Changing user role claims for user {id}", user.Id);
         await _userRoleClaims.ChangeUserRoleClaimsAsync(user, userRoles, model.SelectedRoles); //меняем роли
 
         user.SecurityStamp = Guid.NewGuid().ToString();
         await _userManager.UpdateAsync(user);
 
+        _logger.LogInformation("Send notification about changing user role claims.");
+
         _changeRole!.SendNotification(user.Id); //отправляем уведомление о смене ролей
 
+        _logger.LogInformation("User role claims has changed for user {id}", user.Id);
         return PartialView("_StatusMessage", "Данные изменены!");
       }
 
@@ -131,6 +155,8 @@ namespace Company.Controllers
     public async Task<IActionResult> UserList()
     {
       var users = await _context!.Users.ToListAsync();
+
+      _logger.LogInformation("User List method. Getting user list.");
       return PartialView(users);
     }
 

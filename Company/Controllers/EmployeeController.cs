@@ -16,14 +16,16 @@ namespace Company.Controllers
   public class EmployeeController : Controller
   {
     private readonly ICompanyContext _context;
+    private readonly ILogger<EmployeeController> _logger;
 
     /// <summary>
     /// Создает экземпляр класса <see cref="EmployeeController"/>.
     /// </summary>
     /// <param name="context">Контекст компании для доступа к данным сотрудников.</param>
-    public EmployeeController(ICompanyContext context)
+    public EmployeeController(ICompanyContext context, ILogger<EmployeeController> logger)
     {
       _context = context;
+      _logger = logger;
     }
 
     /// <summary>
@@ -42,7 +44,7 @@ namespace Company.Controllers
             Text = item.DepartmentName
           })
           .AsEnumerable();
-
+      _logger.LogInformation("Create employee method. Getting departments.");
       if(departmentId != null)
       {
         var tempDep = GetDepartments(departmentId, _context.Departments.ToList());
@@ -71,12 +73,16 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
+        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
+                                .Select(c => c.ErrorMessage);
+        _logger.LogInformation("Create employee has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
         return BadRequest(ModelState);
       }
 
       await _context.Employees.AddAsync(employee);
       await _context.SaveChangesAsync();
 
+      _logger.LogInformation("Employee {id} has created", employee.ID);
       return RedirectToAction(nameof(Details));
     }
 
@@ -91,8 +97,9 @@ namespace Company.Controllers
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Edit(int? id)
     {
-      if(id == null || _context.Employees == null)
+      if(id == null)
       {
+        _logger.LogInformation("Edit employee view has not gotten. Id is null");
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -100,6 +107,7 @@ namespace Company.Controllers
 
       if(employee == null)
       {
+        _logger.LogWarning("Edit employee view has not gotten. Employee {id} not found", id);
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -133,47 +141,38 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
+        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
+                                .Select(c => c.ErrorMessage);
+        _logger.LogInformation("Edit employee has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
         return BadRequest(ModelState);
       }
 
       if(id != employee.ID)
       {
+        _logger.LogWarning("Edit employee has failed. Employee {id} not found", id);
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
-      if(ModelState.IsValid)
+      try
       {
-        try
+        _context.Update(employee);
+        await _context.SaveChangesAsync();
+      }
+      catch(DbUpdateConcurrencyException)
+      {
+        if(!await EmployeeExistsAsync(employee.ID))
         {
-          _context.Update(employee);
-          await _context.SaveChangesAsync();
+          _logger.LogError("Employee {id} doesn't exist", employee.ID);
+          return View("_StatusMessage", "Ошибка!Пользователь не найден.");
         }
-        catch(DbUpdateConcurrencyException)
+        else
         {
-          if(!await EmployeeExistsAsync(employee.ID))
-          {
-            return View("_StatusMessage", "Ошибка!Пользователь не найден.");
-          }
-          else
-          {
-            throw;
-          }
+          throw;
         }
-        return RedirectToAction(nameof(Details));
       }
 
-      var departments = _context.Departments
-          .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
-          .Select(item => new SelectListItem
-          {
-            Value = item.ID.ToString(),
-            Text = item.DepartmentName
-          })
-          .AsEnumerable();
-
-      ViewBag.Departments = departments;
-
-      return View();
+      _logger.LogInformation("Employee witg ID {id} has edited", employee.ID);
+      return RedirectToAction(nameof(Details));
     }
 
     /// <summary>
@@ -186,6 +185,7 @@ namespace Company.Controllers
     {
       if(id == null || _context.Employees == null)
       {
+        _logger.LogWarning("Delete employee view has not gotten. Employee Id is null");
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -193,6 +193,7 @@ namespace Company.Controllers
 
       if(employee == null)
       {
+        _logger.LogWarning("Delete employee view has not gotten. Employee with ID {Id} not found", id);
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -214,6 +215,7 @@ namespace Company.Controllers
     {
       if(_context.Employees == null)
       {
+        _logger.LogError("Employee delete has failed. Entity set 'DBContext.Employee' is null.");
         return Problem("Entity set 'DepartmentContext.Employee' is null.");
       }
 
@@ -222,9 +224,11 @@ namespace Company.Controllers
       if(employee != null)
       {
         _context.Employees.Remove(employee);
+        _logger.LogInformation("Employee with ID {id} has deleted", id);
       }
 
       await _context.SaveChangesAsync();
+      _logger.LogInformation("DBContext save changes");
       return RedirectToAction(nameof(Details));
     }
 
@@ -278,6 +282,7 @@ namespace Company.Controllers
       {
         deps.Add(departments.Find(d => d.ID == id)!);
       }
+      _logger.LogInformation("Get departments method. Departments {dep} have gotten", deps);
       return deps;
     }
 

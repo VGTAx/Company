@@ -46,7 +46,7 @@ namespace Company.Data
 
     public new EntityEntry Update<TEntity>(TEntity entity)
     {
-      return base.Update(entity);
+      return base.Update(entity!);
     }
   }
 }

@@ -1,3 +1,4 @@
+using Company.BaseClass;
 using Company.Data;
 using Company.Filters;
 using Company.Interfaces;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -43,7 +45,18 @@ builder.Services.AddAuthorization(options =>
   });
 
 });
-builder.Services.AddMemoryCache();
+builder.Host.UseSerilog((context, configuration) =>
+{
+  configuration.ReadFrom.Configuration(context.Configuration);
+});
+//builder.Services.AddLogging(options =>
+//{
+//  var logger = new LoggerConfiguration()
+//    .WriteTo.File("log1.txt", outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+//    .CreateLogger();
+//  options.ClearProviders();
+//  options.AddSerilog(logger);
+//});
 builder.Services.AddMvc();
 builder.Services.AddControllersWithViews(options =>
 {
@@ -56,13 +69,12 @@ builder.Services.Configure<SmtpSettings>(config =>
   config.Email = Environment.GetEnvironmentVariable("SMTP_EMAIL");
   config.Password = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
   config.SenderName = Environment.GetEnvironmentVariable("SMTP_SENDER_NAME");
-}
-
-);
+});
 builder.Services.AddScoped<IEmailSender, MailKitEmailSenderService>();
 builder.Services.AddScoped<IUserRoleClaims<ApplicationUserModel>, UserRoleClaimsService>();
+builder.Services.AddScoped<AccountServiceBase, AccountService>();
 builder.Services.AddSingleton<INotificationService, ChangeRoleNotificationService>();
-builder.Services.AddSingleton<IAuthorizationHandler, RoleClaimsRequirementHandle>();
+builder.Services.AddSingleton<IAuthorizationHandler, RoleClaimsAuthRequirementHandler>();
 
 var app = builder.Build();
 

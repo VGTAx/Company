@@ -8,7 +8,7 @@
     /// <summary>
     /// Список выбранных ролей пользователя.
     /// </summary>
-    public List<string> SelectedRoles { get; set; }
+    public List<string>? SelectedRoles { get; set; }
     /// <summary>
     /// Идентификатор пользователя.
     /// </summary>    

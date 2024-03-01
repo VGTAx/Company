@@ -1,4 +1,5 @@
-﻿using Company.Models;
+﻿using Company.BaseClass;
+using Company.Models;
 using Company.Models.ManageAccount;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +18,7 @@ namespace Company.Controllers
   [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class ManageAccountController : Controller
   {
+    private readonly ManageAccountBase<ApplicationUserModel> _manageAccountService;
     private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -28,11 +30,13 @@ namespace Company.Controllers
     /// <param name="signInManager">Менеджер аутентификации.</param>
     /// <param name="emailSender">Сервис отправки электронной почты.</param>
     public ManageAccountController(
+        ManageAccountBase<ApplicationUserModel> manageAccountService,
         UserManager<ApplicationUserModel> userManager,
         SignInManager<ApplicationUserModel> signInManager,
         ILogger<ManageAccountController> logger,
         IEmailSender emailSender)
     {
+      _manageAccountService = manageAccountService;
       _userManager = userManager;
       _signInManager = signInManager;
       _emailSender = emailSender;
@@ -82,9 +86,9 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
-                               .Select(c => c.ErrorMessage);
+        var modelStateErrors = _manageAccountService.GetModelErrors(ModelState);
         _logger.LogInformation("Update profile has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+
         return BadRequest(ModelState);
       }
 
@@ -102,7 +106,7 @@ namespace Company.Controllers
         var setPhoneNumberResult = await _userManager.SetPhoneNumberAsync(user, model.Phone);
         if(!setPhoneNumberResult.Succeeded)
         {
-          var setPhoneNumberResultErrors = setPhoneNumberResult.Errors.Select(c => c.Description);
+          var setPhoneNumberResultErrors = _manageAccountService.GetIdentityResultErrors(setPhoneNumberResult);
 
           _logger.LogWarning("Update profile of user {id} has failed. Change phone number is failed." +
             "Errors: {errors}", user.Id, setPhoneNumberResultErrors);
@@ -116,14 +120,16 @@ namespace Company.Controllers
       {
         user.Name = model.Name;
         var updateNameResult = await _userManager.UpdateAsync(user);
+
         if(!updateNameResult.Succeeded)
         {
-          var setPhoneNumberResultErrors = updateNameResult.Errors.Select(c => c.Description);
-
+          var setPhoneNumberResultErrors = _manageAccountService.GetIdentityResultErrors(updateNameResult);
           _logger.LogWarning("Update profile of user {id} has failed. Change name is failed." +
             "Errors: {errors}", user.Id, setPhoneNumberResultErrors);
+
           return PartialView(model);
         }
+
         _logger.LogInformation("Update profile of user {id} has succeeded. Name is changed.", user.Id);
         ViewBag.StatusMessage = "Профиль изменен"!;
       }
@@ -132,6 +138,7 @@ namespace Company.Controllers
       {
         await _signInManager.RefreshSignInAsync(user);
         _logger.LogInformation("Update profile of user {id} has succeeded. User re sign in", user.Id);
+
         return PartialView("_StatusMessage", ViewBag.StatusMessage);
       }
       else
@@ -175,9 +182,9 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
-                               .Select(c => c.ErrorMessage);
+        var modelStateErrors = _manageAccountService.GetModelErrors(ModelState);
         _logger.LogInformation("Change email has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+
         return PartialView();
       }
 
@@ -195,9 +202,9 @@ namespace Company.Controllers
 
       if(model.NewEmail != model.Email && checkAvailableEmail is null)
       {
-        var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail!);
-        token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+        var token = await _manageAccountService.GenerateChangeEmailTokenAsync(user, model.NewEmail!);
         _logger.LogInformation("Change email method. Change email token is generated");
+
         var callbackUrl = Url.Action(
             action: nameof(ChangeEmailConfirmation),
             controller: typeof(ManageAccountController).ControllerName(),
@@ -205,15 +212,15 @@ namespace Company.Controllers
             protocol: Request.Scheme);
 
         var message = $"Добрый день. Подтвердите изменение эл.почты <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>нажмите сюда</a>";
-
         await _emailSender.SendEmailAsync(model.NewEmail!, "Подтверждение изменения электронной почты", message);
 
         _logger.LogInformation("Change email has succeeded. Email with  change email confirmation has sent.");
         return PartialView("_StatusMessage", "Пожалуйста, проверьте электронную почту, чтобы подтвердить изменения");
       }
 
-      _logger.LogWarning("Change email has failed. Email has already used");
       ModelState.AddModelError("NewEmail", "Электронная почта уже используется");
+      _logger.LogWarning("Change email has failed. Email has already used");
+
       return PartialView(model);
     }
 
@@ -250,11 +257,14 @@ namespace Company.Controllers
       }
 
       token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+
       var resultChangeEmail = await _userManager.ChangeEmailAsync(user, email, token);
+
       if(!resultChangeEmail.Succeeded)
       {
-        var resultChangeEmailErrors = resultChangeEmail.Errors.Select(c => c.Description);
+        var resultChangeEmailErrors = _manageAccountService.GetIdentityResultErrors(resultChangeEmail);
         _logger.LogWarning("Confirmation new email has failed. User {id}. Errors: {errors}", user.Id, resultChangeEmailErrors);
+
         return View("_StatusMessage", "Ошибка при подтверждении электронной почты.");
       }
 
@@ -293,9 +303,9 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
-                               .Select(c => c.ErrorMessage);
+        var modelStateErrors = _manageAccountService.GetModelErrors(ModelState);
         _logger.LogInformation("Change password has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+
         return BadRequest(ModelState);
       }
 
@@ -307,9 +317,10 @@ namespace Company.Controllers
       }
 
       var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
+
       if(!changePasswordResult.Succeeded)
       {
-        var resultChangePasswordErrors = changePasswordResult.Errors.Select(c => c.Description);
+        var resultChangePasswordErrors = _manageAccountService.GetIdentityResultErrors(changePasswordResult);
         _logger.LogWarning("Change password has failed. User {id}. Errors: {errors}", user.Id, resultChangePasswordErrors);
 
         ModelState.AddModelError(string.Empty, "Неверный старый пароль.");
@@ -317,9 +328,10 @@ namespace Company.Controllers
       }
 
       _logger.LogInformation("Change password has succeeded. User {id}.", user.Id);
-      await _signInManager.RefreshSignInAsync(user);
 
+      await _signInManager.RefreshSignInAsync(user);
       _logger.LogInformation("Change password. User {id}. Refresh sign in.", user.Id);
+
       return PartialView("_StatusMessage", "Пароль изменен!");
     }
 
@@ -367,9 +379,9 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
-                               .Select(c => c.ErrorMessage);
+        var modelStateErrors = _manageAccountService.GetModelErrors(ModelState);
         _logger.LogInformation("Delete personal data has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+
         return BadRequest(ModelState);
       }
 
@@ -384,23 +396,25 @@ namespace Company.Controllers
 
       if(model.RequirePassword && !await _userManager.CheckPasswordAsync(user!, model.Password!))
       {
-        _logger.LogWarning("Delete personal data has failed. Incorrect password");
         ModelState.AddModelError("Password", "Неверный пароль");
+        _logger.LogWarning("Delete personal data has failed. Incorrect password");
+
         return BadRequest(ModelState);
       }
 
       var resultDeletePersonalData = await _userManager.DeleteAsync(user!);
       if(!resultDeletePersonalData.Succeeded)
       {
-        var resultDeletePersonalDataErrors = resultDeletePersonalData.Errors.Select(c => c.Description);
+        var resultDeletePersonalDataErrors = _manageAccountService.GetIdentityResultErrors(resultDeletePersonalData);
         _logger.LogWarning("Delete personal data has failed. User {id}. Errors: {errors}", user.Id, resultDeletePersonalDataErrors);
         return PartialView("_StatusMessage", "Ошибка при удалении пользователя!");
       }
 
       _logger.LogInformation("Delete personal data has succeeded. User {id}.", user.Id);
-      await _signInManager.SignOutAsync();
 
+      await _signInManager.SignOutAsync();
       _logger.LogInformation("Delete personal data. User {id}. Sign out.", user.Id);
+
       return Ok();
     }
   }

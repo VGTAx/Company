@@ -1,10 +1,10 @@
-﻿using Company.Interfaces;
+﻿using Company.BaseClass;
+using Company.Interfaces;
 using Company.Models.Department;
 using Company.Models.Employee;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Controllers
@@ -17,15 +17,23 @@ namespace Company.Controllers
   {
     private readonly ICompanyContext _context;
     private readonly ILogger<EmployeeController> _logger;
+    private readonly EmployeeServiceBase<EmployeeModel> _employeeService;
+    private readonly DepartmentServiceBase<DepartmentModel> _departmentService;
 
     /// <summary>
     /// Создает экземпляр класса <see cref="EmployeeController"/>.
     /// </summary>
     /// <param name="context">Контекст компании для доступа к данным сотрудников.</param>
-    public EmployeeController(ICompanyContext context, ILogger<EmployeeController> logger)
+    public EmployeeController(
+      ICompanyContext context,
+      ILogger<EmployeeController> logger,
+      EmployeeServiceBase<EmployeeModel> employeeService,
+      DepartmentServiceBase<DepartmentModel> departmentService)
     {
       _context = context;
       _logger = logger;
+      _employeeService = employeeService;
+      _departmentService = departmentService;
     }
 
     /// <summary>
@@ -34,27 +42,10 @@ namespace Company.Controllers
     /// <param name="departmentId">Идентификатор отдела, в котором будет создан сотрудник (необязательный).</param>
     /// <returns>View для создания сотрудника с доступными отделами.</returns>
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public IActionResult Create(int? departmentId)
+    public IActionResult Create()
     {
-      var departments = _context.Departments
-          .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
-          .Select(item => new SelectListItem
-          {
-            Value = item.ID.ToString(),
-            Text = item.DepartmentName
-          })
-          .AsEnumerable();
+      var departments = _departmentService.GetDepartmentsListItem();
       _logger.LogInformation("Create employee method. Getting departments.");
-      if(departmentId != null)
-      {
-        var tempDep = GetDepartments(departmentId, _context.Departments.ToList());
-        departments = tempDep.Select(item => new SelectListItem
-        {
-          Value = item.ID.ToString(),
-          Text = item.DepartmentName,
-          Selected = (tempDep.Count == 1)
-        });
-      }
 
       ViewBag.Departments = departments;
       return View();
@@ -73,9 +64,9 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
-                                .Select(c => c.ErrorMessage);
+        var modelStateErrors = _employeeService.GetModelErrors(ModelState);
         _logger.LogInformation("Create employee has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+
         return BadRequest(ModelState);
       }
 
@@ -103,7 +94,7 @@ namespace Company.Controllers
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
-      var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
+      var employee = await _employeeService.GetEmployeeAsync(id);
 
       if(employee == null)
       {
@@ -111,14 +102,7 @@ namespace Company.Controllers
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
-      var departments = _context.Departments
-          .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
-          .Select(item => new SelectListItem
-          {
-            Value = item.ID.ToString(),
-            Text = item.DepartmentName
-          });
-
+      var departments = _departmentService.GetDepartmentsListItem();
       ViewBag.Departments = departments;
 
       return View(nameof(Edit), employee);
@@ -141,9 +125,9 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
-                                .Select(c => c.ErrorMessage);
+        var modelStateErrors = _employeeService.GetModelErrors(ModelState);
         _logger.LogInformation("Edit employee has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+
         return BadRequest(ModelState);
       }
 
@@ -160,7 +144,7 @@ namespace Company.Controllers
       }
       catch(DbUpdateConcurrencyException)
       {
-        if(!await EmployeeExistsAsync(employee.ID))
+        if(!await _employeeService.IsEmployeeExist(employee.ID))
         {
           _logger.LogError("Employee {id} doesn't exist", employee.ID);
           return View("_StatusMessage", "Ошибка!Пользователь не найден.");
@@ -189,7 +173,7 @@ namespace Company.Controllers
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
-      var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
+      var employee = await _employeeService.GetEmployeeAsync(id);
 
       if(employee == null)
       {
@@ -197,7 +181,7 @@ namespace Company.Controllers
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
-      var department = await _context.Departments.FirstOrDefaultAsync(d => d.ID == employee.DepartmentID);
+      var department = await _departmentService.GetDepartmentAsync(employee.DepartmentID);
       ViewBag.Department = department!.DepartmentName;
 
       return View(employee);
@@ -219,7 +203,7 @@ namespace Company.Controllers
         return Problem("Entity set 'DepartmentContext.Employee' is null.");
       }
 
-      var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
+      var employee = await _employeeService.GetEmployeeAsync(id);
 
       if(employee != null)
       {
@@ -229,6 +213,7 @@ namespace Company.Controllers
 
       await _context.SaveChangesAsync();
       _logger.LogInformation("DBContext save changes");
+
       return RedirectToAction(nameof(Details));
     }
 
@@ -241,59 +226,10 @@ namespace Company.Controllers
     [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Details()
     {
-      var departments = await _context.Departments.ToListAsync();
-      var employee = _context.Employees;
-
-      ViewBag.Departments = departments;
+      var employee = await _employeeService.GetEmployeesAsync();
+      ViewBag.Departments = await _departmentService.GetDepartmentsAsync();
 
       return View(employee);
-    }
-
-    /// <summary>
-    /// Метод для получения списка отделов.
-    /// </summary>
-    /// <param name="id">Идентификатор отдела.</param>
-    /// <param name="departments">Список отделов.</param>
-    /// <returns>Список отделов.</returns>
-    [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    private List<DepartmentModel> GetDepartments(int? id, List<DepartmentModel> departments)
-    {
-      var subdepartments = departments
-          .Where(d => d.ParentDepartmentID == id)
-          .ToList();
-      var deps = new List<DepartmentModel>();
-
-      if(subdepartments.Any())
-      {
-        foreach(var department in subdepartments)
-        {
-          var childDep = GetDepartments(department.ID, departments);
-          if(childDep.Count == 0)
-          {
-            deps.Add(department);
-          }
-          else
-          {
-            deps.AddRange(childDep);
-          }
-        }
-      }
-      else
-      {
-        deps.Add(departments.Find(d => d.ID == id)!);
-      }
-      _logger.LogInformation("Get departments method. Departments {dep} have gotten", deps);
-      return deps;
-    }
-
-    /// <summary>
-    /// Проверяет существование сотрудника по идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор сотрудника.</param>
-    /// <returns>True, если сотрудник с указанным идентификатором существует, иначе false.</returns>
-    private async Task<bool> EmployeeExistsAsync(int? id)
-    {
-      return await _context.Employees.AnyAsync(e => e.ID == id);
     }
 
     /// <summary>

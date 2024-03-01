@@ -5,7 +5,17 @@ namespace Company.Interfaces
 {
   public interface IErrorMessage
   {
-    IEnumerable<string> GetModelStateErrors(ModelStateDictionary errors);
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    IEnumerable<string> GetModelErrors(ModelStateDictionary errors);
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
     IEnumerable<string> GetIdentityResultErrors(IdentityResult errors);
   }
 }

@@ -28,7 +28,8 @@ namespace Company.Middlewares
     /// <param name="_changeRole">Сервис уведомлений о смене роли.</param>
     /// <param name="_signInManager">Менеджер аутентификации.</param>
     /// <returns>Асинхронную задачу, представляющую выполнение следующего обработчика запроса.</returns>
-    public async Task InvokeAsync(HttpContext context,
+    public async Task InvokeAsync(
+      HttpContext context,
       UserManager<ApplicationUserModel> _userManager,
       INotificationService _changeRole,
       SignInManager<ApplicationUserModel> _signInManager)

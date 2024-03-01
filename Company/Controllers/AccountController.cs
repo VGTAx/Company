@@ -76,7 +76,7 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelStateErrors(ModelState);
+        var modelStateErrors = _accountService.GetModelErrors(ModelState);
 
         _logger.LogInformation("Registration has failed. Model isn't valid. Errors: {error}", modelStateErrors);
         return View();
@@ -108,7 +108,7 @@ namespace Company.Controllers
         await _userManager.AddClaimAsync(user, roleClaim);
 
         var userId = await _userManager.GetUserIdAsync(user);
-        var token = await _accountService.GenereateEmailConfirmationTokenAsync(user);
+        var token = await _accountService.GenerateEmailConfirmationTokenAsync(user);
 
         var callBackUrl = Url.Action(
             action: nameof(RegistrationConfirmation),
@@ -203,7 +203,7 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelStateErrors(ModelState);
+        var modelStateErrors = _accountService.GetModelErrors(ModelState);
         _logger.LogInformation("Login is failed. Model isn't valid. Errors: {error}", modelStateErrors);
         return View();
       }
@@ -219,7 +219,7 @@ namespace Company.Controllers
         if(user!.IsFirstLogin && userPrincipal.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin"))
         {
           //Генерируем токен изменения пароля и перенаправляем на страницу изменения пароля
-          var token = await _accountService.GenereatePasswordResetTokenAsync(user);
+          var token = await _accountService.GeneratePasswordResetTokenAsync(user);
           return RedirectToAction(nameof(ResetPassword), new { token, user.Email });
         }
         // Установка аутентификационных куки
@@ -243,6 +243,7 @@ namespace Company.Controllers
     {
       await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
       _logger.LogInformation("Logout method. User has logged out");
+
       return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
     }
 
@@ -269,7 +270,7 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelStateErrors(ModelState);
+        var modelStateErrors = _accountService.GetModelErrors(ModelState);
 
         _logger.LogInformation("Reset password token has not created. Model isn't valid. Errors: {error}", modelStateErrors);
         return View();
@@ -283,7 +284,7 @@ namespace Company.Controllers
         return View();
       }
 
-      var token = await _accountService.GenereatePasswordResetTokenAsync(user);
+      var token = await _accountService.GeneratePasswordResetTokenAsync(user);
 
       var callBackUrl = Url.Action(
           action: nameof(ResetPassword),
@@ -336,7 +337,7 @@ namespace Company.Controllers
     {
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelStateErrors(ModelState);
+        var modelStateErrors = _accountService.GetModelErrors(ModelState);
 
         _logger.LogInformation("Reset password failed. Model isn't valid. Errors: {error}", modelStateErrors);
         return View();

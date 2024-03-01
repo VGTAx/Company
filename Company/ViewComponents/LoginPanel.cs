@@ -6,7 +6,7 @@ namespace Company.ViewComponents
 {
   public class LoginPanel : ViewComponent
   {
-    private readonly UserManager<ApplicationUserModel>? _userManger;
+    private readonly UserManager<ApplicationUserModel> _userManger;
 
     public LoginPanel(UserManager<ApplicationUserModel> userManager)
     {

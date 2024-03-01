@@ -20,11 +20,11 @@ namespace Company.Controllers
   public class AdminController : Controller
   {
     private readonly ILogger<AdminController> _logger;
-    private readonly UserManager<ApplicationUserModel>? _userManager;
-    private readonly RoleManager<IdentityRole>? _roleManager;
     private readonly INotificationService? _changeRole;
     private readonly IUserRoleClaims<ApplicationUserModel> _userRoleClaims;
     private readonly CompanyContext _context;
+    private readonly UserManager<ApplicationUserModel>? _userManager;
+    private readonly RoleManager<IdentityRole>? _roleManager;
     private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
 
     /// <summary>
@@ -36,12 +36,13 @@ namespace Company.Controllers
     /// <param name="changeRole">Сервис уведомлений о смене роли.</param>
     /// <param name="context">Контекст базы данных компании.</param>
     public AdminController(
-      UserManager<ApplicationUserModel> userManager,
-      RoleManager<IdentityRole> roleManager,
+      ILogger<AdminController> logger,
       INotificationService changeRole,
       IUserRoleClaims<ApplicationUserModel> userRoleClaims,
       CompanyContext context,
-      ILogger<AdminController> logger)
+      UserManager<ApplicationUserModel> userManager,
+      RoleManager<IdentityRole> roleManager
+      )
     {
       _userManager = userManager;
       _roleManager = roleManager;
@@ -106,7 +107,7 @@ namespace Company.Controllers
         var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
                                 .Select(c => c.ErrorMessage);
 
-        _logger.LogInformation("Changing access settings is not available. " +
+        _logger.LogInformation("Change access settings has failed. " +
           "Model isn't valid. Errors: {errors}", modelStateErrors);
         return BadRequest(ModelState);
       }
@@ -114,15 +115,16 @@ namespace Company.Controllers
       var user = await _userManager!.FindByIdAsync(model.Id!);
       if(user == null)
       {
-        _logger.LogWarning("Changing access settings is not available. User {id} not found", user.Id);
+        _logger.LogWarning("Change access settings has failed. User {id} not found", model.Id);
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
-      if(!model.SelectedRoles.Contains("User"))
+      if(!model.SelectedRoles!.Contains("User"))
       {
         ModelState.AddModelError(string.Empty, "Роль User не может быть удалена");
-        _logger.LogWarning("Changing access settings for user {id} is not available. " +
+        _logger.LogWarning("Change access settings has failed. User {id}. " +
           "Claims \"User\" can't be deleted", user.Id);
+
         return BadRequest(ModelState);
       }
 
@@ -130,7 +132,7 @@ namespace Company.Controllers
 
       if(!model.SelectedRoles.SequenceEqual(userRoles)) //сравнение текущих ролей пользователя и выбранных ролей из формы
       {
-        _logger.LogInformation("Changing user role claims for user {id}", user.Id);
+        _logger.LogInformation("Changing user role claims. User {id}", user.Id);
         await _userRoleClaims.ChangeUserRoleClaimsAsync(user, userRoles, model.SelectedRoles); //меняем роли
 
         user.SecurityStamp = Guid.NewGuid().ToString();
@@ -140,7 +142,7 @@ namespace Company.Controllers
 
         _changeRole!.SendNotification(user.Id); //отправляем уведомление о смене ролей
 
-        _logger.LogInformation("User role claims has changed for user {id}", user.Id);
+        _logger.LogInformation("Change user role claims has succeeded. User {id}", user.Id);
         return PartialView("_StatusMessage", "Данные изменены!");
       }
 

@@ -147,7 +147,7 @@ namespace Company.Controllers
       }
 
       var userList = _context.Users.ToList();
-      return PartialView("UserList", userList);
+      return PartialView(nameof(UserList), userList);
     }
     /// <summary>
     /// Отображает Partial View списка пользователей.

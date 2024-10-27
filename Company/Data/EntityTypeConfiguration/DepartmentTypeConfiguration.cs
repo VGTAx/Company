@@ -1,4 +1,4 @@
-﻿using Company.Models.Department;
+﻿using Company.Models.Departments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,18 +10,18 @@ namespace Company.Data.EntityTypeConfiguration
     {
       builder.HasKey(d => d.ID);
       builder.HasData(
-           new DepartmentModel(1, "Отдел по обслуживанию клиентов", null),
-           new DepartmentModel(2, "Производственный отдел", null),
-           new DepartmentModel(3, "Бухгалтерия", null),
-           new DepartmentModel(4, "Отдел продаж", 1),
-           new DepartmentModel(5, "Отдел оптовых продаж", 4),
-           new DepartmentModel(6, "Отдел розничных продаж", 4),
-           new DepartmentModel(7, "Отдел логистики", 1),
-           new DepartmentModel(8, "Склад", 7),
-           new DepartmentModel(9, "Отдел доставки", 7),
-           new DepartmentModel(10, "Инженерный отдел", 2),
-           new DepartmentModel(11, "Отдел контроля качества", 2),
-           new DepartmentModel(12, "Отдел закупок", 2)
+           new DepartmentModel(Department.CustomerService, "Отдел по обслуживанию клиентов", null),
+           new DepartmentModel(Department.Production, "Производственный отдел", null),
+           new DepartmentModel(Department.Accounting, "Бухгалтерия", null),
+           new DepartmentModel(Department.Sales, "Отдел продаж", Department.CustomerService),
+           new DepartmentModel(Department.Wholesales, "Отдел оптовых продаж", Department.Wholesales),
+           new DepartmentModel(Department.RetailSales, "Отдел розничных продаж", Department.Wholesales),
+           new DepartmentModel(Department.Logistic, "Отдел логистики", Department.CustomerService),
+           new DepartmentModel(Department.Warehouse, "Склад", Department.Logistic),
+           new DepartmentModel(Department.Delivering, "Отдел доставки", Department.Logistic),
+           new DepartmentModel(Department.Engineering, "Инженерный отдел", Department.Production),
+           new DepartmentModel(Department.QualityControl, "Отдел контроля качества", Department.Production),
+           new DepartmentModel(Department.Purchasing, "Отдел закупок", Department.Production)
           );
     }
   }

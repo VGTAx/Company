@@ -2,7 +2,7 @@
 
 namespace Company.Models
 {
-  public class ApplicationUserModel : IdentityUser
+  public class AppUser : IdentityUser
   {
     /// <summary>
     /// Имя пользователя

@@ -20,10 +20,10 @@ namespace Company.Controllers
   public class AdminController : Controller
   {
     private readonly ILogger<AdminController> _logger;
-    private readonly INotificationService? _changeRole;
-    private readonly IUserRoleClaims<ApplicationUserModel> _userRoleClaims;
+    private readonly INotification? _changeRole;
+    private readonly IUserRoleClaims<AppUser> _userRoleClaims;
     private readonly CompanyContext _context;
-    private readonly UserManager<ApplicationUserModel>? _userManager;
+    private readonly UserManager<AppUser>? _userManager;
     private readonly RoleManager<IdentityRole>? _roleManager;
     private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
 
@@ -37,10 +37,10 @@ namespace Company.Controllers
     /// <param name="context">Контекст базы данных компании.</param>
     public AdminController(
       ILogger<AdminController> logger,
-      INotificationService changeRole,
-      IUserRoleClaims<ApplicationUserModel> userRoleClaims,
+      INotification changeRole,
+      IUserRoleClaims<AppUser> userRoleClaims,
       CompanyContext context,
-      UserManager<ApplicationUserModel> userManager,
+      UserManager<AppUser> userManager,
       RoleManager<IdentityRole> roleManager
       )
     {

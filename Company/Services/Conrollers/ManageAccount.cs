@@ -6,16 +6,16 @@ using System.Text;
 
 namespace Company.Services
 {
-  public class ManageAccountService : ManageAccountBase<ApplicationUserModel>
+  public class ManageAccount : ManageAccountBase<AppUser>
   {
-    private readonly UserManager<ApplicationUserModel> _userManager;
+    private readonly UserManager<AppUser> _userManager;
 
-    public ManageAccountService(UserManager<ApplicationUserModel> userManager)
+    public ManageAccount(UserManager<AppUser> userManager)
     {
       _userManager = userManager;
     }
 
-    public override async Task<string> GenerateChangeEmailTokenAsync(ApplicationUserModel user, string email)
+    public override async Task<string> GenerateChangeEmailTokenAsync(AppUser user, string email)
     {
       var token = await _userManager.GenerateChangeEmailTokenAsync(user, email);
       token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));

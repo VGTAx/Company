@@ -18,9 +18,9 @@ namespace Company.Controllers
   [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
   public class ManageAccountController : Controller
   {
-    private readonly ManageAccountBase<ApplicationUserModel> _manageAccountService;
-    private readonly UserManager<ApplicationUserModel> _userManager;
-    private readonly SignInManager<ApplicationUserModel> _signInManager;
+    private readonly ManageAccountBase<AppUser> _manageAccountService;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
     private readonly IEmailSender _emailSender;
     private readonly ILogger<ManageAccountController> _logger;
     /// <summary>
@@ -30,9 +30,9 @@ namespace Company.Controllers
     /// <param name="signInManager">Менеджер аутентификации.</param>
     /// <param name="emailSender">Сервис отправки электронной почты.</param>
     public ManageAccountController(
-        ManageAccountBase<ApplicationUserModel> manageAccountService,
-        UserManager<ApplicationUserModel> userManager,
-        SignInManager<ApplicationUserModel> signInManager,
+        ManageAccountBase<AppUser> manageAccountService,
+        UserManager<AppUser> userManager,
+        SignInManager<AppUser> signInManager,
         ILogger<ManageAccountController> logger,
         IEmailSender emailSender)
     {

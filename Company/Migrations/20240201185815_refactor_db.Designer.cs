@@ -23,7 +23,7 @@ namespace Company.Migrations
                 .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Company.Models.ApplicationUserModel", b =>
+            modelBuilder.Entity("Company.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
@@ -101,7 +101,7 @@ namespace Company.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Company.Models.Department.DepartmentModel", b =>
+            modelBuilder.Entity("Company.Models.Departments.DepartmentModel", b =>
                 {
                     b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
@@ -189,12 +189,12 @@ namespace Company.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Company.Models.Employee.EmployeeModel", b =>
+            modelBuilder.Entity("Company.Models.EmployeeModel.EmployeeModel", b =>
                 {
-                    b.Property<int?>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+                  b.Property<int?>("ID")
+                      .ValueGeneratedOnAdd()
+                      .HasColumnType("int");
+                        //.HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Age")
                         .IsRequired()

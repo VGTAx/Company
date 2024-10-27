@@ -3,7 +3,7 @@
   /// <summary>
   /// Интерфейс для сервиса уведомлений.
   /// </summary>
-  public interface INotificationService
+  public interface INotification
   {
     /// <summary>
     /// Отправляет уведомление по идентификатору.

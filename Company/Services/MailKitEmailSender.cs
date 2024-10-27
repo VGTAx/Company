@@ -6,11 +6,11 @@ using MimeKit;
 
 namespace Company.Services
 {
-  public class MailKitEmailSenderService : IEmailSender
+  public class MailKitEmailSender : IEmailSender
   {
     private readonly SmtpSettings _smtpSettings;
 
-    public MailKitEmailSenderService(IOptions<SmtpSettings> smtpSettings)
+    public MailKitEmailSender(IOptions<SmtpSettings> smtpSettings)
     {
       _smtpSettings = smtpSettings.Value;
     }

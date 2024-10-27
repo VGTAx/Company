@@ -32,8 +32,7 @@ namespace Company.Data.EntityTypeConfiguration
           );
 
       builder.Property(e => e.ID)
-             .ValueGeneratedOnAdd()
-             .UseMySqlIdentityColumn();
+             .ValueGeneratedOnAdd();
     }
   }
 }

@@ -5,15 +5,22 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Company.Data.EntityTypeConfiguration
 {
-  public sealed class IdentityUserTypeConfiguration : IEntityTypeConfiguration<ApplicationUserModel>
+  public sealed class IdentityUserTypeConfiguration : IEntityTypeConfiguration<AppUser>
   {
-    public void Configure(EntityTypeBuilder<ApplicationUserModel> builder)
+    private readonly string _id;
+
+    public IdentityUserTypeConfiguration(string id)
+    {
+      _id = id;
+    }
+
+    public void Configure(EntityTypeBuilder<AppUser> builder)
     {
       builder.HasKey(iu => iu.Id);
       builder.HasData(
-        new ApplicationUserModel
+        new AppUser
         {
-          Id = "aef4d787-6c8a-4f3d-bd2e-9b77f82bdc1a",
+          Id = _id,
           Name = "Admin",
           UserName = "putinvodkagta@yandex.by",
           NormalizedUserName = "PUTINVODKAGTA@YANDEX.BY",

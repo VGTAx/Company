@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Company.Models.Department
+namespace Company.Models.Departments
 {
   /// <summary>
   /// Модель данных для хранения числа сотрудников в отделе.

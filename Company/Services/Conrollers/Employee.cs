@@ -5,21 +5,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Company.Services.Conrollers
 {
-  public class EmployeeService : EmployeeServiceBase<EmployeeModel>
+  public class Employee : EmployeeBase<Models.Employee.EmployeeModel>
   {
     private readonly ICompanyContext _context;
 
-    public EmployeeService(ICompanyContext context)
+    public Employee(ICompanyContext context)
     {
       _context = context;
     }
 
-    public override async Task<EmployeeModel> GetEmployeeAsync(int? id)
+    public override async Task<Models.Employee.EmployeeModel> GetEmployeeAsync(int? id)
     {
       return id.HasValue ? await _context.Employees.FirstOrDefaultAsync(e => e.ID == id) : null;
     }
 
-    public override async Task<List<EmployeeModel>> GetEmployeesAsync()
+    public override async Task<List<Models.Employee.EmployeeModel>> GetEmployeesAsync()
     {
       return await _context.Employees.ToListAsync();
     }

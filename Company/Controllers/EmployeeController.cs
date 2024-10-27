@@ -1,6 +1,6 @@
 ﻿using Company.BaseClass;
 using Company.Interfaces;
-using Company.Models.Department;
+using Company.Models.Departments;
 using Company.Models.Employee;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -17,8 +17,8 @@ namespace Company.Controllers
   {
     private readonly ICompanyContext _context;
     private readonly ILogger<EmployeeController> _logger;
-    private readonly EmployeeServiceBase<EmployeeModel> _employeeService;
-    private readonly DepartmentServiceBase<DepartmentModel> _departmentService;
+    private readonly EmployeeBase<EmployeeModel> _employeeService;
+    private readonly DepartmentBase<DepartmentModel> _departmentService;
 
     /// <summary>
     /// Создает экземпляр класса <see cref="EmployeeController"/>.
@@ -27,8 +27,8 @@ namespace Company.Controllers
     public EmployeeController(
       ICompanyContext context,
       ILogger<EmployeeController> logger,
-      EmployeeServiceBase<EmployeeModel> employeeService,
-      DepartmentServiceBase<DepartmentModel> departmentService)
+      EmployeeBase<EmployeeModel> employeeService,
+      DepartmentBase<DepartmentModel> departmentService)
     {
       _context = context;
       _logger = logger;
@@ -73,7 +73,7 @@ namespace Company.Controllers
       await _context.Employees.AddAsync(employee);
       await _context.SaveChangesAsync();
 
-      _logger.LogInformation("Employee {id} has created", employee.ID);
+      _logger.LogInformation("EmployeeModel {id} has created", employee.ID);
       return RedirectToAction(nameof(Details));
     }
 
@@ -98,7 +98,7 @@ namespace Company.Controllers
 
       if(employee == null)
       {
-        _logger.LogWarning("Edit employee view has not gotten. Employee {id} not found", id);
+        _logger.LogWarning("Edit employee view has not gotten. EmployeeModel {id} not found", id);
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -133,7 +133,7 @@ namespace Company.Controllers
 
       if(id != employee.ID)
       {
-        _logger.LogWarning("Edit employee has failed. Employee {id} not found", id);
+        _logger.LogWarning("Edit employee has failed. EmployeeModel {id} not found", id);
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -146,7 +146,7 @@ namespace Company.Controllers
       {
         if(!await _employeeService.IsEmployeeExist(employee.ID))
         {
-          _logger.LogError("Employee {id} doesn't exist", employee.ID);
+          _logger.LogError("EmployeeModel {id} doesn't exist", employee.ID);
           return View("_StatusMessage", "Ошибка!Пользователь не найден.");
         }
         else
@@ -155,7 +155,7 @@ namespace Company.Controllers
         }
       }
 
-      _logger.LogInformation("Employee witg ID {id} has edited", employee.ID);
+      _logger.LogInformation("EmployeeModel witg ID {id} has edited", employee.ID);
       return RedirectToAction(nameof(Details));
     }
 
@@ -169,7 +169,7 @@ namespace Company.Controllers
     {
       if(id == null || _context.Employees == null)
       {
-        _logger.LogWarning("Delete employee view has not gotten. Employee Id is null");
+        _logger.LogWarning("Delete employee view has not gotten. EmployeeModel Id is null");
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -177,7 +177,7 @@ namespace Company.Controllers
 
       if(employee == null)
       {
-        _logger.LogWarning("Delete employee view has not gotten. Employee with ID {Id} not found", id);
+        _logger.LogWarning("Delete employee view has not gotten. EmployeeModel with ID {Id} not found", id);
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -199,8 +199,8 @@ namespace Company.Controllers
     {
       if(_context.Employees == null)
       {
-        _logger.LogError("Employee delete has failed. Entity set 'DBContext.Employee' is null.");
-        return Problem("Entity set 'DepartmentContext.Employee' is null.");
+        _logger.LogError("EmployeeModel delete has failed. Entity set 'DBContext.EmployeeModel' is null.");
+        return Problem("Entity set 'DepartmentContext.EmployeeModel' is null.");
       }
 
       var employee = await _employeeService.GetEmployeeAsync(id);
@@ -208,7 +208,7 @@ namespace Company.Controllers
       if(employee != null)
       {
         _context.Employees.Remove(employee);
-        _logger.LogInformation("Employee with ID {id} has deleted", id);
+        _logger.LogInformation("EmployeeModel with ID {id} has deleted", id);
       }
 
       await _context.SaveChangesAsync();

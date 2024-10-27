@@ -5,16 +5,16 @@ using System.Security.Claims;
 
 namespace Company.Services
 {
-  public class UserRoleClaimsService : IUserRoleClaims<ApplicationUserModel>
+  public class UserRoleClaims : IUserRoleClaims<AppUser>
   {
-    private readonly UserManager<ApplicationUserModel> _userManager;
+    private readonly UserManager<AppUser> _userManager;
 
-    public UserRoleClaimsService(UserManager<ApplicationUserModel> userManager)
+    public UserRoleClaims(UserManager<AppUser> userManager)
     {
       _userManager = userManager;
     }
 
-    public async Task ChangeUserRoleClaimsAsync(ApplicationUserModel user, List<string> userRoles, List<string> newUserRoles)
+    public async Task ChangeUserRoleClaimsAsync(AppUser user, List<string> userRoles, List<string> newUserRoles)
     {
       var rolesToAdd = newUserRoles.Except(userRoles);
       var rolesToRemove = userRoles.Except(newUserRoles!);
@@ -32,7 +32,7 @@ namespace Company.Services
       }
     }
 
-    public async Task<List<string>> GetUserRoleClaimsAsync(ApplicationUserModel user)
+    public async Task<List<string>> GetUserRoleClaimsAsync(AppUser user)
     {
       var userClaims = await _userManager!.GetClaimsAsync(user);
       var userRoles = userClaims

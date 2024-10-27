@@ -9,6 +9,7 @@ namespace Company.Services.Authorization
     {
       var userClaims = context.User.Claims.ToList();
       var roleClaims = requirement.RoleClaims;
+
       bool containsAnyRoleClaims =
         roleClaims?.Any(claim => userClaims?.Any(userClaim => userClaim.Value == claim) ?? false) ?? false;
 

@@ -13,22 +13,22 @@ namespace Company.Data.EntityTypeConfiguration
               new IdentityRole
               {
                 Id = "1",
-                Name = "Admin",
-                NormalizedName = "ADMIN",
+                Name = RoleClaims.Admin.ToString(),
+                NormalizedName = RoleClaims.Admin.ToString().ToUpper(),
                 ConcurrencyStamp = Guid.NewGuid().ToString(),
               },
               new IdentityRole
               {
                 Id = "2",
-                Name = "User",
-                NormalizedName = "USER",
+                Name = RoleClaims.User.ToString(),
+                NormalizedName = RoleClaims.User.ToString().ToUpper(),
                 ConcurrencyStamp = Guid.NewGuid().ToString(),
               },
               new IdentityRole
               {
                 Id = "3",
-                Name = "Manager",
-                NormalizedName = "MANAGER",
+                Name = RoleClaims.Manager.ToString(),
+                NormalizedName = RoleClaims.Manager.ToString().ToUpper(),
                 ConcurrencyStamp = Guid.NewGuid().ToString(),
               }
           );

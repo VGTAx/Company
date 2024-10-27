@@ -1,5 +1,5 @@
 ﻿using Company.Interfaces;
-using Company.Models.Department;
+using Company.Models.Departments;
 using Company.Models.Employee;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -53,20 +53,20 @@ namespace Company.Controllers
       }
       var department = _context.Departments.FirstOrDefault(d => d.ID == departmentId);
 
-      return departmentId switch
+      return (Department?)departmentId switch
       {
-        1 => View("CustomerService", department),
-        2 => View("Production", department),
-        3 => View("Bookkeeping", department),
-        4 => View("Sales", department),
-        5 => View("WholeSales", department),
-        6 => View("RetailSales", department),
-        7 => View("Logistic", department),
-        8 => View("Stock", department),
-        9 => View("Delivery", department),
-        10 => View("Engineering", department),
-        11 => View("QualityControl", department),
-        12 => View("Purchasing", department),
+        Department.CustomerService => View("CustomerService", department),
+        Department.Production => View("Production", department),
+        Department.Accounting => View("Bookkeeping", department),
+        Department.Sales => View("Sales", department),
+        Department.Wholesales => View("WholeSales", department),
+        Department.RetailSales => View("RetailSales", department),
+        Department.Logistic => View("Logistic", department),
+        Department.Warehouse => View("Stock", department),
+        Department.Delivering => View("Delivery", department),
+        Department.Engineering => View("Engineering", department),
+        Department.QualityControl => View("QualityControl", department),
+        Department.Purchasing => View("Purchasing", department),
         _ => NotFound(),
       };
     }

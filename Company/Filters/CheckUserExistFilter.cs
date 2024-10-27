@@ -15,13 +15,13 @@ namespace Company.Filters
   /// </remarks>
   public class CheckUserExistFilter : IAsyncAuthorizationFilter
   {
-    private readonly UserManager<ApplicationUserModel>? _userManager;
+    private readonly UserManager<AppUser>? _userManager;
     /// <summary>
     /// Создает экземпляр класса <see cref="CheckUserExistFilter"/>.
     /// </summary>
     /// <param name="userManager">Менеджер пользователей для управления пользователями.</param>
     /// <param name="cache">Кэш в памяти для временного хранения данных.</param>
-    public CheckUserExistFilter(UserManager<ApplicationUserModel> userManager)
+    public CheckUserExistFilter(UserManager<AppUser> userManager)
     {
       _userManager = userManager;
     }

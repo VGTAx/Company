@@ -1,7 +1,7 @@
 ﻿using Company.Data.EntityTypeConfiguration;
 using Company.Interfaces;
 using Company.Models;
-using Company.Models.Department;
+using Company.Models.Departments;
 using Company.Models.Employee;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -10,24 +10,31 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Company.Data
 {
-
-  public class CompanyContext : IdentityDbContext<ApplicationUserModel>, ICompanyContext
+  public class CompanyContext : IdentityDbContext<AppUser>, ICompanyContext
   {
     public DbSet<EmployeeModel> Employees { get; set; }
     public DbSet<DepartmentModel> Departments { get; set; }
     public DbSet<IdentityRole> IdentityRoles { get; set; }
 
     public CompanyContext(DbContextOptions<CompanyContext> options)
-        : base(options) { }
-    public CompanyContext() { }
+        : base(options)
+    {
+      Database.EnsureCreated();
+    }
+    public CompanyContext()
+    {
+      Database.EnsureCreated();
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+      var id = Guid.NewGuid().ToString();
+
       builder.ApplyConfiguration(new EmployeeTypeConfiguration());
       builder.ApplyConfiguration(new DepartmentTypeConfiguration());
       builder.ApplyConfiguration(new IdentityRoleTypeConfiguration());
-      builder.ApplyConfiguration(new IdentityUserTypeConfiguration());
-      builder.ApplyConfiguration(new IdentityUserClaimTypeConfiguration());
+      builder.ApplyConfiguration(new IdentityUserTypeConfiguration(id));
+      builder.ApplyConfiguration(new IdentityUserClaimTypeConfiguration(id));
 
       builder.Entity<IdentityRoleClaim<string>>()
         .HasKey(d => d.Id);

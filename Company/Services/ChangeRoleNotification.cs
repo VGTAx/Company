@@ -2,15 +2,15 @@
 
 namespace Company.Services
 {
-  public class ChangeRoleNotificationService : INotificationService
+  public class ChangeRoleNotification : INotification
   {
     private readonly HashSet<string> _usersId = new HashSet<string>();
 
-    public ChangeRoleNotificationService(HashSet<string> usersId)
+    public ChangeRoleNotification(HashSet<string> usersId)
     {
       _usersId = usersId;
     }
-    public ChangeRoleNotificationService() { }
+    public ChangeRoleNotification() { }
 
     public bool HasNotification(string id)
     {

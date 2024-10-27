@@ -7,6 +7,12 @@ namespace Company.Data.EntityTypeConfiguration
 {
   public sealed class IdentityUserClaimTypeConfiguration : IEntityTypeConfiguration<IdentityUserClaim<string>>
   {
+    private readonly string _id;
+    public IdentityUserClaimTypeConfiguration(string id)
+    {
+      _id = id;
+    }
+
     public void Configure(EntityTypeBuilder<IdentityUserClaim<string>> builder)
     {
       builder.HasKey(iuc => iuc.Id);
@@ -15,15 +21,15 @@ namespace Company.Data.EntityTypeConfiguration
           {
             Id = 5,
             ClaimType = ClaimTypes.Role,
-            ClaimValue = "Admin",
-            UserId = "aef4d787-6c8a-4f3d-bd2e-9b77f82bdc1a",
+            ClaimValue = RoleClaims.Admin.ToString(),
+            UserId = _id,
           },
           new IdentityUserClaim<string>
           {
             Id = 6,
             ClaimType = ClaimTypes.Role,
-            ClaimValue = "User",
-            UserId = "aef4d787-6c8a-4f3d-bd2e-9b77f82bdc1a",
+            ClaimValue = RoleClaims.User.ToString(),
+            UserId = _id,
           }
         );
     }

@@ -6,16 +6,19 @@ namespace Company.ViewComponents
 {
   public class LoginPanel : ViewComponent
   {
-    private readonly UserManager<ApplicationUserModel> _userManger;
+    private readonly UserManager<AppUser> _userManger;
 
-    public LoginPanel(UserManager<ApplicationUserModel> userManager)
+    public LoginPanel(UserManager<AppUser> userManager)
     {
       _userManger = userManager;
     }
 
     public IViewComponentResult Invoke()
     {
-      var user = _userManger.GetUserAsync((System.Security.Claims.ClaimsPrincipal)User).GetAwaiter().GetResult();
+      var user = _userManger
+        .GetUserAsync((System.Security.Claims.ClaimsPrincipal)User)
+        .GetAwaiter()
+        .GetResult();
 
       return View(user);
     }

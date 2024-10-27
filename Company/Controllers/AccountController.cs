@@ -19,14 +19,14 @@ namespace Company.Controllers
   /// </summary>
   public class AccountController : Controller
   {
-    private readonly AccountServiceBase _accountService;
+    private readonly AccountBase _accountService;
     private readonly ICompanyContext _context;
     private readonly IEmailSender _emailSender;
-    private readonly IUserStore<ApplicationUserModel> _userStore;
-    private readonly IUserEmailStore<ApplicationUserModel> _emailStore;
+    private readonly IUserStore<AppUser> _userStore;
+    private readonly IUserEmailStore<AppUser> _emailStore;
     private readonly ILogger<AccountController> _logger;
-    private readonly SignInManager<ApplicationUserModel> _signInManager;
-    private readonly UserManager<ApplicationUserModel> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
+    private readonly UserManager<AppUser> _userManager;
 
     /// <summary>
     /// Создает экземпляр класса <see cref="AccountController"/>.
@@ -37,23 +37,48 @@ namespace Company.Controllers
     /// <param name="emailSender">Сервис отправки электронных писем.</param>
     /// <param name="roleManager">Менеджер ролей для работы с ролями пользователей.</param>    
     public AccountController(
-        AccountServiceBase accountService,
+        AccountBase accountService,
         ICompanyContext context,
         IEmailSender emailSender,
         ILogger<AccountController> logger,
-        IUserStore<ApplicationUserModel> userStore,
-        UserManager<ApplicationUserModel> userManager,
-        SignInManager<ApplicationUserModel> signInManager
+        IUserStore<AppUser> userStore,
+        UserManager<AppUser> userManager,
+        SignInManager<AppUser> signInManager
         )
     {
       _userManager = userManager;
       _userStore = userStore;
-      _emailStore = (IUserEmailStore<ApplicationUserModel>)_userStore;
+      _emailStore = (IUserEmailStore<AppUser>)_userStore;
       _signInManager = signInManager;
       _emailSender = emailSender;
       _logger = logger;
       _context = context;
       _accountService = accountService;
+    }
+
+    private void Logger(LogLevel logLevel, string methodName, string message, string userId)
+    {
+      var ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+      _logger.Log(logLevel, ": {IP} {method} - {user} {message}", ip, methodName, userId, message);
+    }
+
+    private void Logger(LogLevel logLevel, string methodName, string message)
+    {
+      var ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+      _logger.Log(logLevel, ": {IP} {method} - {message}", ip, methodName, message);
+    }
+
+    private string GetErrors(IEnumerable<string> errors)
+    {
+      var sb = new StringBuilder();
+
+      foreach(var error in errors)
+      {
+        sb.Append(error);
+        sb.Append("; ");
+      }
+
+      return sb.ToString();
     }
 
     /// <summary>
@@ -74,22 +99,24 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> Registration([FromForm] RegistrationModel model)
     {
+      var methodName = nameof(Registration);
+
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelErrors(ModelState);
+        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
 
-        _logger.LogInformation("Registration has failed. Model isn't valid. Errors: {error}", modelStateErrors);
+        Logger(LogLevel.Warning, methodName, $"Model invalid. Errors: {modelStateErrors}");
         return View();
       }
 
       if(!await _accountService.CheckIsEmailExistAsync(model.Email!))
       {
         ModelState.AddModelError(nameof(model.Email), $"Электронная почта уже используется");
-        _logger.LogWarning("Registration has failed. Email has already used.");
+        Logger(LogLevel.Warning, methodName, $"Email already used.");
         return View();
       }
 
-      var user = new ApplicationUserModel
+      var user = new AppUser
       {
         UserName = model.Email,
         Email = model.Email,
@@ -102,9 +129,9 @@ namespace Company.Controllers
 
       if(resultOfCreatingUser.Succeeded)
       {
-        _logger.LogInformation("User {user} is created at {CurrentTime}", user.Id, DateTime.Now);
+        Logger(LogLevel.Information, methodName, "User is created", user.Id);
 
-        var roleClaim = new Claim(ClaimTypes.Role, "User");
+        var roleClaim = new Claim(ClaimTypes.Role, RoleClaims.User.ToString());
         await _userManager.AddClaimAsync(user, roleClaim);
 
         var userId = await _userManager.GetUserIdAsync(user);
@@ -121,14 +148,13 @@ namespace Company.Controllers
             $"\n\nЕсли вы получили это письмо случайно - удалите это письмо.");
         ViewBag.StatusMessage = $"Спасибо за регистрацию. На ваш электронный адрес выслано письмо с подтверждением регистрации.";
 
-        _logger.LogInformation("Email with registration confirmation has sent");
+        Logger(LogLevel.Information, methodName, "Email with registration confirmation has sent", userId);
 
         return View("_StatusMessage");
       }
 
-      var creatingUserErrors = _accountService.GetIdentityResultErrors(resultOfCreatingUser);
-
-      _logger.LogWarning("Registration has failed. User {user} hasn't created. Errors: {errors}", user.Id, creatingUserErrors);
+      var creatingUserErrors = GetErrors(_accountService.GetIdentityResultErrors(resultOfCreatingUser));
+      Logger(LogLevel.Error, methodName, $"User not created, Errors: {creatingUserErrors}", user.Id);
       return View();
     }
 
@@ -142,14 +168,16 @@ namespace Company.Controllers
     /// </returns>
     public async Task<IActionResult> RegistrationConfirmation([FromQuery] string userId, [FromQuery] string token)
     {
+      var methodName = nameof(RegistrationConfirmation);
+
       if(userId == null)
       {
-        _logger.LogWarning("Registration confirmation has failed. UserId is null");
+        Logger(LogLevel.Error, methodName, "UserId is null");
         return View("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
       else if(token == null)
       {
-        _logger.LogWarning("Registration confirmation has failed. Verification token is null");
+        Logger(LogLevel.Error, methodName, "Verification token is null");
         return View("_StatusMessage", "Ошибка! Код подтверждения не найден!");
       }
 
@@ -157,7 +185,7 @@ namespace Company.Controllers
 
       if(user == null)
       {
-        _logger.LogWarning("Registration confirmation has failed. User {userId} has not found", userId);
+        Logger(LogLevel.Error, methodName, "User has not found", userId);
         return View("_StatusMessage", "Ошибка. Пользователь не найден или истек срок годности кода подтверждения");
       }
 
@@ -166,14 +194,14 @@ namespace Company.Controllers
       var resultOfConfrimEmail = await _userManager.ConfirmEmailAsync(user, token);
       if(resultOfConfrimEmail.Succeeded)
       {
-        _logger.LogInformation("User {user} is registered", userId);
+        Logger(LogLevel.Information, methodName, "User is registered", userId);
         ViewBag.StatusMessage = "Регистрация завершена.";
       }
       else
       {
-        var errors = _accountService.GetIdentityResultErrors(resultOfConfrimEmail);
+        var errors = GetErrors(_accountService.GetIdentityResultErrors(resultOfConfrimEmail));
 
-        _logger.LogWarning("Registration confirmation has failed. User {user} hasn't registered. Errors: {errors}", userId, errors);
+        Logger(LogLevel.Warning, methodName, $"User not registered. Errors: {errors}", userId);
         ViewBag.StatusMessage = "Ошибка при подтверждении эл.почты! Обратитесь к администрации.";
       }
 
@@ -201,10 +229,13 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> Login([FromForm] LoginModel model)
     {
+      var methodName = nameof(Login);
+
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelErrors(ModelState);
-        _logger.LogInformation("Login is failed. Model isn't valid. Errors: {error}", modelStateErrors);
+        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
+        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
+
         return View();
       }
 
@@ -224,11 +255,11 @@ namespace Company.Controllers
         }
         // Установка аутентификационных куки
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal);
-        _logger.LogInformation("User {user} is logged in", user.Id);
+        Logger(LogLevel.Information, methodName, "User signed in", user.Id);
         return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
       }
 
-      _logger.LogWarning("Login is failed. Login or password is incorrect.");
+      Logger(LogLevel.Warning, methodName, "Login or password is incorrect.");
       ModelState.AddModelError(string.Empty, "Неверный логин или пароль");
       return View();
     }
@@ -241,9 +272,14 @@ namespace Company.Controllers
     /// </returns>    
     public async Task<IActionResult> Logout()
     {
-      await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-      _logger.LogInformation("Logout method. User has logged out");
+      var methodName = nameof(Logout);
+      var userId = User.Claims
+        .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
 
+      await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+      await _signInManager.SignOutAsync();
+
+      Logger(LogLevel.Information, methodName, "User logged out", userId.Value);
       return RedirectToAction(nameof(DepartmentController.Index), typeof(DepartmentController).ControllerName());
     }
 
@@ -268,18 +304,20 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> ForgotPassword([FromForm] ForgotPasswordModel model)
     {
+      var methodName = nameof(ForgotPassword);
+
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelErrors(ModelState);
+        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
 
-        _logger.LogInformation("Reset password token has not created. Model isn't valid. Errors: {error}", modelStateErrors);
+        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
         return View();
       }
 
       var user = await _userManager.FindByEmailAsync(model.Email!);
       if(user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
       {
-        _logger.LogWarning("Reset password token has not created. User doesn't exist.");
+        Logger(LogLevel.Error, methodName, "User not exist");
         ModelState.AddModelError(nameof(model.Email), "Пользователя с такой электронной почтой не существует.");
         return View();
       }
@@ -295,7 +333,7 @@ namespace Company.Controllers
       await _emailSender.SendEmailAsync(model.Email!, "Восстановление пароля",
           $"Для восстановления пароля перейдите по ссылке : <a href = '{HtmlEncoder.Default.Encode(callBackUrl!)}'>нажмите сюда</a>.");
 
-      _logger.LogInformation("Reset password token has created. Email for reset password has sent");
+      Logger(LogLevel.Information, methodName, "Email for reset password has sent", user.Id);
       return View("_StatusMessage", "Проверьте вашу электронную почту, чтобы восстановить пароль.");
     }
 
@@ -310,14 +348,16 @@ namespace Company.Controllers
     [HttpGet]
     public IActionResult ResetPassword(string? token = null, string? email = null)
     {
+      var methodName = nameof(ResetPassword);
+
       if(String.IsNullOrEmpty(token))
       {
-        _logger.LogWarning("Reset password failed. Verification token is null");
+        Logger(LogLevel.Error, methodName, "Verification token is null");
         return View("_StatusMessage", "Ошибка! Код сброса пароля не найден.");
       }
       if(String.IsNullOrEmpty(email))
       {
-        _logger.LogWarning("Reset password failed. Email is null");
+        Logger(LogLevel.Error, methodName, "Email is null");
         return View("_StatusMessage", "Ошибка! Электронная почта не найдена.");
       }
 
@@ -335,18 +375,20 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordModel model)
     {
+      var methodName = nameof(ResetPassword);
+
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = _accountService.GetModelErrors(ModelState);
+        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
+        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
 
-        _logger.LogInformation("Reset password failed. Model isn't valid. Errors: {error}", modelStateErrors);
         return View();
       }
 
       var user = await _userManager.FindByEmailAsync(model.Email!);
       if(user == null)
       {
-        _logger.LogWarning("Reset password failed. User has not found", model.Email);
+        Logger(LogLevel.Error, methodName, "User not found");
         return View("_StatusMessage", "Ошибка во время сброса пароля. Попробуйте ещё раз.");
       }
 
@@ -355,7 +397,7 @@ namespace Company.Controllers
 
       if(resultOfResetPassword.Succeeded)
       {
-        _logger.LogInformation("Password for user {user} is reset", user.Id);
+        Logger(LogLevel.Information, methodName, "Password is reset", user.Id);
         // Создание ClaimsPrincipal на основе пользователя
         var userPrincipal = await _signInManager.CreateUserPrincipalAsync(user!);
         // Проверяем явлется ли это первым входом для пользователя с ролью Admin, изменяем статус флага и обновляем значение в БД
@@ -366,7 +408,7 @@ namespace Company.Controllers
           await _context.SaveChangesAsync();
         }
 
-        _logger.LogInformation("Password for user {user} has changed", user.Id);
+        Logger(LogLevel.Information, methodName, "Password is changed", user.Id);
         return View("_StatusMessage", $"Пароль изменен.");
       }
 
@@ -375,8 +417,8 @@ namespace Company.Controllers
         ModelState.AddModelError(string.Empty, error.Description);
       }
 
-      var errors = _accountService.GetIdentityResultErrors(resultOfResetPassword);
-      _logger.LogWarning("Reset password has failed.Errors: {errors}", errors);
+      var errors = GetErrors(_accountService.GetIdentityResultErrors(resultOfResetPassword));
+      Logger(LogLevel.Warning, methodName, $"Reset password has failed. Errors: {errors}");
 
       return View();
     }

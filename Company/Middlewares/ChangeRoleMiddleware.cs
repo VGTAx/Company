@@ -30,9 +30,9 @@ namespace Company.Middlewares
     /// <returns>Асинхронную задачу, представляющую выполнение следующего обработчика запроса.</returns>
     public async Task InvokeAsync(
       HttpContext context,
-      UserManager<ApplicationUserModel> _userManager,
-      INotificationService _changeRole,
-      SignInManager<ApplicationUserModel> _signInManager)
+      UserManager<AppUser> _userManager,
+      INotification _changeRole,
+      SignInManager<AppUser> _signInManager)
     {
       if(context.User.Identity.Name == null)
       {

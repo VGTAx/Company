@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Company.Services.Conrollers
 {
-  public class AccountService : AccountServiceBase
+  public class Account : AccountBase
   {
-    private readonly UserManager<ApplicationUserModel> _userManager;
+    private readonly UserManager<AppUser> _userManager;
 
-    public AccountService(UserManager<ApplicationUserModel> userManager)
+    public Account(UserManager<AppUser> userManager)
     {
       _userManager = userManager;
     }
@@ -20,14 +20,14 @@ namespace Company.Services.Conrollers
       return await _userManager.FindByEmailAsync(email) is null;
     }
 
-    public override async Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUserModel user)
+    public override async Task<string> GenerateEmailConfirmationTokenAsync(AppUser user)
     {
       var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
       token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
       return token;
     }
 
-    public override async Task<string> GeneratePasswordResetTokenAsync(ApplicationUserModel user)
+    public override async Task<string> GeneratePasswordResetTokenAsync(AppUser user)
     {
       var token = await _userManager.GeneratePasswordResetTokenAsync(user);
       token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));

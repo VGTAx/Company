@@ -1,4 +1,4 @@
-﻿using Company.Models.Department;
+﻿using Company.Models.Departments;
 using Company.Models.Employee;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

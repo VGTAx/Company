@@ -11,7 +11,7 @@ namespace Company.Models.ViewModels
     /// 
     /// </summary>
     [HiddenInput]
-    public ApplicationUserModel? User { get; set; }
+    public AppUser? User { get; set; }
     /// <summary>
     /// 
     /// </summary>

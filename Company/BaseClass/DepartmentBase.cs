@@ -2,7 +2,7 @@
 
 namespace Company.BaseClass
 {
-  public abstract class DepartmentServiceBase<T> : ErrorMessageBase
+  public abstract class DepartmentBase<T> : ErrorMessageBase
   {
     public abstract Task<T> GetDepartmentAsync(int? id);
     public abstract IEnumerable<SelectListItem> GetDepartmentsListItem();

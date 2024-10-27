@@ -1,12 +1,12 @@
 ﻿using Company.BaseClass;
 using Company.Interfaces;
-using Company.Models.Department;
+using Company.Models.Departments;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Services.Conrollers
 {
-  public class DepartmentService : DepartmentServiceBase<DepartmentModel>
+  public class DepartmentService : DepartmentBase<DepartmentModel>
   {
     private readonly ICompanyContext _context;
 
@@ -33,7 +33,7 @@ namespace Company.Services.Conrollers
       return await _context.Departments.ToListAsync();
     }
 
-    public override async Task<DepartmentModel> GetDepartmentAsync(int? id)
+    public override async Task<DepartmentModel?> GetDepartmentAsync(int? id)
     {
       return id.HasValue ? await _context.Departments.FirstOrDefaultAsync(d => d.ID == id) : null;
     }

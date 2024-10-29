@@ -2,6 +2,7 @@
 using Company.Interfaces;
 using Company.Models;
 using Company.Models.Account;
+using Company.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +28,7 @@ namespace Company.Controllers
     private readonly ILogger<AccountController> _logger;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly UserManager<AppUser> _userManager;
+    private readonly StringParser _stringParser;
 
     /// <summary>
     /// Создает экземпляр класса <see cref="AccountController"/>.
@@ -43,7 +45,8 @@ namespace Company.Controllers
         ILogger<AccountController> logger,
         IUserStore<AppUser> userStore,
         UserManager<AppUser> userManager,
-        SignInManager<AppUser> signInManager
+        SignInManager<AppUser> signInManager,
+        StringParser errorParser
         )
     {
       _userManager = userManager;
@@ -54,6 +57,7 @@ namespace Company.Controllers
       _logger = logger;
       _context = context;
       _accountService = accountService;
+      _stringParser = errorParser;
     }
 
     private void Logger(LogLevel logLevel, string methodName, string message, string userId)
@@ -66,19 +70,6 @@ namespace Company.Controllers
     {
       var ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
       _logger.Log(logLevel, ": {IP} {method} - {message}", ip, methodName, message);
-    }
-
-    private string GetErrors(IEnumerable<string> errors)
-    {
-      var sb = new StringBuilder();
-
-      foreach(var error in errors)
-      {
-        sb.Append(error);
-        sb.Append("; ");
-      }
-
-      return sb.ToString();
     }
 
     /// <summary>
@@ -103,7 +94,7 @@ namespace Company.Controllers
 
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
+        var modelStateErrors = _stringParser.CollectionToString(_accountService.GetModelErrors(ModelState));
 
         Logger(LogLevel.Warning, methodName, $"Model invalid. Errors: {modelStateErrors}");
         return View();
@@ -153,7 +144,7 @@ namespace Company.Controllers
         return View("_StatusMessage");
       }
 
-      var creatingUserErrors = GetErrors(_accountService.GetIdentityResultErrors(resultOfCreatingUser));
+      var creatingUserErrors = _stringParser.CollectionToString(_accountService.GetIdentityResultErrors(resultOfCreatingUser));
       Logger(LogLevel.Error, methodName, $"User not created, Errors: {creatingUserErrors}", user.Id);
       return View();
     }
@@ -199,7 +190,7 @@ namespace Company.Controllers
       }
       else
       {
-        var errors = GetErrors(_accountService.GetIdentityResultErrors(resultOfConfrimEmail));
+        var errors = _stringParser.CollectionToString(_accountService.GetIdentityResultErrors(resultOfConfrimEmail));
 
         Logger(LogLevel.Warning, methodName, $"User not registered. Errors: {errors}", userId);
         ViewBag.StatusMessage = "Ошибка при подтверждении эл.почты! Обратитесь к администрации.";
@@ -233,7 +224,7 @@ namespace Company.Controllers
 
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
+        var modelStateErrors = _stringParser.CollectionToString(_accountService.GetModelErrors(ModelState));
         Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
 
         return View();
@@ -308,7 +299,7 @@ namespace Company.Controllers
 
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
+        var modelStateErrors = _stringParser.CollectionToString(_accountService.GetModelErrors(ModelState));
 
         Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
         return View();
@@ -379,7 +370,7 @@ namespace Company.Controllers
 
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = GetErrors(_accountService.GetModelErrors(ModelState));
+        var modelStateErrors = _stringParser.CollectionToString(_accountService.GetModelErrors(ModelState));
         Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
 
         return View();
@@ -417,7 +408,7 @@ namespace Company.Controllers
         ModelState.AddModelError(string.Empty, error.Description);
       }
 
-      var errors = GetErrors(_accountService.GetIdentityResultErrors(resultOfResetPassword));
+      var errors = _stringParser.CollectionToString(_accountService.GetIdentityResultErrors(resultOfResetPassword));
       Logger(LogLevel.Warning, methodName, $"Reset password has failed. Errors: {errors}");
 
       return View();

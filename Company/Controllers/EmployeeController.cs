@@ -2,6 +2,7 @@
 using Company.Interfaces;
 using Company.Models.Departments;
 using Company.Models.Employee;
+using Company.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ namespace Company.Controllers
     private readonly ILogger<EmployeeController> _logger;
     private readonly EmployeeBase<EmployeeModel> _employeeService;
     private readonly DepartmentBase<DepartmentModel> _departmentService;
+    private readonly StringParser _stringParser;
 
     /// <summary>
     /// Создает экземпляр класса <see cref="EmployeeController"/>.
@@ -28,12 +30,20 @@ namespace Company.Controllers
       ICompanyContext context,
       ILogger<EmployeeController> logger,
       EmployeeBase<EmployeeModel> employeeService,
-      DepartmentBase<DepartmentModel> departmentService)
+      DepartmentBase<DepartmentModel> departmentService,
+      StringParser stringParser)
     {
       _context = context;
       _logger = logger;
       _employeeService = employeeService;
       _departmentService = departmentService;
+      _stringParser = stringParser;
+    }
+
+    private void Logger(LogLevel logLevel, string methodName, string message, string? employeeId = default)
+    {
+      var ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+      _logger.Log(logLevel, ": {IP} {method} - {employeeId} {message}", ip, methodName, employeeId, message);
     }
 
     /// <summary>
@@ -44,11 +54,11 @@ namespace Company.Controllers
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public IActionResult Create()
     {
+      var methodName = nameof(Create);
       var departments = _departmentService.GetDepartmentsListItem();
-      _logger.LogInformation("Create employee method. Getting departments.");
 
       ViewBag.Departments = departments;
-      return View();
+      return View(methodName);
     }
 
     /// <summary>
@@ -62,18 +72,21 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> Create([FromForm] EmployeeModel employee)
     {
+      var methodName = nameof(Create);
+
       if(!ModelState.IsValid)
       {
         var modelStateErrors = _employeeService.GetModelErrors(ModelState);
-        _logger.LogInformation("Create employee has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+        var errors = _stringParser.CollectionToString(modelStateErrors);
 
+        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {errors}");
         return BadRequest(ModelState);
       }
 
       await _context.Employees.AddAsync(employee);
       await _context.SaveChangesAsync();
 
-      _logger.LogInformation("EmployeeModel {id} has created", employee.ID);
+      Logger(LogLevel.Information, methodName, "Employee created", employee.ID.ToString());
       return RedirectToAction(nameof(Details));
     }
 
@@ -86,11 +99,13 @@ namespace Company.Controllers
     /// В противном случае возвращает NotFound().
     /// </returns>
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Edit(int? id)
+    public async Task<IActionResult> EditEmployee(int? id)
     {
+      var methodName = nameof(EditEmployee);
+
       if(id == null)
       {
-        _logger.LogInformation("Edit employee view has not gotten. Id is null");
+        Logger(LogLevel.Error, methodName, "Employee id is null");
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -98,14 +113,14 @@ namespace Company.Controllers
 
       if(employee == null)
       {
-        _logger.LogWarning("Edit employee view has not gotten. EmployeeModel {id} not found", id);
+        Logger(LogLevel.Warning, methodName, "Employee not found", id.ToString());
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
       var departments = _departmentService.GetDepartmentsListItem();
       ViewBag.Departments = departments;
 
-      return View(nameof(Edit), employee);
+      return View(nameof(EditEmployee), employee);
     }
 
     /// <summary>
@@ -121,19 +136,22 @@ namespace Company.Controllers
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> Edit(int? id, [FromForm] EmployeeModel employee)
+    public async Task<IActionResult> EditEmployeePost(int? id, [FromForm] EmployeeModel employee)
     {
+      var methodName = nameof(EditEmployeePost);
+
       if(!ModelState.IsValid)
       {
         var modelStateErrors = _employeeService.GetModelErrors(ModelState);
-        _logger.LogInformation("Edit employee has failed. Model isn't valid. Errors: {errors}", modelStateErrors);
+        var errors = _stringParser.CollectionToString(modelStateErrors);
 
+        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {errors}");
         return BadRequest(ModelState);
       }
 
       if(id != employee.ID)
       {
-        _logger.LogWarning("Edit employee has failed. EmployeeModel {id} not found", id);
+        Logger(LogLevel.Warning, methodName, $"Employee not found");
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -141,21 +159,22 @@ namespace Company.Controllers
       {
         _context.Update(employee);
         await _context.SaveChangesAsync();
+        Logger(LogLevel.Information, methodName, "Employee info changed", employee.ID.ToString());
       }
       catch(DbUpdateConcurrencyException)
       {
         if(!await _employeeService.IsEmployeeExist(employee.ID))
         {
-          _logger.LogError("EmployeeModel {id} doesn't exist", employee.ID);
+          Logger(LogLevel.Error, methodName, "Employee not exist");
           return View("_StatusMessage", "Ошибка!Пользователь не найден.");
         }
         else
         {
+          Logger(LogLevel.Critical, methodName, "Db Update Concurrency Exception");
           throw;
         }
       }
 
-      _logger.LogInformation("EmployeeModel witg ID {id} has edited", employee.ID);
       return RedirectToAction(nameof(Details));
     }
 
@@ -167,9 +186,11 @@ namespace Company.Controllers
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Delete(int? id)
     {
+      var methodName = nameof(Delete);
+
       if(id == null || _context.Employees == null)
       {
-        _logger.LogWarning("Delete employee view has not gotten. EmployeeModel Id is null");
+        Logger(LogLevel.Error, methodName, "Employee Id is null");
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -177,7 +198,7 @@ namespace Company.Controllers
 
       if(employee == null)
       {
-        _logger.LogWarning("Delete employee view has not gotten. EmployeeModel with ID {Id} not found", id);
+        Logger(LogLevel.Warning, methodName, "Employee not found", id.ToString());
         return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
@@ -197,24 +218,26 @@ namespace Company.Controllers
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+      var methodName = nameof(DeleteConfirmed);
+
       if(_context.Employees == null)
       {
-        _logger.LogError("EmployeeModel delete has failed. Entity set 'DBContext.EmployeeModel' is null.");
+        Logger(LogLevel.Critical, methodName, "Entity set 'DBContext.EmployeeModel' is null.");
         return Problem("Entity set 'DepartmentContext.EmployeeModel' is null.");
       }
 
       var employee = await _employeeService.GetEmployeeAsync(id);
 
-      if(employee != null)
+      _context.Employees.Remove(employee);
+      if(await _context.SaveChangesAsync() != 0)
       {
-        _context.Employees.Remove(employee);
-        _logger.LogInformation("EmployeeModel with ID {id} has deleted", id);
+        Logger(LogLevel.Information, methodName, "Employee deleted", id.ToString());
+        return RedirectToAction(nameof(Details));
       }
 
-      await _context.SaveChangesAsync();
-      _logger.LogInformation("DBContext save changes");
-
-      return RedirectToAction(nameof(Details));
+      _context.Employees.Add(employee);
+      Logger(LogLevel.Information, methodName, "Employee deleted error", id.ToString());
+      return RedirectToAction(nameof(DeleteConfirmed), id);
     }
 
     /// <summary>
@@ -226,8 +249,11 @@ namespace Company.Controllers
     [Authorize(Policy = "BasicPolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Details()
     {
+      var methodName = nameof(Details);
       var employee = await _employeeService.GetEmployeesAsync();
       ViewBag.Departments = await _departmentService.GetDepartmentsAsync();
+
+      Logger(LogLevel.Information, methodName, "Get employees list");
 
       return View(employee);
     }

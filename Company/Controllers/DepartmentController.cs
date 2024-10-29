@@ -1,6 +1,7 @@
 ﻿using Company.Interfaces;
 using Company.Models.Departments;
 using Company.Models.Employee;
+using Company.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,13 +13,24 @@ namespace Company.Controllers
   public class DepartmentController : Controller
   {
     private readonly ICompanyContext _context;
+    private readonly ILogger<DepartmentController> _logger;
+    private readonly StringParser _stringParser;
+
+    private void Logger(LogLevel logLevel, string methodName, string message, string? id = default)
+    {
+      var ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+      _logger.Log(logLevel, ": {IP} {id} {method} - {message}", ip, id, methodName, message);
+    }
+
     /// <summary>
     /// Создает экземпляр класса <see cref="DepartmentController"/>.
     /// </summary>
     /// <param name="context">Контекст компании для доступа к данным отделов.</param>
-    public DepartmentController(ICompanyContext context)
+    public DepartmentController(ICompanyContext context, StringParser stringParser, ILogger<DepartmentController> logger)
     {
       _context = context;
+      _stringParser = stringParser;
+      _logger = logger;
     }
 
     /// <summary>
@@ -42,8 +54,11 @@ namespace Company.Controllers
     [HttpGet]
     public async Task<IActionResult> Details(int? departmentId = 0, string? departmentName = "")
     {
+      var methodName = nameof(Details);
+
       if(String.IsNullOrEmpty(departmentName) && departmentId == null)
       {
+        Logger(LogLevel.Error, methodName, "Department not found");
         return View("_StatusMessage", "Ошибка! Отдел не найден.");
       }
       else if(departmentId == 0 && !String.IsNullOrEmpty(departmentName))
@@ -52,6 +67,13 @@ namespace Company.Controllers
         departmentId = tempDepartment!.ID;
       }
       var department = _context.Departments.FirstOrDefault(d => d.ID == departmentId);
+
+      if(department == null)
+      {
+        Logger(LogLevel.Error, methodName, "Department not found", departmentId.ToString());
+      }
+
+      Logger(LogLevel.Information, methodName, $"Get \"{department.DepartmentName}\" department details", departmentId.ToString());
 
       return (Department?)departmentId switch
       {

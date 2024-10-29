@@ -104,8 +104,10 @@ public class Startup
     services.AddScoped<ManageAccountBase<AppUser>, ManageAccount>();
     services.AddScoped<EmployeeBase<EmployeeModel>, Employee>();
     services.AddScoped<DepartmentBase<DepartmentModel>, DepartmentService>();
+
     services.AddSingleton<INotification, ChangeRoleNotification>();
     services.AddSingleton<IAuthorizationHandler, RoleClaimsAuthRequirementHandler>();
+    services.AddSingleton<StringParser>();
   }
 
   public void ConfigureApp(WebApplication app)

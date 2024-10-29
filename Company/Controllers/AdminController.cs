@@ -4,6 +4,7 @@ using Company.IServices;
 using Company.Models;
 using Company.Models.Admin;
 using Company.Models.ViewModels;
+using Company.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +26,21 @@ namespace Company.Controllers
     private readonly CompanyContext _context;
     private readonly UserManager<AppUser>? _userManager;
     private readonly RoleManager<IdentityRole>? _roleManager;
+    private readonly StringParser _stringParser;
+
     private readonly List<string> exceptRoles = new List<string> { "Admin" }!;
+
+    private void Logger(LogLevel logLevel, string methodName, string message, string userId)
+    {
+      var ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+      _logger.Log(logLevel, ": {IP} {method} - {user} {message}", ip, methodName, userId, message);
+    }
+
+    private void Logger(LogLevel logLevel, string methodName, string message)
+    {
+      var ip = Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+      _logger.Log(logLevel, ": {IP} {method} - {message}", ip, methodName, message);
+    }
 
     /// <summary>
     /// Создает экземпляр класса <see cref="AdminController"/>.
@@ -41,7 +56,8 @@ namespace Company.Controllers
       IUserRoleClaims<AppUser> userRoleClaims,
       CompanyContext context,
       UserManager<AppUser> userManager,
-      RoleManager<IdentityRole> roleManager
+      RoleManager<IdentityRole> roleManager,
+      StringParser errorParser
       )
     {
       _userManager = userManager;
@@ -50,7 +66,9 @@ namespace Company.Controllers
       _userRoleClaims = userRoleClaims;
       _context = context;
       _logger = logger;
+      _stringParser = errorParser;
     }
+
     /// <summary>
     /// Отображает главную страницу администратора.
     /// </summary>
@@ -59,6 +77,7 @@ namespace Company.Controllers
     {
       return View();
     }
+
     /// <summary>
     /// 
     /// </summary>
@@ -67,9 +86,11 @@ namespace Company.Controllers
     [HttpGet]
     public async Task<IActionResult> AccessSettings(string? id)
     {
+      var methodName = nameof(AccessSettings);
+
       if(String.IsNullOrEmpty(id))
       {
-        _logger.LogInformation("Access settings aren't available. Id is null");
+        Logger(LogLevel.Warning, methodName, "UserId is null");
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
@@ -77,7 +98,7 @@ namespace Company.Controllers
 
       if(user == null)
       {
-        _logger.LogWarning("Access settings aren't available. User {id} not found", id);
+        Logger(LogLevel.Error, methodName, "User not found");
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
@@ -91,9 +112,10 @@ namespace Company.Controllers
         Roles = roles!
       };
 
-      _logger.LogInformation("Access settings for User {id} are gotten", id);
+      Logger(LogLevel.Information, methodName, $"Got access settings for user {user.Id}");
       return PartialView(model);
     }
+
     /// <summary>
     /// Отображает страницу настройки доступа для пользователя с указанным идентификатором.
     /// </summary>
@@ -102,28 +124,30 @@ namespace Company.Controllers
     [HttpPost]
     public async Task<IActionResult> AccessSettings([FromForm] UserInfoModel model)
     {
+      var methodName = nameof(AccessSettings);
+
       if(!ModelState.IsValid)
       {
-        var modelStateErrors = ModelState.Values.SelectMany(c => c.Errors)
-                                .Select(c => c.ErrorMessage);
+        var modelStateErrors = ModelState.Values
+          .SelectMany(c => c.Errors)
+          .Select(c => c.ErrorMessage);
+        var errors = _stringParser.CollectionToString(modelStateErrors);
 
-        _logger.LogInformation("Change access settings has failed. " +
-          "Model isn't valid. Errors: {errors}", modelStateErrors);
+        Logger(LogLevel.Warning, methodName, $"Changed settings failed. Model isn't valid. Errors: {errors}");
         return BadRequest(ModelState);
       }
 
       var user = await _userManager!.FindByIdAsync(model.Id!);
       if(user == null)
       {
-        _logger.LogWarning("Change access settings has failed. User {id} not found", model.Id);
+        Logger(LogLevel.Error, methodName, "User not found", model.Id!);
         return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
       if(!model.SelectedRoles!.Contains("User"))
       {
         ModelState.AddModelError(string.Empty, "Роль User не может быть удалена");
-        _logger.LogWarning("Change access settings has failed. User {id}. " +
-          "Claims \"User\" can't be deleted", user.Id);
+        Logger(LogLevel.Error, methodName, $"Claims \"User\" can't be deleted", user.Id);
 
         return BadRequest(ModelState);
       }
@@ -132,17 +156,17 @@ namespace Company.Controllers
 
       if(!model.SelectedRoles.SequenceEqual(userRoles)) //сравнение текущих ролей пользователя и выбранных ролей из формы
       {
-        _logger.LogInformation("Changing user role claims. User {id}", user.Id);
+        var roles = _stringParser.CollectionToString(model.SelectedRoles);
+        Logger(LogLevel.Information, methodName, $"Change user role claims to: {roles}", user.Id);
+
         await _userRoleClaims.ChangeUserRoleClaimsAsync(user, userRoles, model.SelectedRoles); //меняем роли
 
         user.SecurityStamp = Guid.NewGuid().ToString();
         await _userManager.UpdateAsync(user);
 
-        _logger.LogInformation("Send notification about changing user role claims.");
-
         _changeRole!.SendNotification(user.Id); //отправляем уведомление о смене ролей
+        Logger(LogLevel.Information, methodName, $"Update user role claims", user.Id);
 
-        _logger.LogInformation("Change user role claims has succeeded. User {id}", user.Id);
         return PartialView("_StatusMessage", "Данные изменены!");
       }
 
@@ -156,9 +180,10 @@ namespace Company.Controllers
     [HttpGet]
     public async Task<IActionResult> UserList()
     {
+      var methodName = nameof(UserList);
       var users = await _context!.Users.ToListAsync();
 
-      _logger.LogInformation("User List method. Getting user list.");
+      Logger(LogLevel.Information, methodName, "Get user list.");
       return PartialView(users);
     }
 

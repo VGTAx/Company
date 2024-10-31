@@ -126,6 +126,13 @@ namespace Company.Controllers
     {
       var methodName = nameof(AccessSettings);
 
+      var user = await _userManager!.FindByIdAsync(model.Id!);
+      if(user == null)
+      {
+        Logger(LogLevel.Error, methodName, "User not found", model.Id!);
+        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
+      }
+
       if(!ModelState.IsValid)
       {
         var modelStateErrors = ModelState.Values
@@ -135,13 +142,6 @@ namespace Company.Controllers
 
         Logger(LogLevel.Warning, methodName, $"Changed settings failed. Model isn't valid. Errors: {errors}");
         return BadRequest(ModelState);
-      }
-
-      var user = await _userManager!.FindByIdAsync(model.Id!);
-      if(user == null)
-      {
-        Logger(LogLevel.Error, methodName, "User not found", model.Id!);
-        return PartialView("_StatusMessage", "Ошибка! Пользователь не найден!");
       }
 
       if(!model.SelectedRoles!.Contains("User"))

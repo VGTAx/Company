@@ -16,7 +16,7 @@ namespace Company.Services.Conrollers
 
     public override async Task<Models.Employee.EmployeeModel> GetEmployeeAsync(int? id)
     {
-      return id.HasValue ? await _context.Employees.FirstOrDefaultAsync(e => e.ID == id) : null;
+      return id.HasValue ? await _context.Employees.FirstOrDefaultAsync(e => e.Id == id) : null;
     }
 
     public override async Task<List<Models.Employee.EmployeeModel>> GetEmployeesAsync()
@@ -31,7 +31,7 @@ namespace Company.Services.Conrollers
     /// <returns>True, если сотрудник с указанным идентификатором существует, иначе false.</returns>
     public override async Task<bool> IsEmployeeExist(int? id)
     {
-      return id.HasValue && await _context.Employees.AnyAsync(e => e.ID == id);
+      return id.HasValue && await _context.Employees.AnyAsync(e => e.Id == id);
     }
   }
 }

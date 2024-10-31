@@ -297,19 +297,19 @@ namespace Company.Controllers
     {
       var methodName = nameof(ForgotPassword);
 
+      var user = await _userManager.FindByEmailAsync(model.Email!);
+      if(user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+      {
+        Logger(LogLevel.Error, methodName, "User not exist", user.Id);
+        ModelState.AddModelError(nameof(model.Email), "Пользователя с такой электронной почтой не существует.");
+        return View();
+      }
+
       if(!ModelState.IsValid)
       {
         var modelStateErrors = _stringParser.CollectionToString(_accountService.GetModelErrors(ModelState));
 
         Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
-        return View();
-      }
-
-      var user = await _userManager.FindByEmailAsync(model.Email!);
-      if(user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-      {
-        Logger(LogLevel.Error, methodName, "User not exist");
-        ModelState.AddModelError(nameof(model.Email), "Пользователя с такой электронной почтой не существует.");
         return View();
       }
 
@@ -368,19 +368,19 @@ namespace Company.Controllers
     {
       var methodName = nameof(ResetPassword);
 
-      if(!ModelState.IsValid)
-      {
-        var modelStateErrors = _stringParser.CollectionToString(_accountService.GetModelErrors(ModelState));
-        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}");
-
-        return View();
-      }
-
       var user = await _userManager.FindByEmailAsync(model.Email!);
       if(user == null)
       {
         Logger(LogLevel.Error, methodName, "User not found");
         return View("_StatusMessage", "Ошибка во время сброса пароля. Попробуйте ещё раз.");
+      }
+
+      if(!ModelState.IsValid)
+      {
+        var modelStateErrors = _stringParser.CollectionToString(_accountService.GetModelErrors(ModelState));
+        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {modelStateErrors}", user.Id);
+
+        return View();
       }
 
       model.Token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Token!));

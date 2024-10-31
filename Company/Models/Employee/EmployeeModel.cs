@@ -12,7 +12,7 @@ namespace Company.Models.Employee
     /// Идентификатор сотрудника.
     /// </summary>
     [HiddenInput]
-    public int? ID { get; set; }
+    public int? Id { get; set; }
 
     /// <summary>
     /// Имя сотрудника.
@@ -55,7 +55,7 @@ namespace Company.Models.Employee
     /// <param name="DepartmentID">Идентификатор отдела.</param>
     public EmployeeModel(int? ID, int? DepartmentID)
     {
-      this.ID = ID;
+      this.Id = ID;
       this.DepartmentID = DepartmentID;
     }
 
@@ -70,7 +70,7 @@ namespace Company.Models.Employee
     /// <param name="departmentID">Идентификатор отдела.</param>
     public EmployeeModel(int? iD, string name, string surname, string age, string number, int? departmentID)
     {
-      ID = iD;
+      Id = iD;
       Name = name;
       Surname = surname;
       Age = age;

@@ -110,7 +110,7 @@ namespace Company.Controllers
       if(subdepartments.Count != 0)
       {
         employees = empl.Where(e => subdepartments.Select(s => s.ID)
-                            .Contains(e.ID))
+                            .Contains(e.Id))
                         .ToList();
       }
       else

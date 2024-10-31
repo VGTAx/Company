@@ -64,13 +64,13 @@ namespace Company.Controllers
     /// <summary>
     /// Метод действия для создания нового сотрудника на основе входных данных формы.
     /// </summary>
-    /// <param name="employee">Модель сотрудника, полученная из формы.</param>
+    /// <param name="model">Модель сотрудника, полученная из формы.</param>
     /// <returns>
     /// Если модель данных валидна, перенаправляет на страницу со списком сотрудников.
     /// В противном случае возвращает View "Create" с данными формы и списком доступных отделов.
     /// </returns>
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm] EmployeeModel employee)
+    public async Task<IActionResult> Create([FromForm] EmployeeModel model)
     {
       var methodName = nameof(Create);
 
@@ -83,10 +83,10 @@ namespace Company.Controllers
         return BadRequest(ModelState);
       }
 
-      await _context.Employees.AddAsync(employee);
+      await _context.Employees.AddAsync(model);
       await _context.SaveChangesAsync();
 
-      Logger(LogLevel.Information, methodName, "Employee created", employee.ID.ToString());
+      Logger(LogLevel.Information, methodName, "Employee created", model.Id.ToString());
       return RedirectToAction(nameof(Details));
     }
 
@@ -127,7 +127,7 @@ namespace Company.Controllers
     /// Метод для обновления данных сотрудника на основе указанного идентификатора.
     /// </summary>
     /// <param name="id">Идентификатор сотрудника для обновления.</param>
-    /// <param name="employee">Модель сотрудника с обновленными данными.</param>
+    /// <param name="model">Модель сотрудника с обновленными данными.</param>
     /// <returns>
     /// Если сотрудник с указанным идентификатором не найден, возвращает NotFoundResult.
     /// Если модель данных сотрудника валидна и обновление данных выполнено успешно, перенаправляет на метод действия "Details".
@@ -136,34 +136,34 @@ namespace Company.Controllers
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Policy = "ManagePolicy", AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<IActionResult> EditEmployeePost(int? id, [FromForm] EmployeeModel employee)
+    public async Task<IActionResult> EditEmployeePost(int? id, [FromForm] EmployeeModel model)
     {
       var methodName = nameof(EditEmployeePost);
+
+      if(id != model.Id)
+      {
+        Logger(LogLevel.Warning, methodName, $"Employee not found");
+        return View("_StatusMessage", "Ошибка!Пользователь не найден.");
+      }
 
       if(!ModelState.IsValid)
       {
         var modelStateErrors = _employeeService.GetModelErrors(ModelState);
         var errors = _stringParser.CollectionToString(modelStateErrors);
 
-        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {errors}");
+        Logger(LogLevel.Warning, methodName, $"Model isn't valid. Errors: {errors}", model.Id.ToString());
         return BadRequest(ModelState);
-      }
-
-      if(id != employee.ID)
-      {
-        Logger(LogLevel.Warning, methodName, $"Employee not found");
-        return View("_StatusMessage", "Ошибка!Пользователь не найден.");
       }
 
       try
       {
-        _context.Update(employee);
+        _context.Update(model);
         await _context.SaveChangesAsync();
-        Logger(LogLevel.Information, methodName, "Employee info changed", employee.ID.ToString());
+        Logger(LogLevel.Information, methodName, "Employee info changed", model.Id.ToString());
       }
       catch(DbUpdateConcurrencyException)
       {
-        if(!await _employeeService.IsEmployeeExist(employee.ID))
+        if(!await _employeeService.IsEmployeeExist(model.Id))
         {
           Logger(LogLevel.Error, methodName, "Employee not exist");
           return View("_StatusMessage", "Ошибка!Пользователь не найден.");

@@ -31,7 +31,7 @@ namespace Company.Data.EntityTypeConfiguration
           new EmployeeModel(20, "Алиса", "Николаева", "22", "+79123456768", 12)
           );
 
-      builder.Property(e => e.ID)
+      builder.Property(e => e.Id)
              .ValueGeneratedOnAdd();
     }
   }

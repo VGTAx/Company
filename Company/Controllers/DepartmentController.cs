@@ -64,9 +64,9 @@ namespace Company.Controllers
       else if(departmentId == 0 && !String.IsNullOrEmpty(departmentName))
       {
         var tempDepartment = await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == departmentName);
-        departmentId = tempDepartment!.ID;
+        departmentId = tempDepartment!.Id;
       }
-      var department = _context.Departments.FirstOrDefault(d => d.ID == departmentId);
+      var department = _context.Departments.FirstOrDefault(d => d.Id == departmentId);
 
       if(department == null)
       {
@@ -109,7 +109,7 @@ namespace Company.Controllers
 
       if(subdepartments.Count != 0)
       {
-        employees = empl.Where(e => subdepartments.Select(s => s.ID)
+        employees = empl.Where(e => subdepartments.Select(s => s.Id)
                             .Contains(e.Id))
                         .ToList();
       }
@@ -122,7 +122,7 @@ namespace Company.Controllers
       {
         foreach(var dep in subdepartments)
         {
-          var children = GetEmployees(dep.ID, departments, empl);
+          var children = GetEmployees(dep.Id, departments, empl);
           employees.AddRange(children);
         }
       }

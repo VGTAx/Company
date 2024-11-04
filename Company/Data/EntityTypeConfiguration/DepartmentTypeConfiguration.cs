@@ -8,7 +8,7 @@ namespace Company.Data.EntityTypeConfiguration
   {
     public void Configure(EntityTypeBuilder<DepartmentModel> builder)
     {
-      builder.HasKey(d => d.ID);
+      builder.HasKey(d => d.Id);
       builder.HasData(
            new DepartmentModel(Department.CustomerService, "Отдел по обслуживанию клиентов", null),
            new DepartmentModel(Department.Production, "Производственный отдел", null),

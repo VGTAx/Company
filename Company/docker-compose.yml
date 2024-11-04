@@ -1,0 +1,22 @@
+services:
+  server:
+    image: company-server
+    container_name: company_server
+    environment:
+      - COMPANY__DB_CON_STR=${DB_CON_STR}
+      - COMPANY__SMTP_HOST=${SMTP_HOST}
+      - COMPANY__SMTP_PORT=${SMTP_PORT}
+      - COMPANY__SMTP_EMAIL=${SMTP_EMAIL}
+      - COMPANY__SMTP_PASSWORD=${SMTP_PASSWORD}
+      - COMPANY__SMTP_EMAIL_SENDER=${SMTP_EMAIL_SENDER}
+    ports:
+      - ${PORT}:4132
+    volumes:
+      - ${LOGS_FOLDER}:/app/log
+      - ${CONFIG_FOLDER}:/app/config
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO - http://127.0.0.1:4132/service/status"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s  

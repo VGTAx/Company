@@ -10,7 +10,7 @@ namespace Company.Models.Departments
     /// <summary>
     /// Идентификатор отдела.
     /// </summary>
-    public int? ID { get; set; }
+    public int? Id { get; set; }
     /// <summary>
     /// Название отдела.
     /// </summary>
@@ -29,7 +29,7 @@ namespace Company.Models.Departments
     /// <param name="parentDepartmentID">Идентификатор родительского отдела</param>
     public DepartmentModel(Department? department, string? departmentName, Department? parentDepartment)
     {
-      ID = ((int?)department);
+      Id = ((int?)department);
       DepartmentName = departmentName;
       ParentDepartmentID = ((int?)parentDepartment);
     }

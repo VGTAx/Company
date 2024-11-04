@@ -18,10 +18,10 @@ namespace Company.Services.Conrollers
     public override IEnumerable<SelectListItem> GetDepartmentsListItem()
     {
       var departments = _context.Departments
-         .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.ID))
+         .Where(d => !_context.Departments.Any(sub => sub.ParentDepartmentID == d.Id))
          .Select(item => new SelectListItem
          {
-           Value = item.ID.ToString(),
+           Value = item.Id.ToString(),
            Text = item.DepartmentName
          }).AsEnumerable();
 
@@ -35,7 +35,7 @@ namespace Company.Services.Conrollers
 
     public override async Task<DepartmentModel?> GetDepartmentAsync(int? id)
     {
-      return id.HasValue ? await _context.Departments.FirstOrDefaultAsync(d => d.ID == id) : null;
+      return id.HasValue ? await _context.Departments.FirstOrDefaultAsync(d => d.Id == id) : null;
     }
   }
 }

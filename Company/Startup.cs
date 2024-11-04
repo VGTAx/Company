@@ -21,11 +21,11 @@ namespace Company;
 
 public class Startup
 {
-  public void ConfigureService(IServiceCollection services, IConfiguration config)
+  public void ConfigureService(IServiceCollection services, IConfiguration configuration)
   {
     // ------------------------------------ Database
 
-    var connectionString = Environment.GetEnvironmentVariable("COMPANY__DB_CON_STR");
+    var connectionString = configuration["DB_CON_STR"];
 
     services.AddDbContext<ICompanyContext, CompanyContext>(
       options => options.UseNpgsql(connectionString!));
@@ -74,7 +74,7 @@ public class Startup
     // ------------------------------------ Logger
 
     Serilog.Log.Logger = new LoggerConfiguration()
-        .ReadFrom.Configuration(config)
+        .ReadFrom.Configuration(configuration)
         .CreateLogger();
 
     var loggerFactory = LoggerFactory.Create(builder =>
@@ -89,11 +89,11 @@ public class Startup
 
     services.Configure<SmtpSettings>(config =>
     {
-      config.Host = Environment.GetEnvironmentVariable("SMTP_HOST");
-      config.Port = int.TryParse(Environment.GetEnvironmentVariable("SMTP_PORT"), out int port) ? port : throw new ArgumentNullException(nameof(config.Port), "SMTP:PORT is null");
-      config.Email = Environment.GetEnvironmentVariable("SMTP_EMAIL");
-      config.Password = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
-      config.SenderName = Environment.GetEnvironmentVariable("SMTP_SENDER_NAME");
+      config.Host = configuration["SMTP_HOST"];
+      config.Port = int.TryParse(configuration["SMTP_PORT"], out int port) ? port : throw new ArgumentNullException(nameof(config.Port), "SMTP:PORT is null");
+      config.Email = configuration["SMTP_EMAIL"];
+      config.Password = configuration["SMTP_PASSWORD"];
+      config.SenderName = configuration["SMTP_SENDER_NAME"];
     });
 
     // ------------------------------------ Other services

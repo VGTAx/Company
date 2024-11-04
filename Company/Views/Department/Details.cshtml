@@ -57,7 +57,7 @@
             <td>
                 @foreach(DepartmentModel dep in ViewBag.Departments)
                 {
-                    if(item.DepartmentID == dep.ID)
+                    if(item.DepartmentID == dep.Id)
                     {
                         <p>@dep.DepartmentName</p>
                         break;

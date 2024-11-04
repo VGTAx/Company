@@ -1,0 +1,121 @@
+version: '3.9'
+
+services:
+  postgres:
+    container_name: company_postgres_container
+    image: postgres:16.3-alpine3.18
+    command:
+      - sh
+      - -c
+      - |
+        chown -R postgres /var/lib/postgresql/crts &&
+        chmod 700 /var/lib/postgresql/crts &&        
+        chmod 600 /var/lib/postgresql/crts/server.key &&
+        if [ -z "$(ls -A /var/lib/postgresql/data/pgdata)" ]; then
+          su postgres -c "initdb -D /var/lib/postgresql/data/pgdata"
+        fi &&        
+        chown postgres /var/lib/postgresql/data/pgdata/postgresql.conf &&
+        chmod 600 /var/lib/postgresql/data/pgdata/postgresql.conf &&   
+        su postgres -c "postgres \
+          -c 'max_connections=50' \
+          -c 'shared_buffers=1GB' \
+          -c 'effective_cache_size=4GB' \
+          -c 'work_mem=16MB' \
+          -c 'maintenance_work_mem=512MB' \
+          -c 'random_page_cost=1.1' \
+          -c 'temp_file_limit=10GB' \
+          -c 'log_min_duration_statement=200ms' \
+          -c 'idle_in_transaction_session_timeout=10s' \
+          -c 'lock_timeout=1s' \
+          -c 'statement_timeout=60s' \
+          -c 'shared_preload_libraries=pg_stat_statements' \
+          -c 'pg_stat_statements.max=10000' \
+          -c 'pg_stat_statements.track=all' \
+          -c 'ssl=on' \
+          -c 'ssl_cert_file=/var/lib/postgresql/crts/server.crt' \
+          -c 'ssl_key_file=/var/lib/postgresql/crts/server.key' \
+          -c 'ssl_ca_file=/var/lib/postgresql/crts/root.crt' \
+          -c 'hba_file=/var/lib/postgresql/config/pg_hba.conf' \
+          -c 'logging_collector=on' \
+          -c 'log_destination=jsonlog,stderr' \
+          -c 'log_statement=all' \
+          -c 'log_timezone=Europe/Moscow'"        
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: "/var/lib/postgresql/data/pgdata"      
+    user: root 
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+      - ${CERTIFICATES_FOLDER}:/var/lib/postgresql/crts 
+      - ${CONFIG_FOLDER_DB}:/var/lib/postgresql/config
+    ports:
+      - ${POSTGRES_PORT}:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped    
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+
+
+  pgadmin:
+    container_name: company_pgadmin_container
+    image: dpage/pgadmin4:8.6
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    user: "root"     
+    volumes: 
+      - pgadmin-data:/var/lib/pgadmin   
+      - ${CERTIFICATES_FOLDER}:/var/lib/postgresql/crts   
+    ports:
+      - 7453:80
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    depends_on:
+      postgres:
+        condition: service_healthy
+    configs:
+    - source: servers.json
+      target: /root/servers.json
+    
+
+configs:      
+  servers.json:
+    content: |
+      {
+        "Servers":
+         {
+           "1":
+              {
+                "Name": "RONAVI",
+                "Group": "Servers",
+                "Host": "postgres",
+                "Port": 5432,
+                "MaintenanceDB": "postgres",
+                "Username": "postgres",
+                "SSLMode": "prefer",
+                "ConnectionParameters": {
+                    "sslmode": "verify-full",
+                    "sslrootcert": "/var/lib/postgresql/crts/root.crt",
+                    "sslcert": "/var/lib/postgresql/crts/client.crt",
+                    "sslkey": "/var/lib/postgresql/crts/client.key"
+                }
+              }
+          }
+      }
+
+volumes:
+  postgresql-data:
+  pgadmin-data:

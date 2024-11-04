@@ -6,14 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Company-a24c271c-d070-4a53-9a1b-a638a20f71bc</UserSecretsId>
   </PropertyGroup>
-
- 
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\js\CreateUser.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\HighligthLink.js" />
-  </ItemGroup>
-
   
 
   <ItemGroup>
@@ -39,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.Development.json">
+    <!--<Content Update="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -60,7 +52,11 @@
     <Content Update="wwwroot\js\DefaultMenuItem.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    </Content>-->
+	  <Content Update="wwwroot\js\**\*.*">
+		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
   </ItemGroup>
 
   <ItemGroup>

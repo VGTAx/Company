@@ -99,7 +99,7 @@ configs:
          {
            "1":
               {
-                "Name": "Company",
+                "Name": "RONAVI",
                 "Group": "Servers",
                 "Host": "postgres",
                 "Port": 5432,

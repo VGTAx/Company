@@ -17,7 +17,7 @@ build-job:       # This job runs in the build stage, which runs first.
 
 
 
-variables:
+# variables:
 #   IMAGE_NAME: "vgtax/company"
 #   TAG_LATEST: "latest"
 #   TAG_COMMIT: "${CI_COMMIT_SHA}"

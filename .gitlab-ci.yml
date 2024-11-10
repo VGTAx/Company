@@ -22,9 +22,9 @@ variables:
   TAG_LATEST: "latest"
   TAG_COMMIT: "${CI_COMMIT_SHA}"
 
-before_script:
-  # Вход в Docker Hub с использованием переменных DOCKER_USERNAME и DOCKER_PASSWORD
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+# before_script:
+#   # Вход в Docker Hub с использованием переменных DOCKER_USERNAME и DOCKER_PASSWORD
+#   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 
 stages:          # List of stages for jobs, and their order of execution

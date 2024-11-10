@@ -1,47 +1,47 @@
-image: mcr.microsoft.com/dotnet/sdk:8.0
+# image: mcr.microsoft.com/dotnet/sdk:8.0
 
-
-before_script:
-  - 'dotnet restore ./Company.sln'
-
-
-stages:          # List of stages for jobs, and their order of execution
-  - build
-  - test  
-
-build-job:       # This job runs in the build stage, which runs first.
-  stage: build
-  script: 
-    - 'dotnet build ./Company.sln --no-restore'
-
-
-
-
-# variables:
-#   IMAGE_NAME: "vgtax/company"
-#   TAG_LATEST: "latest"
-#   TAG_COMMIT: "${CI_COMMIT_SHA}"
 
 # before_script:
-#   # Вход в Docker Hub с использованием переменных DOCKER_USERNAME и DOCKER_PASSWORD
-#   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+#   - 'dotnet restore ./Company.sln'
 
 
 # stages:          # List of stages for jobs, and their order of execution
-#   - build  
+#   - build
+#   - test  
 
 # build-job:       # This job runs in the build stage, which runs first.
 #   stage: build
-#   image: docker:26.1.3
-#   tags:
-#     - company
-#   except:
-#     - branches
-#   services:
-#     - docker:26.1.3-dind
-#   script:
-#     - docker build -t $IMAGE_NAME:$TAG_COMMIT -t $IMAGE_NAME:$TAG_LATEST
-#     - docker push $IMAGE_NAME --all-tags
+#   script: 
+#     - 'dotnet build ./Company.sln --no-restore'
+
+
+
+
+variables:
+  IMAGE_NAME: "vgtax/company"
+  TAG_LATEST: "latest"
+  TAG_COMMIT: "${CI_COMMIT_SHA}"
+
+before_script:
+  # Вход в Docker Hub с использованием переменных DOCKER_USERNAME и DOCKER_PASSWORD
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+
+stages:          # List of stages for jobs, and their order of execution
+  - build  
+
+build-job:       # This job runs in the build stage, which runs first.
+  stage: build
+  image: docker:26.1.3
+  tags:
+    - company
+  except:
+    - branches
+  services:
+    - docker:26.1.3-dind
+  script:
+    - docker build -t $IMAGE_NAME:$TAG_COMMIT -t $IMAGE_NAME:$TAG_LATEST
+    - docker push $IMAGE_NAME --all-tags
 
 
 
